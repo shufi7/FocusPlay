@@ -47,12 +47,6 @@
                         android:layout_marginTop="4dp"/>
                 </LinearLayout>
 
-                <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_alignParentEnd="true"
-                    android:src="@android:drawable/ic_menu_myplaces"
-                    app:tint="#D4AF37"/>
             </RelativeLayout>
 
             <TextView
