@@ -19,7 +19,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
     private lateinit var btnLogin: Button
-    private lateinit var btnRegister: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +28,6 @@ class LoginActivity : AppCompatActivity() {
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
-        btnRegister = findViewById(R.id.btnRegister)
 
         // Beri perintah ketika tombol "Masuk" diklik
         btnLogin.setOnClickListener {
@@ -44,13 +42,6 @@ class LoginActivity : AppCompatActivity() {
 
             // Jalankan fungsi login jika tidak kosong
             prosesLogin(email, password)
-        }
-
-        // Beri perintah ketika tombol "Daftar Baru" diklik
-        btnRegister.setOnClickListener {
-            // Pindah langsung ke halaman RegisterActivity
-            val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
-            startActivity(intent)
         }
     }
 
