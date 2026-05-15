@@ -63,6 +63,7 @@
                 android:layout_height="50dp"
                 android:background="#F5F6F8"
                 android:hint="nama@email.com"
+                android:textColor="#111111"
                 android:textColorHint="#BDBDBD"
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="16dp"
@@ -88,11 +89,14 @@
                     android:layout_height="match_parent"
                     android:background="@null"
                     android:hint="Masukkan sandi"
+                    android:textColor="#111111"
                     android:textColorHint="#BDBDBD"
-                    android:paddingHorizontal="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="48dp"
                     android:inputType="textPassword" />
 
                 <ImageView
+                    android:id="@+id/ivTogglePassword"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_alignParentEnd="true"

@@ -1,9 +1,13 @@
 package com.example.focusplay.view
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
@@ -15,11 +19,14 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
 
-    // Deklarasi variabel untuk elemen layar
+    // Deklarasi variabel
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
     private lateinit var btnLogin: Button
-    private lateinit var btnRegister: Button // <-- Ini yang tadi hilang
+    private lateinit var btnRegister: Button
+    private lateinit var ivTogglePassword: ImageView // Variabel baru untuk ikon mata
+
+    private var isPasswordVisible = false // Status untuk melacak sandi terlihat/sembunyi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,24 +36,38 @@ class LoginActivity : AppCompatActivity() {
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
-        btnRegister = findViewById(R.id.btnRegister) // <-- Ini juga hilang
+        btnRegister = findViewById(R.id.btnRegister)
+        ivTogglePassword = findViewById(R.id.ivTogglePassword) // Hubungkan ikon mata
 
-        // Beri perintah ketika tombol "Masuk" diklik
+        // --- LOGIKA IKON MATA SANDI ---
+        ivTogglePassword.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible // Balikkan status
+            if (isPasswordVisible) {
+                // Tampilkan teks sandi
+                etPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                ivTogglePassword.setColorFilter(Color.parseColor("#406915")) // Ikon jadi hijau saat dilihat
+            } else {
+                // Sembunyikan kembali jadi titik-titik
+                etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+                ivTogglePassword.setColorFilter(Color.parseColor("#555555")) // Ikon kembali abu-abu
+            }
+            // Pindahkan kursor pengetikan ke ujung karakter terakhir
+            etPassword.setSelection(etPassword.text.length)
+        }
+
+        // --- LOGIKA TOMBOL MASUK ---
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
 
-            // Cek apakah kolom kosong
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Email dan password tidak boleh kosong", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
-            // Jalankan fungsi login jika tidak kosong
             prosesLogin(email, password)
         }
 
-        // Beri perintah ketika tombol "Daftar Baru" diklik (Ini yang memindahkan layar)
+        // --- LOGIKA TOMBOL DAFTAR ---
         btnRegister.setOnClickListener {
             val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
             startActivity(intent)
@@ -54,31 +75,25 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun prosesLogin(email: String, pass: String) {
-        // Siapkan data JSON yang akan dikirim
         val requestData = HashMap<String, String>()
         requestData["email"] = email
         requestData["password"] = pass
 
-        // Panggil API lewat Retrofit
         ApiClient.instance.loginPendamping(requestData).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful && response.body()?.status == "success") {
-                    // Jika login benar, munculkan pesan selamat datang
                     val nama = response.body()?.data?.nama_pendamping
                     Toast.makeText(this@LoginActivity, "Selamat datang, $nama", Toast.LENGTH_SHORT).show()
 
-                    // Pindah ke halaman Dashboard
                     val intent = Intent(this@LoginActivity, DashboardActivity::class.java)
                     startActivity(intent)
-                    finish() // Tutup halaman login agar tidak bisa di-back
+                    finish()
                 } else {
-                    // Jika salah sandi/email
                     Toast.makeText(this@LoginActivity, "Login gagal: Email atau password salah", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                // Jika koneksi internet atau server mati
                 Toast.makeText(this@LoginActivity, "Koneksi Error: ${t.message}", Toast.LENGTH_LONG).show()
             }
         })
