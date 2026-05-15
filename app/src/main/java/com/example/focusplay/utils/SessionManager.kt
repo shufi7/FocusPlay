@@ -5,31 +5,31 @@ import android.content.SharedPreferences
 
 class SessionManager(context: Context) {
 
-    // Membuat atau membuka brankas penyimpanan bernama "FocusPlayPrefs"
     private val prefs: SharedPreferences = context.getSharedPreferences("FocusPlayPrefs", Context.MODE_PRIVATE)
 
-    // Fungsi untuk menyimpan data saat berhasil login
     fun simpanSesiLogin(id: Int, nama: String, email: String) {
         val editor = prefs.edit()
-        editor.putBoolean("IS_LOGGED_IN", true) // Menandai bahwa ada yang sedang login
-        editor.putInt("USER_ID", id)
+        editor.putBoolean("IS_LOGGED_IN", true)
+        editor.putInt("USER_ID", id) // Menyimpan ID ke brankas
         editor.putString("USER_NAMA", nama)
         editor.putString("USER_EMAIL", email)
-        editor.apply() // Kunci brankasnya
+        editor.apply()
     }
 
-    // Fungsi untuk mengecek apakah sedang ada yang login
     fun isLogin(): Boolean {
         return prefs.getBoolean("IS_LOGGED_IN", false)
     }
 
-    // Fungsi untuk mengambil nama pengguna yang sedang login
+    // --- TAMBAHKAN FUNGSI INI ---
+    fun getUserId(): Int {
+        return prefs.getInt("USER_ID", 0) // Mengambil ID dari brankas, default 0 jika tidak ada
+    }
+
     fun getNamaUser(): String? {
         return prefs.getString("USER_NAMA", "Pengguna")
     }
 
-    // Fungsi untuk menghapus sesi (Logout)
     fun logout() {
-        prefs.edit().clear().apply() // Kosongkan brankas
+        prefs.edit().clear().apply()
     }
 }

@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.model.TambahAnakResponse // <-- BARIS INI WAJIB ADA
 import com.example.focusplay.network.ApiClient
 import com.example.focusplay.utils.SessionManager
 import retrofit2.Call
@@ -28,7 +29,9 @@ class TambahAnakActivity : AppCompatActivity() {
         etNamaAnak = findViewById(R.id.etNamaAnak)
         etUsiaAnak = findViewById(R.id.etUsiaAnak)
         btnSimpanAnak = findViewById(R.id.btnSimpanAnak)
-        findViewById<ImageView>(R.id.ivBack).setOnClickListener { finish() }
+
+        val ivBack = findViewById<ImageView>(R.id.ivBack)
+        ivBack.setOnClickListener { finish() }
 
         btnSimpanAnak.setOnClickListener {
             val nama = etNamaAnak.text.toString().trim()
@@ -45,7 +48,8 @@ class TambahAnakActivity : AppCompatActivity() {
 
     private fun prosesSimpanAnak(nama: String, usia: Int) {
         val requestData = HashMap<String, Any>()
-        requestData["id_pendamping"] = session.getUserId() // Pastikan SessionManager punya fungsi getUserId()
+        // Mengambil ID orang tua dari session
+        requestData["id_pendamping"] = session.getUserId()
         requestData["nama_anak"] = nama
         requestData["usia"] = usia
 
@@ -53,14 +57,14 @@ class TambahAnakActivity : AppCompatActivity() {
             override fun onResponse(call: Call<TambahAnakResponse>, response: Response<TambahAnakResponse>) {
                 if (response.isSuccessful && response.body()?.status == "success") {
                     Toast.makeText(this@TambahAnakActivity, "Profil $nama berhasil disimpan!", Toast.LENGTH_SHORT).show()
-                    finish() // Tutup halaman dan kembali ke Dashboard
+                    finish()
                 } else {
                     Toast.makeText(this@TambahAnakActivity, "Gagal menyimpan data", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<TambahAnakResponse>, t: Throwable) {
-                Toast.makeText(this@TambahAnakActivity, "Koneksi Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@TambahAnakActivity, "Koneksi Error: ${t.message}", Toast.LENGTH_LONG).show()
             }
         })
     }
