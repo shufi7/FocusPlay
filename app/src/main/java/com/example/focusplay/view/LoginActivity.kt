@@ -3,29 +3,76 @@ package com.example.focusplay.view
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.model.LoginResponse
+import com.example.focusplay.network.ApiClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
+
+    // Deklarasi variabel untuk elemen layar
+    private lateinit var etEmail: EditText
+    private lateinit var etPassword: EditText
+    private lateinit var btnLogin: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // 1. Mengenali tombol Masuk berdasarkan ID yang kita buat di XML
-        val btnLogin = findViewById<Button>(R.id.btnLogin)
+        // Hubungkan variabel dengan ID di XML
+        etEmail = findViewById(R.id.etEmail)
+        etPassword = findViewById(R.id.etPassword)
+        btnLogin = findViewById(R.id.btnLogin)
 
-        // 2. Memberikan perintah saat tombol tersebut diklik
+        // Beri perintah ketika tombol "Masuk" diklik
         btnLogin.setOnClickListener {
-            // Memunculkan pesan kecil (Toast) di bawah layar sebagai indikator
-            Toast.makeText(this, "Berhasil Masuk!", Toast.LENGTH_SHORT).show()
+            val email = etEmail.text.toString().trim()
+            val password = etPassword.text.toString().trim()
 
-            // 3. Berpindah dari LoginActivity ke DashboardActivity
-            val intent = Intent(this, DashboardActivity::class.java)
-            startActivity(intent)
+            // Cek apakah kolom kosong
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Email dan password tidak boleh kosong", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            // Menutup halaman login agar tidak kembali saat tombol back ditekan
-            finish()
+            // Jalankan fungsi login jika tidak kosong
+            prosesLogin(email, password)
         }
+    }
+
+    private fun prosesLogin(email: String, pass: String) {
+        // Siapkan data JSON yang akan dikirim
+        val requestData = HashMap<String, String>()
+        requestData["email"] = email
+        requestData["password"] = pass
+
+        // Panggil API lewat Retrofit
+        ApiClient.instance.loginPendamping(requestData).enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                if (response.isSuccessful && response.body()?.status == "success") {
+                    // Jika login benar, munculkan pesan selamat datang
+                    val nama = response.body()?.data?.nama_pendamping
+                    Toast.makeText(this@LoginActivity, "Selamat datang, $nama", Toast.LENGTH_SHORT).show()
+
+                    // Pindah ke halaman Dashboard
+                    val intent = Intent(this@LoginActivity, DashboardActivity::class.java)
+                    startActivity(intent)
+                    finish() // Tutup halaman login agar tidak bisa di-back
+                } else {
+                    // Jika salah sandi/email
+                    Toast.makeText(this@LoginActivity, "Login gagal: Email atau password salah", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                // Jika koneksi internet atau server mati
+                Toast.makeText(this@LoginActivity, "Koneksi Error: ${t.message}", Toast.LENGTH_LONG).show()
+            }
+        })
     }
 }
