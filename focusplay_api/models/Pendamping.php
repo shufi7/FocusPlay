@@ -36,5 +36,30 @@ class Pendamping {
         }
         return false;
     }
+
+    // Fungsi untuk login pendamping
+    public function login() {
+        // Ambil data user berdasarkan email
+        $query = "SELECT id_pendamping, nama_pendamping, password, peran FROM " . $this->table_name . " WHERE email = ? LIMIT 0,1";
+        $stmt = $this->conn->prepare($query);
+        
+        $stmt->bindParam(1, $this->email);
+        $stmt->execute();
+
+        // Jika email ditemukan
+        if($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Verifikasi kecocokan password yang diketik dengan hash di database
+            if(password_verify($this->password, $row['password'])) {
+                // Jika cocok, simpan data ke properti objek
+                $this->id_pendamping = $row['id_pendamping'];
+                $this->nama_pendamping = $row['nama_pendamping'];
+                $this->peran = $row['peran'];
+                return true;
+            }
+        }
+        return false;
+    }
 }
 ?>
