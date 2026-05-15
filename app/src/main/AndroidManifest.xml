@@ -12,8 +12,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.FocusPlay">
+        android:theme="@style/Theme.FocusPlay"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".view.RegisterActivity"
+            android:exported="false" />
         <activity
             android:name=".view.DashboardActivity"
             android:exported="false" />
