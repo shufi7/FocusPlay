@@ -1,10 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.RegisterActivity">
+    android:background="#B5ED59"
+    android:padding="24dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:background="#FFFFFF">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Daftar Akun Baru"
+                        android:textColor="#111111"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Lengkapi data untuk bergabung"
+                        android:textColor="#888888"
+                        android:textSize="14sp"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nama Lengkap"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/etNamaRegister"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#F5F6F8"
+                android:hint="Contoh: Pak Amat"
+                android:textColorHint="#BDBDBD"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                android:inputType="textPersonName" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/etEmailRegister"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#F5F6F8"
+                android:hint="nama@email.com"
+                android:textColorHint="#BDBDBD"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                android:inputType="textEmailAddress" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/etPasswordRegister"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#F5F6F8"
+                android:hint="Buat sandi yang kuat"
+                android:textColorHint="#BDBDBD"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="24dp"
+                android:inputType="textPassword" />
+
+            <Button
+                android:id="@+id/btnProsesRegister"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Daftar Sekarang"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#406915"
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sudah punya akun? "
+                    android:textColor="#7A7A7A" />
+
+                <TextView
+                    android:id="@+id/tvMasukSini"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Masuk di sini"
+                    android:textColor="#1872A1"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>
