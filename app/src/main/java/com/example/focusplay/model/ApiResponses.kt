@@ -1,6 +1,6 @@
 package com.example.focusplay.model
 
-// --- Model untuk balasan Login ---
+// --- Model yang sudah ada sebelumnya ---
 data class LoginResponse(
     val status: String,
     val message: String,
@@ -14,8 +14,13 @@ data class PendampingData(
     val peran: String
 )
 
-// --- Model untuk balasan Register ---
 data class RegisterResponse(
     val status: String? = null,
+    val message: String
+)
+
+// --- TAMBAHKAN INI DI BAGIAN PALING BAWAH ---
+data class TambahAnakResponse(
+    val status: String,
     val message: String
 )
