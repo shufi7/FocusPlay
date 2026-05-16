@@ -24,8 +24,6 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var btnLogout: Button
     private lateinit var btnKeTambahAnak: Button
     private lateinit var rvDaftarAnak: RecyclerView
-
-    // Variabel penampung teks kosong (nullable agar aman jika ID salah/belum ada di XML)
     private var tvEmptyData: TextView? = null
 
     private lateinit var session: SessionManager
@@ -42,8 +40,6 @@ class DashboardActivity : AppCompatActivity() {
         btnLogout = findViewById(R.id.btnLogout)
         btnKeTambahAnak = findViewById(R.id.btnKeTambahAnak)
         rvDaftarAnak = findViewById(R.id.rvDaftarAnak)
-
-        // Panggil ID TextView peringatan kosong yang baru saja kamu tambahkan di XML
         tvEmptyData = findViewById(R.id.tvEmptyData)
 
         session = SessionManager(this)
@@ -52,11 +48,21 @@ class DashboardActivity : AppCompatActivity() {
 
         tvWelcomeName.text = "Halo, ${session.getNamaUser()}!"
 
-        // Konfigurasi List & Menerima sinyal klik dari Adapter
+        // Konfigurasi List & Aturan Klik Ganda
         rvDaftarAnak.layoutManager = LinearLayoutManager(this)
-        anakAdapter = AnakAdapter(listAnak) { anakYangDipilih ->
-            tampilkanDialogHapus(anakYangDipilih)
-        }
+        anakAdapter = AnakAdapter(
+            listAnak,
+            onClickAnak = { anakYangDipilih ->
+                // KLIK BIASA: Buka area bermain anak dan lempar nama anaknya
+                val intent = Intent(this, DashboardAnakActivity::class.java)
+                intent.putExtra("NAMA_ANAK", anakYangDipilih.nama_anak)
+                startActivity(intent)
+            },
+            onLongClickAnak = { anakYangDipilih ->
+                // TEKAN TAHAN: Hapus Data
+                tampilkanDialogHapus(anakYangDipilih)
+            }
+        )
         rvDaftarAnak.adapter = anakAdapter
 
         btnKeTambahAnak.setOnClickListener {
@@ -103,12 +109,9 @@ class DashboardActivity : AppCompatActivity() {
                     }
                     anakAdapter.notifyDataSetChanged()
 
-                    // --- LOGIKA MENYEMBUNYIKAN TEKS KOSONG ---
                     if (listAnak.isEmpty()) {
-                        // Jika tidak ada anak, tampilkan teksnya
                         tvEmptyData?.visibility = View.VISIBLE
                     } else {
-                        // Jika ada anak, sembunyikan teksnya agar rapi
                         tvEmptyData?.visibility = View.GONE
                     }
                 }

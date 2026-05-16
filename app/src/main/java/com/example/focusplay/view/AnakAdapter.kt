@@ -10,7 +10,8 @@ import com.example.focusplay.model.Anak
 
 class AnakAdapter(
     private val listAnak: List<Anak>,
-    private val onClickAnak: (Anak) -> Unit // Ubah fungsi agar menangani klik biasa
+    private val onClickAnak: (Anak) -> Unit,       // Jalur 1: Untuk Masuk
+    private val onLongClickAnak: (Anak) -> Unit    // Jalur 2: Untuk Hapus
 ) : RecyclerView.Adapter<AnakAdapter.AnakViewHolder>() {
 
     class AnakViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -28,14 +29,14 @@ class AnakAdapter(
         holder.tvNama.text = anak.nama_anak
         holder.tvUsia.text = "Usia: ${anak.usia} Tahun"
 
-        // Jika dipencet biasa (klik 1x) -> Munculkan pop up hapus
+        // Klik Biasa (Tap 1x)
         holder.itemView.setOnClickListener {
             onClickAnak(anak)
         }
 
-        // Jika ditahan lama -> Sama, munculkan pop up hapus
+        // Tekan Tahan
         holder.itemView.setOnLongClickListener {
-            onClickAnak(anak)
+            onLongClickAnak(anak)
             true
         }
     }
