@@ -16,7 +16,7 @@ class GameTapMerahActivity : AppCompatActivity() {
     private lateinit var tvSkor: TextView
     private lateinit var tvWaktu: TextView
     private lateinit var viewTargetMerah: View
-    private lateinit var viewTargetBiru: View // Objek Pengecoh
+    private lateinit var viewTargetBiru: View
     private lateinit var layStatus: View
 
     private var skor = 0
@@ -26,10 +26,11 @@ class GameTapMerahActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var gerakOtomatis: Runnable
 
-    // Kecepatan awal 1.2 detik
-    private var kecepatanLompat: Long = 1200
-    // Batas maksimal kecepatan agar masih bisa ditekan manusia (0.5 detik)
-    private val kecepatanMaksimal: Long = 500
+    // PENGATURAN KECEPATAN (RAMAH ANAK)
+    // Kecepatan awal 1.5 detik
+    private var kecepatanLompat: Long = 1500
+    // Batas maksimal kecepatan agar masih logis ditekan anak-anak (0.6 detik)
+    private val kecepatanMaksimal: Long = 600
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +42,6 @@ class GameTapMerahActivity : AppCompatActivity() {
         viewTargetBiru = findViewById(R.id.viewTargetBiru)
         layStatus = findViewById(R.id.layStatus)
 
-        // Mesin penggerak untuk KEDUA target
         gerakOtomatis = Runnable {
             if (isGameRunning) {
                 pindahkanTargetSecaraAcak()
@@ -49,15 +49,14 @@ class GameTapMerahActivity : AppCompatActivity() {
             }
         }
 
-        // Jika MERAH ditekan (BENAR)
         viewTargetMerah.setOnClickListener {
             if (isGameRunning) {
                 skor++
                 tvSkor.text = "Skor: $skor"
 
-                // Tingkatkan kecepatan permainan secara progresif tiap kali berhasil
+                // Tingkatkan kecepatan permainan secara halus (30 milidetik saja)
                 if (kecepatanLompat > kecepatanMaksimal) {
-                    kecepatanLompat -= 50 // Kurangi jeda 50 milidetik
+                    kecepatanLompat -= 30
                 }
 
                 handler.removeCallbacks(gerakOtomatis)
@@ -66,10 +65,9 @@ class GameTapMerahActivity : AppCompatActivity() {
             }
         }
 
-        // Jika BIRU ditekan (SALAH / TERKECOH)
         viewTargetBiru.setOnClickListener {
             if (isGameRunning) {
-                skor-- // Kurangi skor
+                skor--
                 tvSkor.text = "Skor: $skor"
 
                 handler.removeCallbacks(gerakOtomatis)
@@ -83,7 +81,7 @@ class GameTapMerahActivity : AppCompatActivity() {
 
     private fun mulaiPermainan() {
         skor = 0
-        kecepatanLompat = 1200 // Reset kecepatan
+        kecepatanLompat = 1500 // Reset ke kecepatan awal
         tvSkor.text = "Skor: 0"
         isGameRunning = true
 
@@ -102,7 +100,7 @@ class GameTapMerahActivity : AppCompatActivity() {
 
                 handler.removeCallbacks(gerakOtomatis)
 
-                Toast.makeText(this@GameTapMerahActivity, "Selesai! Akurasi refleksmu mencetak Skor: $skor", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@GameTapMerahActivity, "Selesai! Skor akhirmu: $skor", Toast.LENGTH_LONG).show()
             }
         }.start()
     }
@@ -113,11 +111,9 @@ class GameTapMerahActivity : AppCompatActivity() {
         val batasBawah = rootLayout.height - viewTargetMerah.height - layStatus.height
 
         if (batasKanan > 0 && batasBawah > 0) {
-            // Posisi untuk Merah
             val merahX = Random.nextInt(0, batasKanan).toFloat()
             val merahY = Random.nextInt(layStatus.height, batasBawah + layStatus.height).toFloat()
 
-            // Posisi untuk Biru (Pengecoh)
             val biruX = Random.nextInt(0, batasKanan).toFloat()
             val biruY = Random.nextInt(layStatus.height, batasBawah + layStatus.height).toFloat()
 
