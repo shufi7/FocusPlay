@@ -15,6 +15,9 @@
         android:theme="@style/Theme.FocusPlay"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".view.games.GameTapMerahActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.DashboardAnakActivity"
             android:exported="false" />
         <activity

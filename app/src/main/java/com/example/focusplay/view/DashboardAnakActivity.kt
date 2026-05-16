@@ -1,5 +1,6 @@
 package com.example.focusplay.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.Button
@@ -8,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.example.focusplay.R
+import com.example.focusplay.view.games.GameTapMerahActivity
 import java.util.Locale
 
 class DashboardAnakActivity : AppCompatActivity() {
@@ -57,8 +59,9 @@ class DashboardAnakActivity : AppCompatActivity() {
 
         // --- SISTEM TOMBOL PERMAINAN ---
         findViewById<CardView>(R.id.cardGame1).setOnClickListener {
-            Toast.makeText(this, "Membuka Tap si Merah...", Toast.LENGTH_SHORT).show()
-            // Nanti di sini kita masukkan kode untuk membuka WebView ke URL game-nya
+            // Membuka Activity Game Tap si Merah
+            val intent = Intent(this, GameTapMerahActivity::class.java)
+            startActivity(intent)
         }
         findViewById<CardView>(R.id.cardGame2).setOnClickListener {
             Toast.makeText(this, "Membuka Antar ke Rumah...", Toast.LENGTH_SHORT).show()
