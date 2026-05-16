@@ -3,6 +3,7 @@ package com.example.focusplay.view
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -24,6 +25,9 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var btnKeTambahAnak: Button
     private lateinit var rvDaftarAnak: RecyclerView
 
+    // Variabel penampung teks kosong (nullable agar aman jika ID salah/belum ada di XML)
+    private var tvEmptyData: TextView? = null
+
     private lateinit var session: SessionManager
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
@@ -39,13 +43,16 @@ class DashboardActivity : AppCompatActivity() {
         btnKeTambahAnak = findViewById(R.id.btnKeTambahAnak)
         rvDaftarAnak = findViewById(R.id.rvDaftarAnak)
 
+        // Panggil ID TextView peringatan kosong yang baru saja kamu tambahkan di XML
+        tvEmptyData = findViewById(R.id.tvEmptyData)
+
         session = SessionManager(this)
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
         tvWelcomeName.text = "Halo, ${session.getNamaUser()}!"
 
-        // Konfigurasi List & Menerima sinyal Long Click dari Adapter
+        // Konfigurasi List & Menerima sinyal klik dari Adapter
         rvDaftarAnak.layoutManager = LinearLayoutManager(this)
         anakAdapter = AnakAdapter(listAnak) { anakYangDipilih ->
             tampilkanDialogHapus(anakYangDipilih)
@@ -88,18 +95,26 @@ class DashboardActivity : AppCompatActivity() {
                     for (doc in snapshots) {
                         try {
                             val anak = doc.toObject(Anak::class.java)
-                            anak.id_dokumen = doc.id // <--- Ambil ID dokumen asli Firestore
+                            anak.id_dokumen = doc.id
                             listAnak.add(anak)
                         } catch (e: Exception) {
                             // Abaikan error format
                         }
                     }
                     anakAdapter.notifyDataSetChanged()
+
+                    // --- LOGIKA MENYEMBUNYIKAN TEKS KOSONG ---
+                    if (listAnak.isEmpty()) {
+                        // Jika tidak ada anak, tampilkan teksnya
+                        tvEmptyData?.visibility = View.VISIBLE
+                    } else {
+                        // Jika ada anak, sembunyikan teksnya agar rapi
+                        tvEmptyData?.visibility = View.GONE
+                    }
                 }
             }
     }
 
-    // Fungsi memunculkan pop-up konfirmasi
     private fun tampilkanDialogHapus(anak: Anak) {
         AlertDialog.Builder(this)
             .setTitle("Hapus Profil")
@@ -111,7 +126,6 @@ class DashboardActivity : AppCompatActivity() {
             .show()
     }
 
-    // Fungsi menembak Firebase untuk menghapus data
     private fun hapusDataAnak(idDokumen: String) {
         db.collection("tb_anak").document(idDokumen)
             .delete()

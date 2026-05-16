@@ -71,7 +71,8 @@
                         android:layout_marginTop="8dp"
                         android:text="Belum ada data anak yang ditambahkan. Area ini nanti akan digunakan untuk menampilkan laporan permainan dan perkembangan fokus anak."
                         android:textColor="#7A7A7A"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        android:id="@+id/tvEmptyData"/>
 
                     <Button
                         android:id="@+id/btnKeTambahAnak"
