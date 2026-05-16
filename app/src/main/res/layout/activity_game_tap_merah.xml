@@ -39,6 +39,18 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:background="@drawable/bg_bulat_merah"
+        android:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layStatus" />
+
+    <View
+        android:id="@+id/viewTargetBiru"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/bg_bulat_biru"
+        android:elevation="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
