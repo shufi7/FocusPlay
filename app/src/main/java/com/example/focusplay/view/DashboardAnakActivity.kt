@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import com.example.focusplay.R
 import java.util.Locale
 
@@ -17,7 +19,6 @@ class DashboardAnakActivity : AppCompatActivity() {
     private var countDownTimer: CountDownTimer? = null
     private var timerRunning = false
 
-    // Setel waktu ke 25 Menit (dalam milidetik)
     private val START_TIME_IN_MILLIS: Long = 1500000
     private var timeLeftInMillis: Long = START_TIME_IN_MILLIS
 
@@ -32,10 +33,10 @@ class DashboardAnakActivity : AppCompatActivity() {
         btnMulaiFokus = findViewById(R.id.btnMulaiFokus)
         btnResetFokus = findViewById(R.id.btnResetFokus)
 
-        // Tangkap sapaan nama anak
         val namaAnak = intent.getStringExtra("NAMA_ANAK") ?: "Anak Hebat"
         tvWelcomeAnak.text = "Halo, $namaAnak!"
 
+        // --- SISTEM TIMER ---
         btnMulaiFokus.setOnClickListener {
             if (timerRunning) {
                 pauseTimer()
@@ -53,6 +54,24 @@ class DashboardAnakActivity : AppCompatActivity() {
         }
 
         updateCountDownText()
+
+        // --- SISTEM TOMBOL PERMAINAN ---
+        findViewById<CardView>(R.id.cardGame1).setOnClickListener {
+            Toast.makeText(this, "Membuka Tap si Merah...", Toast.LENGTH_SHORT).show()
+            // Nanti di sini kita masukkan kode untuk membuka WebView ke URL game-nya
+        }
+        findViewById<CardView>(R.id.cardGame2).setOnClickListener {
+            Toast.makeText(this, "Membuka Antar ke Rumah...", Toast.LENGTH_SHORT).show()
+        }
+        findViewById<CardView>(R.id.cardGame3).setOnClickListener {
+            Toast.makeText(this, "Membuka Pasang Kartu...", Toast.LENGTH_SHORT).show()
+        }
+        findViewById<CardView>(R.id.cardGame4).setOnClickListener {
+            Toast.makeText(this, "Membuka Urutkan Angka...", Toast.LENGTH_SHORT).show()
+        }
+        findViewById<CardView>(R.id.cardGame5).setOnClickListener {
+            Toast.makeText(this, "Membuka Tangkap Warna...", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun startTimer() {
@@ -65,7 +84,6 @@ class DashboardAnakActivity : AppCompatActivity() {
             override fun onFinish() {
                 timerRunning = false
                 btnMulaiFokus.text = "Mulai Fokus"
-                // Nanti kita bisa tambahkan suara atau notifikasi "Selesai" di sini
             }
         }.start()
 
