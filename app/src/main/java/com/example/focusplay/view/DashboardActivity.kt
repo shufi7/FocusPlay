@@ -78,15 +78,20 @@ class DashboardActivity : AppCompatActivity() {
             .whereEqualTo("id_pendamping", currentUser.uid)
             .addSnapshotListener { snapshots, error ->
                 if (error != null) {
-                    Toast.makeText(this, "Gagal memuat data: ${error.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DashboardActivity, "Gagal memuat data: ${error.message}", Toast.LENGTH_SHORT).show()
                     return@addSnapshotListener
                 }
 
                 if (snapshots != null) {
                     listAnak.clear() // Bersihkan list lama agar tidak menumpuk duplikat
                     for (doc in snapshots) {
-                        val anak = doc.toObject(Anak::class.java)
-                        listAnak.add(anak)
+                        // Pasang sistem keamanan (try-catch)
+                        try {
+                            val anak = doc.toObject(Anak::class.java)
+                            listAnak.add(anak)
+                        } catch (e: Exception) {
+                            // Abaikan dokumen yang formatnya salah/rusak, jangan matikan aplikasi
+                        }
                     }
                     anakAdapter.notifyDataSetChanged() // Perbarui daftar di layar HP
                 }
