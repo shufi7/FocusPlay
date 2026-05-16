@@ -5,31 +5,58 @@ import android.content.SharedPreferences
 
 class SessionManager(context: Context) {
 
-    private val prefs: SharedPreferences = context.getSharedPreferences("FocusPlayPrefs", Context.MODE_PRIVATE)
+    private val pref: SharedPreferences =
+        context.getSharedPreferences("focusplay_session", Context.MODE_PRIVATE)
 
-    fun simpanSesiLogin(id: Int, nama: String, email: String) {
-        val editor = prefs.edit()
-        editor.putBoolean("IS_LOGGED_IN", true)
-        editor.putInt("USER_ID", id) // Menyimpan ID ke brankas
-        editor.putString("USER_NAMA", nama)
-        editor.putString("USER_EMAIL", email)
+    private val editor: SharedPreferences.Editor = pref.edit()
+
+    companion object {
+        private const val KEY_IS_LOGIN = "is_login"
+        private const val KEY_ID_PENDAMPING = "id_pendamping"
+        private const val KEY_NAMA_PENDAMPING = "nama_pendamping"
+        private const val KEY_EMAIL = "email"
+    }
+
+    fun simpanSesiLogin(
+        idPendamping: Int,
+        namaPendamping: String,
+        email: String
+    ) {
+        editor.putBoolean(KEY_IS_LOGIN, true)
+        editor.putInt(KEY_ID_PENDAMPING, idPendamping)
+        editor.putString(KEY_NAMA_PENDAMPING, namaPendamping)
+        editor.putString(KEY_EMAIL, email)
         editor.apply()
     }
 
     fun isLogin(): Boolean {
-        return prefs.getBoolean("IS_LOGGED_IN", false)
+        return pref.getBoolean(KEY_IS_LOGIN, false)
     }
 
-    // --- TAMBAHKAN FUNGSI INI ---
+    fun getIdPendamping(): Int {
+        return pref.getInt(KEY_ID_PENDAMPING, 0)
+    }
+
+    // Tambahan agar cocok dengan TambahAnakActivity.kt
     fun getUserId(): Int {
-        return prefs.getInt("USER_ID", 0) // Mengambil ID dari brankas, default 0 jika tidak ada
+        return getIdPendamping()
     }
 
-    fun getNamaUser(): String? {
-        return prefs.getString("USER_NAMA", "Pengguna")
+    fun getNamaPendamping(): String {
+        return pref.getString(KEY_NAMA_PENDAMPING, "") ?: ""
+    }
+
+    // Tambahan agar cocok dengan DashboardActivity.kt
+    fun getNamaUser(): String {
+        return getNamaPendamping()
+    }
+
+    fun getEmail(): String {
+        return pref.getString(KEY_EMAIL, "") ?: ""
     }
 
     fun logout() {
-        prefs.edit().clear().apply()
+        editor.clear()
+        editor.apply()
     }
 }

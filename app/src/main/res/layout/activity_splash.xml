@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#BFEAFB">
+
+    <!-- Awan dekorasi -->
+    <View
+        android:layout_width="120dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="50dp"
+        android:background="@android:color/white"
+        android:alpha="0.75" />
+
+    <View
+        android:layout_width="90dp"
+        android:layout_height="28dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="90dp"
+        android:background="@android:color/white"
+        android:alpha="0.65" />
+
+    <!-- Karakter pojok -->
+    <ImageView
+        android:id="@+id/ivStar"
+        android:layout_width="95dp"
+        android:layout_height="95dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="150dp"
+        android:src="@drawable/char_star"
+        android:contentDescription="Karakter bintang" />
+
+    <ImageView
+        android:id="@+id/ivBlue"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="160dp"
+        android:src="@drawable/char_blue"
+        android:contentDescription="Karakter biru" />
+
+    <ImageView
+        android:id="@+id/ivRed"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/ivStar"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="210dp"
+        android:src="@drawable/char_red"
+        android:contentDescription="Karakter merah" />
+
+    <ImageView
+        android:id="@+id/ivPurple"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/ivBlue"
+        android:layout_marginEnd="26dp"
+        android:layout_marginTop="200dp"
+        android:src="@drawable/char_purple"
+        android:contentDescription="Karakter ungu" />
+
+    <ImageView
+        android:id="@+id/ivMushroom"
+        android:layout_width="95dp"
+        android:layout_height="95dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="120dp"
+        android:src="@drawable/char_mushroom"
+        android:contentDescription="Karakter jamur" />
+
+    <!-- Konten utama -->
+
+    <!-- Footer -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:contentDescription="Logo FocusPlay"
+            android:src="@drawable/logo_focusplay" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/quicksand"
+            android:text="FocusPlay"
+            android:textColor="#2F3A2E"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/quicksand"
+            android:text="Belajar fokus sambil bermain"
+            android:textColor="#4C5B67"
+            android:textSize="16sp" />
+
+        <ProgressBar
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="28dp"
+            android:indeterminateTint="#8DB52A" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:text="Aman &amp; menyenangkan untuk anak"
+        android:textColor="#5A6B76"
+        android:textSize="14sp"
+        android:fontFamily="@font/quicksand" />
+
+</RelativeLayout>

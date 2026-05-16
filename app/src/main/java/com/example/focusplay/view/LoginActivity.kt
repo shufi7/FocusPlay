@@ -26,7 +26,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var btnRegister: Button
     private lateinit var ivTogglePassword: ImageView
 
-    // Inisialisasi SessionManager
     private lateinit var session: SessionManager
 
     private var isPasswordVisible = false
@@ -35,13 +34,11 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Hubungkan SessionManager
         session = SessionManager(this)
 
-        // --- FITUR AUTO-LOGIN ---
-        // Jika sudah login, langsung lempar ke Dashboard
+        // Kalau sudah login, langsung masuk ke halaman pilih peran
         if (session.isLogin()) {
-            startActivity(Intent(this, DashboardActivity::class.java))
+            startActivity(Intent(this, PilihPeranActivity::class.java))
             finish()
         }
 
@@ -53,6 +50,7 @@ class LoginActivity : AppCompatActivity() {
 
         ivTogglePassword.setOnClickListener {
             isPasswordVisible = !isPasswordVisible
+
             if (isPasswordVisible) {
                 etPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
                 ivTogglePassword.setColorFilter(Color.parseColor("#406915"))
@@ -60,6 +58,7 @@ class LoginActivity : AppCompatActivity() {
                 etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
                 ivTogglePassword.setColorFilter(Color.parseColor("#555555"))
             }
+
             etPassword.setSelection(etPassword.text.length)
         }
 
@@ -71,6 +70,7 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Email dan password tidak boleh kosong", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
             prosesLogin(email, password)
         }
 
@@ -87,10 +87,10 @@ class LoginActivity : AppCompatActivity() {
         ApiClient.instance.loginPendamping(requestData).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 val res = response.body()
-                if (response.isSuccessful && res?.status == "success") {
 
-                    // --- SIMPAN DATA KE SESSION ---
+                if (response.isSuccessful && res?.status == "success") {
                     val user = res.data
+
                     if (user != null) {
                         session.simpanSesiLogin(
                             user.id_pendamping,
@@ -99,17 +99,29 @@ class LoginActivity : AppCompatActivity() {
                         )
                     }
 
-                    Toast.makeText(this@LoginActivity, "Selamat datang, ${user?.nama_pendamping}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Selamat datang, ${user?.nama_pendamping}",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-                    startActivity(Intent(this@LoginActivity, DashboardActivity::class.java))
+                    startActivity(Intent(this@LoginActivity, PilihPeranActivity::class.java))
                     finish()
                 } else {
-                    Toast.makeText(this@LoginActivity, "Login gagal: Email atau password salah", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Login gagal: Email atau password salah",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                Toast.makeText(this@LoginActivity, "Koneksi Error: ${t.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@LoginActivity,
+                    "Koneksi Error: ${t.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         })
     }
