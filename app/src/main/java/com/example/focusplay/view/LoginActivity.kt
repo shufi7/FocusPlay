@@ -1,128 +1,92 @@
 package com.example.focusplay.view
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.text.method.HideReturnsTransformationMethod
-import android.text.method.PasswordTransformationMethod
 import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
-import com.example.focusplay.model.LoginResponse
-import com.example.focusplay.network.ApiClient
 import com.example.focusplay.utils.SessionManager
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var etEmail: EditText
-    private lateinit var etPassword: EditText
-    private lateinit var btnLogin: Button
-    private lateinit var btnRegister: Button
-    private lateinit var ivTogglePassword: ImageView
-
+    private lateinit var auth: FirebaseAuth
+    private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var session: SessionManager
 
-    private var isPasswordVisible = false
+    // Mesin penangkap hasil setelah pengguna memilih akun Google di pop-up
+    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                // Akun Google berhasil dipilih, sekarang serahkan ke Firebase
+                val account = task.getResult(ApiException::class.java)!!
+                firebaseAuthWithGoogle(account.idToken!!)
+            } catch (e: ApiException) {
+                Toast.makeText(this, "Google Sign-In gagal: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
         session = SessionManager(this)
+        auth = FirebaseAuth.getInstance()
 
-        // Kalau sudah login, langsung masuk ke halaman pilih peran
-        if (session.isLogin()) {
-            startActivity(Intent(this, PilihPeranActivity::class.java))
+        // Jika sudah login di Firebase, langsung ke Dashboard
+        if (auth.currentUser != null) {
+            startActivity(Intent(this, DashboardActivity::class.java))
             finish()
         }
 
-        etEmail = findViewById(R.id.etEmail)
-        etPassword = findViewById(R.id.etPassword)
-        btnLogin = findViewById(R.id.btnLogin)
-        btnRegister = findViewById(R.id.btnRegister)
-        ivTogglePassword = findViewById(R.id.ivTogglePassword)
+        // Konfigurasi permintaan data ke Google (minta ID dan Email)
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
 
-        ivTogglePassword.setOnClickListener {
-            isPasswordVisible = !isPasswordVisible
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-            if (isPasswordVisible) {
-                etPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
-                ivTogglePassword.setColorFilter(Color.parseColor("#406915"))
-            } else {
-                etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
-                ivTogglePassword.setColorFilter(Color.parseColor("#555555"))
-            }
+        val btnLoginGoogle = findViewById<Button>(R.id.btnLoginGoogle)
 
-            etPassword.setSelection(etPassword.text.length)
-        }
-
-        btnLogin.setOnClickListener {
-            val email = etEmail.text.toString().trim()
-            val password = etPassword.text.toString().trim()
-
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Email dan password tidak boleh kosong", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            prosesLogin(email, password)
-        }
-
-        btnRegister.setOnClickListener {
-            startActivity(Intent(this, RegisterActivity::class.java))
+        // Saat tombol ditekan, munculkan pop-up pilihan akun Google
+        btnLoginGoogle.setOnClickListener {
+            val signInIntent = googleSignInClient.signInIntent
+            launcher.launch(signInIntent)
         }
     }
 
-    private fun prosesLogin(email: String, pass: String) {
-        val requestData = HashMap<String, String>()
-        requestData["email"] = email
-        requestData["password"] = pass
+    // Fungsi untuk mendaftarkan/memasukkan akun Google ke Firebase
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Berhasil masuk!
+                    val user = auth.currentUser
 
-        ApiClient.instance.loginPendamping(requestData).enqueue(object : Callback<LoginResponse> {
-            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                val res = response.body()
+                    // Simpan nama pengguna ke sesi lokal kita agar tetap sinkron dengan Dashboard
+                    session.simpanSesiLogin(
+                        0, // ID tidak lagi pakai angka dari MariaDB
+                        user?.displayName ?: "Orang Tua",
+                        user?.email ?: ""
+                    )
 
-                if (response.isSuccessful && res?.status == "success") {
-                    val user = res.data
-
-                    if (user != null) {
-                        session.simpanSesiLogin(
-                            user.id_pendamping,
-                            user.nama_pendamping,
-                            user.email
-                        )
-                    }
-
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "Selamat datang, ${user?.nama_pendamping}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    startActivity(Intent(this@LoginActivity, PilihPeranActivity::class.java))
+                    Toast.makeText(this, "Selamat datang, ${user?.displayName}", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, DashboardActivity::class.java))
                     finish()
                 } else {
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "Login gagal: Email atau password salah",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this, "Gagal masuk ke Firebase.", Toast.LENGTH_SHORT).show()
                 }
             }
-
-            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                Toast.makeText(
-                    this@LoginActivity,
-                    "Koneksi Error: ${t.message}",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        })
     }
 }

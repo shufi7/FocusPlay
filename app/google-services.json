@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "196743580828",
+    "project_id": "focusplay-86762",
+    "storage_bucket": "focusplay-86762.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:196743580828:android:17d86e2ec155284d1eb159",
+        "android_client_info": {
+          "package_name": "com.example.focusplay"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "196743580828-3vcsmns0b84nb2aus4quitvg0or625q0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.focusplay",
+            "certificate_hash": "1c20b31a036432da351e0ebf68abe51bee5b9acc"
+          }
+        },
+        {
+          "client_id": "196743580828-hjvdn8vk7vecnsi01hacata6kvj191iq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpgz-bf1TlD1zn63mQnrfYiKRmiPDE5GA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "196743580828-hjvdn8vk7vecnsi01hacata6kvj191iq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
