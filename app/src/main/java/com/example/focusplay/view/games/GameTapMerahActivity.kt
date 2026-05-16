@@ -2,6 +2,8 @@ package com.example.focusplay.view.games
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -20,6 +22,11 @@ class GameTapMerahActivity : AppCompatActivity() {
     private var timer: CountDownTimer? = null
     private var isGameRunning = false
 
+    // Mesin penggerak otomatis (Fase 2)
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var gerakOtomatis: Runnable
+    private var kecepatanLompat: Long = 1200 // Pindah otomatis tiap 1.2 detik jika tidak ditekan
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_tap_merah)
@@ -29,12 +36,25 @@ class GameTapMerahActivity : AppCompatActivity() {
         viewTargetMerah = findViewById(R.id.viewTargetMerah)
         layStatus = findViewById(R.id.layStatus)
 
+        // Setup pergerakan otomatis
+        gerakOtomatis = Runnable {
+            if (isGameRunning) {
+                pindahkanTargetSecaraAcak()
+                // Jadwalkan lompatan berikutnya
+                handler.postDelayed(gerakOtomatis, kecepatanLompat)
+            }
+        }
+
         // Sensor ketika lingkaran merah berhasil ditekan
         viewTargetMerah.setOnClickListener {
             if (isGameRunning) {
                 skor++
                 tvSkor.text = "Skor: $skor"
+
+                // Hapus jadwal lompat otomatis sebelumnya, lalu buat jadwal baru dari awal
+                handler.removeCallbacks(gerakOtomatis)
                 pindahkanTargetSecaraAcak()
+                handler.postDelayed(gerakOtomatis, kecepatanLompat)
             }
         }
 
@@ -46,7 +66,10 @@ class GameTapMerahActivity : AppCompatActivity() {
         tvSkor.text = "Skor: 0"
         isGameRunning = true
 
-        // Timer berjalan selama 30 detik (30.000 milidetik)
+        // Mulai pergerakan otomatis saat game dimulai
+        handler.postDelayed(gerakOtomatis, kecepatanLompat)
+
+        // Timer game 30 detik
         timer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 tvWaktu.text = "Sisa: ${millisUntilFinished / 1000}s"
@@ -55,29 +78,25 @@ class GameTapMerahActivity : AppCompatActivity() {
             override fun onFinish() {
                 isGameRunning = false
                 tvWaktu.text = "Waktu Habis!"
-                viewTargetMerah.visibility = View.GONE // Hilangkan target saat waktu habis
+                viewTargetMerah.visibility = View.GONE
 
-                // Tampilkan hasil akhir
+                // Hentikan gerakan otomatis agar tidak error saat waktu habis
+                handler.removeCallbacks(gerakOtomatis)
+
                 Toast.makeText(this@GameTapMerahActivity, "Kerja bagus! Skor kamu: $skor", Toast.LENGTH_LONG).show()
             }
         }.start()
     }
 
     private fun pindahkanTargetSecaraAcak() {
-        // Ambil ukuran layar yang tersedia
         val rootLayout = findViewById<View>(android.R.id.content)
-
-        // Batasi ruang gerak agar lingkaran merah tidak keluar dari tepi layar
         val batasKanan = rootLayout.width - viewTargetMerah.width
         val batasBawah = rootLayout.height - viewTargetMerah.height - layStatus.height
 
-        // Jika layar sudah siap dan ukurannya terbaca
         if (batasKanan > 0 && batasBawah > 0) {
             val XAcak = Random.nextInt(0, batasKanan).toFloat()
-            // Ditambah tinggi layStatus agar target tidak tertimpa barisan skor di atas
             val YAcak = Random.nextInt(layStatus.height, batasBawah + layStatus.height).toFloat()
 
-            // Pindahkan posisi target
             viewTargetMerah.x = XAcak
             viewTargetMerah.y = YAcak
         }
@@ -85,7 +104,8 @@ class GameTapMerahActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Pastikan timer dimatikan jika anak menutup halaman sebelum waktu habis
+        // Pastikan semua mesin dimatikan jika anak menutup halaman
         timer?.cancel()
+        handler.removeCallbacks(gerakOtomatis)
     }
 }
