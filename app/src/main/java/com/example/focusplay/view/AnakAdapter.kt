@@ -8,7 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.focusplay.R
 import com.example.focusplay.model.Anak
 
-class AnakAdapter(private val listAnak: List<Anak>) : RecyclerView.Adapter<AnakAdapter.AnakViewHolder>() {
+class AnakAdapter(
+    private val listAnak: List<Anak>,
+    private val onLongClickAnak: (Anak) -> Unit // Jalur komunikasi ke Dashboard
+) : RecyclerView.Adapter<AnakAdapter.AnakViewHolder>() {
 
     class AnakViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvNama: TextView = itemView.findViewById(R.id.tvNamaAnakItem)
@@ -24,6 +27,12 @@ class AnakAdapter(private val listAnak: List<Anak>) : RecyclerView.Adapter<AnakA
         val anak = listAnak[position]
         holder.tvNama.text = anak.nama_anak
         holder.tvUsia.text = "Usia: ${anak.usia} Tahun"
+
+        // Sensor ketika kotak nama ditekan lama
+        holder.itemView.setOnLongClickListener {
+            onLongClickAnak(anak)
+            true // Mengembalikan 'true' artinya aksi tahan klik berhasil dieksekusi
+        }
     }
 
     override fun getItemCount(): Int = listAnak.size

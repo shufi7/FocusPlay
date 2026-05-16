@@ -1,5 +1,6 @@
 package com.example.focusplay.view
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -44,9 +45,11 @@ class DashboardActivity : AppCompatActivity() {
 
         tvWelcomeName.text = "Halo, ${session.getNamaUser()}!"
 
-        // Konfigurasi List RecyclerView
+        // Konfigurasi List & Menerima sinyal Long Click dari Adapter
         rvDaftarAnak.layoutManager = LinearLayoutManager(this)
-        anakAdapter = AnakAdapter(listAnak)
+        anakAdapter = AnakAdapter(listAnak) { anakYangDipilih ->
+            tampilkanDialogHapus(anakYangDipilih)
+        }
         rvDaftarAnak.adapter = anakAdapter
 
         btnKeTambahAnak.setOnClickListener {
@@ -65,7 +68,6 @@ class DashboardActivity : AppCompatActivity() {
             }
         }
 
-        // Jalankan pemantauan data anak
         ambilDataAnakRealtime()
     }
 
@@ -73,7 +75,6 @@ class DashboardActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         if (currentUser == null) return
 
-        // Hanya mengambil anak yang id_pendamping-nya COCOK dengan akun Google yang sedang aktif
         db.collection("tb_anak")
             .whereEqualTo("id_pendamping", currentUser.uid)
             .addSnapshotListener { snapshots, error ->
@@ -83,18 +84,42 @@ class DashboardActivity : AppCompatActivity() {
                 }
 
                 if (snapshots != null) {
-                    listAnak.clear() // Bersihkan list lama agar tidak menumpuk duplikat
+                    listAnak.clear()
                     for (doc in snapshots) {
-                        // Pasang sistem keamanan (try-catch)
                         try {
                             val anak = doc.toObject(Anak::class.java)
+                            anak.id_dokumen = doc.id // <--- Ambil ID dokumen asli Firestore
                             listAnak.add(anak)
                         } catch (e: Exception) {
-                            // Abaikan dokumen yang formatnya salah/rusak, jangan matikan aplikasi
+                            // Abaikan error format
                         }
                     }
-                    anakAdapter.notifyDataSetChanged() // Perbarui daftar di layar HP
+                    anakAdapter.notifyDataSetChanged()
                 }
+            }
+    }
+
+    // Fungsi memunculkan pop-up konfirmasi
+    private fun tampilkanDialogHapus(anak: Anak) {
+        AlertDialog.Builder(this)
+            .setTitle("Hapus Profil")
+            .setMessage("Apakah kamu yakin ingin menghapus profil ${anak.nama_anak}?")
+            .setPositiveButton("Hapus") { _, _ ->
+                hapusDataAnak(anak.id_dokumen)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    // Fungsi menembak Firebase untuk menghapus data
+    private fun hapusDataAnak(idDokumen: String) {
+        db.collection("tb_anak").document(idDokumen)
+            .delete()
+            .addOnSuccessListener {
+                Toast.makeText(this, "Data berhasil dihapus!", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Gagal menghapus: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 }
