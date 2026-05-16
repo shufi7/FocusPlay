@@ -31,5 +31,15 @@
             android:text="Usia: 0 Tahun"
             android:textColor="#666666"
             android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="💡 Klik untuk masuk | Tahan untuk hapus"
+            android:textColor="#999999"
+            android:textSize="12sp"
+            android:textStyle="italic" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>
