@@ -7,25 +7,26 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
-import com.example.focusplay.model.TambahAnakResponse // <-- BARIS INI WAJIB ADA
-import com.example.focusplay.network.ApiClient
-import com.example.focusplay.utils.SessionManager
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class TambahAnakActivity : AppCompatActivity() {
 
     private lateinit var etNamaAnak: EditText
     private lateinit var etUsiaAnak: EditText
     private lateinit var btnSimpanAnak: Button
-    private lateinit var session: SessionManager
+
+    private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tambah_anak)
 
-        session = SessionManager(this)
+        // Inisialisasi Firebase
+        auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
+
         etNamaAnak = findViewById(R.id.etNamaAnak)
         etUsiaAnak = findViewById(R.id.etUsiaAnak)
         btnSimpanAnak = findViewById(R.id.btnSimpanAnak)
@@ -42,30 +43,34 @@ class TambahAnakActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            prosesSimpanAnak(nama, usia.toInt())
+            prosesSimpanAnakFirebase(nama, usia.toInt())
         }
     }
 
-    private fun prosesSimpanAnak(nama: String, usia: Int) {
-        val requestData = HashMap<String, Any>()
-        // Mengambil ID orang tua dari session
-        requestData["id_pendamping"] = session.getUserId()
-        requestData["nama_anak"] = nama
-        requestData["usia"] = usia
+    private fun prosesSimpanAnakFirebase(nama: String, usia: Int) {
+        // Pastikan ada user yang sedang login
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            Toast.makeText(this, "Sesi login tidak ditemukan. Silakan login ulang.", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        ApiClient.instance.tambahAnak(requestData).enqueue(object : Callback<TambahAnakResponse> {
-            override fun onResponse(call: Call<TambahAnakResponse>, response: Response<TambahAnakResponse>) {
-                if (response.isSuccessful && response.body()?.status == "success") {
-                    Toast.makeText(this@TambahAnakActivity, "Profil $nama berhasil disimpan!", Toast.LENGTH_SHORT).show()
-                    finish()
-                } else {
-                    Toast.makeText(this@TambahAnakActivity, "Gagal menyimpan data", Toast.LENGTH_SHORT).show()
-                }
-            }
+        // Siapkan data yang akan disimpan ke Firestore
+        val anakData = hashMapOf(
+            "id_pendamping" to currentUser.uid, // Menggunakan UID unik dari akun Google
+            "nama_anak" to nama,
+            "usia" to usia
+        )
 
-            override fun onFailure(call: Call<TambahAnakResponse>, t: Throwable) {
-                Toast.makeText(this@TambahAnakActivity, "Koneksi Error: ${t.message}", Toast.LENGTH_LONG).show()
+        // Simpan ke koleksi "tb_anak" di Firestore
+        db.collection("tb_anak")
+            .add(anakData)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Profil $nama berhasil disimpan ke awan!", Toast.LENGTH_SHORT).show()
+                finish() // Kembali ke Dashboard
             }
-        })
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Gagal menyimpan: ${e.message}", Toast.LENGTH_LONG).show()
+            }
     }
 }
