@@ -42,9 +42,9 @@ class LoginActivity : AppCompatActivity() {
         session = SessionManager(this)
         auth = FirebaseAuth.getInstance()
 
-        // Jika sudah login di Firebase, langsung ke Dashboard
+        // PERBAIKAN 1: Jika sudah login di Firebase, langsung arahkan ke Pilih Peran
         if (auth.currentUser != null) {
-            startActivity(Intent(this, DashboardActivity::class.java))
+            startActivity(Intent(this, PilihPeranActivity::class.java))
             finish()
         }
 
@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
                     // Berhasil masuk!
                     val user = auth.currentUser
 
-                    // Simpan nama pengguna ke sesi lokal kita agar tetap sinkron dengan Dashboard
+                    // Simpan nama pengguna ke sesi lokal kita agar tetap sinkron
                     session.simpanSesiLogin(
                         0, // ID tidak lagi pakai angka dari MariaDB
                         user?.displayName ?: "Orang Tua",
@@ -82,7 +82,9 @@ class LoginActivity : AppCompatActivity() {
                     )
 
                     Toast.makeText(this, "Selamat datang, ${user?.displayName}", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, DashboardActivity::class.java))
+
+                    // PERBAIKAN 2: Setelah berhasil masuk, arahkan ke Pilih Peran
+                    startActivity(Intent(this, PilihPeranActivity::class.java))
                     finish()
                 } else {
                     Toast.makeText(this, "Gagal masuk ke Firebase.", Toast.LENGTH_SHORT).show()
