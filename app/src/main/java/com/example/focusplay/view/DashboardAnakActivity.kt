@@ -64,7 +64,8 @@ class DashboardAnakActivity : AppCompatActivity() {
             startActivity(intent)
         }
         findViewById<CardView>(R.id.cardGame2).setOnClickListener {
-            Toast.makeText(this, "Membuka Antar ke Rumah...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, com.example.focusplay.view.games.GameAntarRumahActivity::class.java)
+            startActivity(intent)
         }
         findViewById<CardView>(R.id.cardGame3).setOnClickListener {
             Toast.makeText(this, "Membuka Pasang Kartu...", Toast.LENGTH_SHORT).show()
