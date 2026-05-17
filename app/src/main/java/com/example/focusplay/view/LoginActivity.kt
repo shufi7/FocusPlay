@@ -3,11 +3,14 @@ package com.example.focusplay.view
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.utils.ErrorDialogHelper
 import com.example.focusplay.utils.SessionManager
+import com.example.focusplay.utils.SuccessDialogHelper
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -21,17 +24,40 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var session: SessionManager
 
-    // Mesin penangkap hasil setelah pengguna memilih akun Google di pop-up
-    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private lateinit var btnLogin: Button
+    private lateinit var btnRegister: Button
+    private lateinit var btnLoginGoogle: TextView
+
+    private val launcher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+
         if (result.resultCode == RESULT_OK) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+
             try {
-                // Akun Google berhasil dipilih, sekarang serahkan ke Firebase
-                val account = task.getResult(ApiException::class.java)!!
-                firebaseAuthWithGoogle(account.idToken!!)
+                val account = task.getResult(ApiException::class.java)
+                val idToken = account.idToken
+
+                if (idToken != null) {
+                    firebaseAuthWithGoogle(idToken)
+                } else {
+                    Toast.makeText(this, "Token Google tidak ditemukan", Toast.LENGTH_SHORT).show()
+                }
+
             } catch (e: ApiException) {
-                Toast.makeText(this, "Google Sign-In gagal: ${e.message}", Toast.LENGTH_SHORT).show()
+                ErrorDialogHelper.showErrorDialog(
+                    activity = this,
+                    title = "Google Sign-In Gagal",
+                    message = "Terjadi masalah saat memilih akun Google. Coba ulangi lagi ya."
+                )
             }
+        } else {
+            ErrorDialogHelper.showErrorDialog(
+                activity = this,
+                title = "Login Dibatalkan",
+                message = "Kamu belum memilih akun Google untuk masuk."
+            )
         }
     }
 
@@ -42,13 +68,16 @@ class LoginActivity : AppCompatActivity() {
         session = SessionManager(this)
         auth = FirebaseAuth.getInstance()
 
-        // PERBAIKAN 1: Jika sudah login di Firebase, langsung arahkan ke Pilih Peran
-        if (auth.currentUser != null) {
+        if (auth.currentUser != null || session.isLogin()) {
             startActivity(Intent(this, PilihPeranActivity::class.java))
             finish()
+            return
         }
 
-        // Konfigurasi permintaan data ke Google (minta ID dan Email)
+        btnLogin = findViewById(R.id.btnLogin)
+        btnRegister = findViewById(R.id.btnRegister)
+        btnLoginGoogle = findViewById(R.id.btnLoginGoogle)
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -56,38 +85,55 @@ class LoginActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        val btnLoginGoogle = findViewById<Button>(R.id.btnLoginGoogle)
+        btnLogin.setOnClickListener {
+            Toast.makeText(
+                this,
+                "Login email/password sedang disiapkan. Gunakan Google dulu.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
 
-        // Saat tombol ditekan, munculkan pop-up pilihan akun Google
+        btnRegister.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+        }
+
         btnLoginGoogle.setOnClickListener {
             val signInIntent = googleSignInClient.signInIntent
             launcher.launch(signInIntent)
         }
     }
 
-    // Fungsi untuk mendaftarkan/memasukkan akun Google ke Firebase
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
+
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
+
                 if (task.isSuccessful) {
-                    // Berhasil masuk!
                     val user = auth.currentUser
 
-                    // Simpan nama pengguna ke sesi lokal kita agar tetap sinkron
                     session.simpanSesiLogin(
-                        0, // ID tidak lagi pakai angka dari MariaDB
+                        0,
                         user?.displayName ?: "Orang Tua",
                         user?.email ?: ""
                     )
 
-                    Toast.makeText(this, "Selamat datang, ${user?.displayName}", Toast.LENGTH_SHORT).show()
+                    SuccessDialogHelper.showSuccessDialog(
+                        activity = this,
+                        title = "Login Berhasil!",
+                        message = "Yeay! Kamu berhasil masuk ke FocusPlay."
+                    ) {
+                        startActivity(Intent(this, PilihPeranActivity::class.java))
+                        finish()
+                    }
 
-                    // PERBAIKAN 2: Setelah berhasil masuk, arahkan ke Pilih Peran
-                    startActivity(Intent(this, PilihPeranActivity::class.java))
-                    finish()
                 } else {
-                    Toast.makeText(this, "Gagal masuk ke Firebase.", Toast.LENGTH_SHORT).show()
+                    ErrorDialogHelper.showErrorDialog(
+                        activity = this,
+                        title = "Login Gagal",
+                        message = "Akun belum berhasil masuk. Periksa koneksi internet atau coba lagi ya."
+                    )
                 }
             }
     }

@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
 import com.example.focusplay.model.RegisterResponse
 import com.example.focusplay.network.ApiClient
+import com.example.focusplay.utils.ErrorDialogHelper
+import com.example.focusplay.utils.SuccessDialogHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -61,28 +63,28 @@ class RegisterActivity : AppCompatActivity() {
                 response: Response<RegisterResponse>
             ) {
                 if (response.isSuccessful) {
-                    Toast.makeText(
-                        this@RegisterActivity,
-                        "Pendaftaran berhasil! Silakan masuk.",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    finish()
+                    SuccessDialogHelper.showSuccessDialog(
+                        activity = this@RegisterActivity,
+                        title = "Pendaftaran Berhasil!",
+                        message = "Akun kamu sudah berhasil dibuat. Yuk masuk dan mulai bermain!"
+                    ) {
+                        finish()
+                    }
                 } else {
-                    Toast.makeText(
-                        this@RegisterActivity,
-                        "Pendaftaran gagal, email mungkin sudah dipakai.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    ErrorDialogHelper.showErrorDialog(
+                        activity = this@RegisterActivity,
+                        title = "Pendaftaran Gagal",
+                        message = "Email mungkin sudah digunakan atau data belum sesuai. Coba periksa kembali ya."
+                    )
                 }
             }
 
             override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                Toast.makeText(
-                    this@RegisterActivity,
-                    "Koneksi Error: ${t.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                ErrorDialogHelper.showErrorDialog(
+                    activity = this@RegisterActivity,
+                    title = "Koneksi Bermasalah",
+                    message = "Aplikasi belum bisa terhubung ke server. Periksa koneksi internet lalu coba lagi."
+                )
             }
         })
     }
