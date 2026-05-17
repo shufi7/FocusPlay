@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "196743580828-rsv91rg2hrd47qe3ec4lh4i4inosbm5r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.focusplay",
+            "certificate_hash": "70be00437c0e8c5c0bd86d8d3c7e4979265a0d3c"
+          }
+        },
+        {
           "client_id": "196743580828-hjvdn8vk7vecnsi01hacata6kvj191iq.apps.googleusercontent.com",
           "client_type": 3
         }
