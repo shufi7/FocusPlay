@@ -10,13 +10,24 @@ import com.example.focusplay.model.Anak
 
 class AnakAdapter(
     private val listAnak: List<Anak>,
-    private val onClickAnak: (Anak) -> Unit,       // Jalur 1: Untuk Masuk
-    private val onLongClickAnak: (Anak) -> Unit    // Jalur 2: Untuk Hapus
+    private val onClickAnak: (Anak) -> Unit,
+    private val onLongClickAnak: (Anak) -> Unit
 ) : RecyclerView.Adapter<AnakAdapter.AnakViewHolder>() {
 
-    class AnakViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvNama: TextView = itemView.findViewById(R.id.tvNamaAnakItem)
-        val tvUsia: TextView = itemView.findViewById(R.id.tvUsiaAnakItem)
+    inner class AnakViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val tvNama: TextView = itemView.findViewById(R.id.tvItemNamaAnak)
+        val tvUmur: TextView = itemView.findViewById(R.id.tvItemUmurAnak)
+
+        fun bind(anak: Anak) {
+            tvNama.text = anak.nama_anak
+            tvUmur.text = "Umur: ${anak.umur} Tahun"
+
+            itemView.setOnClickListener { onClickAnak(anak) }
+            itemView.setOnLongClickListener {
+                onLongClickAnak(anak)
+                true
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnakViewHolder {
@@ -25,20 +36,7 @@ class AnakAdapter(
     }
 
     override fun onBindViewHolder(holder: AnakViewHolder, position: Int) {
-        val anak = listAnak[position]
-        holder.tvNama.text = anak.nama_anak
-        holder.tvUsia.text = "Usia: ${anak.usia} Tahun"
-
-        // Klik Biasa (Tap 1x)
-        holder.itemView.setOnClickListener {
-            onClickAnak(anak)
-        }
-
-        // Tekan Tahan
-        holder.itemView.setOnLongClickListener {
-            onLongClickAnak(anak)
-            true
-        }
+        holder.bind(listAnak[position])
     }
 
     override fun getItemCount(): Int = listAnak.size
