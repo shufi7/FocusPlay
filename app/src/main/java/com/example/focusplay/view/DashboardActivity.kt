@@ -52,11 +52,8 @@ class DashboardActivity : AppCompatActivity() {
         anakAdapter = AnakAdapter(
             listAnak,
             onClickAnak = { anakYangDipilih ->
-                // SEKARANG KITA KIRIM NAMA DAN ID DOKUMEN ANAK NYA KEDASHBOARD ANAK
-                val intent = Intent(this, DashboardAnakActivity::class.java)
-                intent.putExtra("ID_ANAK", anakYangDipilih.id_dokumen)
-                intent.putExtra("NAMA_ANAK", anakYangDipilih.nama_anak)
-                startActivity(intent)
+                // TAMPILKAN DIALOG PILIHAN KETIKA PROFIL ANAK DI-KLIK
+                tampilkanPilihanMenu(anakYangDipilih)
             },
             onLongClickAnak = { anakYangDipilih ->
                 tampilkanDialogHapus(anakYangDipilih)
@@ -81,6 +78,31 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         ambilDataAnakRealtime()
+    }
+
+    private fun tampilkanPilihanMenu(anak: Anak) {
+        val opsi = arrayOf("Masuk Area Anak 🎮", "Lihat Evaluasi AI 🤖")
+        AlertDialog.Builder(this)
+            .setTitle("Menu Profil: ${anak.nama_anak}")
+            .setItems(opsi) { _, index ->
+                when (index) {
+                    0 -> {
+                        // Opsi 1: Buka Area Anak
+                        val intent = Intent(this, DashboardAnakActivity::class.java)
+                        intent.putExtra("ID_ANAK", anak.id_dokumen)
+                        intent.putExtra("NAMA_ANAK", anak.nama_anak)
+                        startActivity(intent)
+                    }
+                    1 -> {
+                        // Opsi 2: Buka Layar Analisis AI
+                        val intent = Intent(this, EvaluasiActivity::class.java)
+                        intent.putExtra("ID_ANAK", anak.id_dokumen)
+                        intent.putExtra("NAMA_ANAK", anak.nama_anak)
+                        startActivity(intent)
+                    }
+                }
+            }
+            .show()
     }
 
     private fun ambilDataAnakRealtime() {
