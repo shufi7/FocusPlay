@@ -108,7 +108,21 @@ class EvaluasiActivity : AppCompatActivity() {
 
                 tvStatistikVisual.text = teksUIStatistik.toString().trimEnd()
 
-                teksPromptAI.append("\nSebagai psikolog anak, analisis tren skor di atas. Apakah ada peningkatan? Hubungkan dengan fungsi kognitif yang dilatih. Berikan saran untuk orang tua.")
+                teksPromptAI.append("\nKamu adalah asisten pendamping aplikasi FocusPlay.\n" +
+                        "\n" +
+                        "Tugas:\n" +
+                        "Buat catatan sederhana berdasarkan hasil permainan anak.\n" +
+                        "Jangan memberikan diagnosis ADHD.\n" +
+                        "Jangan menyebut anak pasti ADHD atau tidak ADHD.\n" +
+                        "\n" +
+                        "Berikan:\n" +
+                        "1. Apresiasi untuk anak\n" +
+                        "2. Analisis singkat performa berdasarkan data game\n" +
+                        "3. Saran sederhana untuk orang tua\n" +
+                        "4. Saran apakah waktu bermain sebaiknya dinaikkan, diturunkan, atau dipertahankan\n" +
+                        "\n" +
+                        "Gunakan bahasa Indonesia yang ramah, singkat, dan mudah dipahami.\n" +
+                        "Maksimal 2 paragraf.")
 
                 // Panggil server FreeModel AI
                 panggilFreeModelAI(teksPromptAI.toString())
