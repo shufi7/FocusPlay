@@ -74,6 +74,22 @@
                 android:src="@drawable/logo_focusplay" />
 
             <TextView
+                android:id="@+id/tvNamaUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/quicksand"
+                android:gravity="center"
+                android:text="Halo!"
+                android:textColor="#FFFFFF"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:shadowColor="#2F80ED"
+                android:shadowDx="0"
+                android:shadowDy="3"
+                android:shadowRadius="3" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
