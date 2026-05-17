@@ -76,7 +76,8 @@ class DashboardAnakActivity : AppCompatActivity() {
             startActivity(intent)
         }
         findViewById<CardView>(R.id.cardGame5).setOnClickListener {
-            Toast.makeText(this, "Membuka Tangkap Warna...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, com.example.focusplay.view.games.GameTangkapWarnaActivity::class.java)
+            startActivity(intent)
         }
     }
 
