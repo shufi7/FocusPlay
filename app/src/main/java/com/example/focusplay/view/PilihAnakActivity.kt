@@ -86,8 +86,8 @@ class PilihAnakActivity : AppCompatActivity() {
                     tvEmptyState.visibility = TextView.VISIBLE
                 } else {
                     tvEmptyState.visibility = TextView.GONE
-                    daftarAnak.forEach { anak ->
-                        tambahCardAnak(anak)
+                    daftarAnak.forEachIndexed { index, anak ->
+                        tambahCardAnak(anak, index)
                     }
                 }
             }
@@ -96,12 +96,27 @@ class PilihAnakActivity : AppCompatActivity() {
             }
     }
 
-    private fun tambahCardAnak(anak: Anak) {
+    private fun tambahCardAnak(anak: Anak, index: Int) {
+        val warnaCard = when (index % 4) {
+            0 -> "#F4EEFF"
+            1 -> "#F0FBEA"
+            2 -> "#EAF7FF"
+            else -> "#FFF3EA"
+        }
+
+        val karakterAnak = when (index % 5) {
+            0 -> R.drawable.char_moon_purple
+            1 -> R.drawable.char_cucumber
+            2 -> R.drawable.char_cloud_blue
+            3 -> R.drawable.char_heart
+            else -> R.drawable.char_diamond_orange
+        }
+
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(16), dp(14), dp(16), dp(14))
-            background = roundedDrawable("#FFFFFF", 22f, "#E5EEF7")
+            background = roundedDrawable(warnaCard, 22f, "#E5EEF7")
             isClickable = true
             isFocusable = true
             elevation = dp(2).toFloat()
@@ -115,14 +130,18 @@ class PilihAnakActivity : AppCompatActivity() {
         }
 
         val avatar = ImageView(this).apply {
-            setImageResource(R.drawable.char_cucumber)
-            contentDescription = "Karakter anak"
+            setImageResource(karakterAnak)
+            contentDescription = "Karakter ${anak.namaAnak}"
             layoutParams = LinearLayout.LayoutParams(dp(62), dp(62))
         }
 
         val textBox = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            val params = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            val params = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+            )
             params.setMargins(dp(14), 0, dp(10), 0)
             layoutParams = params
         }
@@ -144,13 +163,12 @@ class PilihAnakActivity : AppCompatActivity() {
         textBox.addView(tvNama)
         textBox.addView(tvUsia)
 
-        val arrow = TextView(this).apply {
-            text = "›"
-            textSize = 30f
-            gravity = Gravity.CENTER
-            setTextColor(Color.WHITE)
+        val arrow = ImageView(this).apply {
+            setImageResource(R.drawable.ic_arrow_right)
             background = circleDrawable("#8DB52A")
-            layoutParams = LinearLayout.LayoutParams(dp(36), dp(36))
+            contentDescription = "Lanjut"
+            setPadding(dp(8), dp(8), dp(8), dp(8))
+            layoutParams = LinearLayout.LayoutParams(dp(34), dp(34))
         }
 
         card.addView(avatar)

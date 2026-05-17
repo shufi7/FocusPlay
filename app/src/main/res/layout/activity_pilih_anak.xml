@@ -69,8 +69,7 @@
             android:background="@drawable/bg_back_circle"
             android:contentDescription="Kembali"
             android:padding="11dp"
-            android:src="@android:drawable/ic_menu_revert"
-            app:tint="#406915" />
+            android:src="@drawable/ic_arrow_back" />
 
         <LinearLayout
             android:layout_width="0dp"
