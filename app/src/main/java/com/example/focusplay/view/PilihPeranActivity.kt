@@ -29,13 +29,13 @@ class PilihPeranActivity : AppCompatActivity() {
         val namaUser = session.getNamaUser()
         tvNamaUser.text = "Halo, $namaUser!"
 
-        // Mengarahkan tombol Orang Tua ke layar keamanan PIN terlebih dahulu
+        // Mengarahkan tombol Orang Tua LANGSUNG ke Dasbor (Tanpa PIN)
         cardOrangTua.setOnClickListener {
-            val intent = Intent(this, PinActivity::class.java)
+            val intent = Intent(this, DashboardActivity::class.java)
             startActivity(intent)
         }
 
-        // Mengarahkan tombol Anak (Tetap sesuai kodemu sebelumnya)
+        // Mengarahkan tombol Anak (Sementara masih ke TambahAnak)
         cardAnak.setOnClickListener {
             val intent = Intent(this, TambahAnakActivity::class.java)
             startActivity(intent)

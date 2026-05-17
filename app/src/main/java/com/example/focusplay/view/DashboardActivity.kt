@@ -52,7 +52,6 @@ class DashboardActivity : AppCompatActivity() {
         anakAdapter = AnakAdapter(
             listAnak,
             onClickAnak = { anakYangDipilih ->
-                // TAMPILKAN DIALOG PILIHAN KETIKA PROFIL ANAK DI-KLIK
                 tampilkanPilihanMenu(anakYangDipilih)
             },
             onLongClickAnak = { anakYangDipilih ->
@@ -87,14 +86,12 @@ class DashboardActivity : AppCompatActivity() {
             .setItems(opsi) { _, index ->
                 when (index) {
                     0 -> {
-                        // Opsi 1: Buka Area Anak
                         val intent = Intent(this, DashboardAnakActivity::class.java)
                         intent.putExtra("ID_ANAK", anak.id_dokumen)
                         intent.putExtra("NAMA_ANAK", anak.nama_anak)
                         startActivity(intent)
                     }
                     1 -> {
-                        // Opsi 2: Buka Layar Analisis AI
                         val intent = Intent(this, EvaluasiActivity::class.java)
                         intent.putExtra("ID_ANAK", anak.id_dokumen)
                         intent.putExtra("NAMA_ANAK", anak.nama_anak)
