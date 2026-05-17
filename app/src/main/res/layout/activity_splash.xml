@@ -63,12 +63,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Logo atas seperti title game -->
+    <!-- Header logo dan teks -->
     <LinearLayout
         android:id="@+id/logoHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="78dp"
         android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -77,40 +77,56 @@
 
         <ImageView
             android:id="@+id/ivLogo"
-            android:layout_width="112dp"
-            android:layout_height="112dp"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
             android:contentDescription="Logo FocusPlay"
             android:src="@drawable/logo_focusplay" />
 
         <TextView
+            android:id="@+id/tvAppName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-4dp"
-            android:fontFamily="@font/quicksand"
-            android:shadowColor="#80FFFFFF"
+            android:layout_marginTop="-2dp"
+            android:fontFamily="@font/bubblegum_sans"
+            android:letterSpacing="0.02"
+            android:shadowColor="#2F80ED"
             android:shadowDx="0"
-            android:shadowDy="3"
+            android:shadowDy="4"
             android:shadowRadius="4"
             android:text="FocusPlay"
-            android:textColor="#FFF06A"
-            android:textSize="38sp"
-            android:textStyle="bold" />
+            android:textColor="#FFD84D"
+            android:textSize="42sp"
+            android:textStyle="normal" />
 
         <TextView
+            android:id="@+id/tvTagline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/bg_splash_ribbon"
             android:fontFamily="@font/quicksand"
-            android:paddingHorizontal="20dp"
+            android:paddingHorizontal="22dp"
             android:paddingVertical="7dp"
             android:text="Belajar fokus sambil bermain"
             android:textColor="#FFFFFF"
             android:textSize="14sp"
             android:textStyle="bold" />
+
+        <!-- Linear loading, tidak menumpuk karakter -->
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressSplash"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:indeterminate="true"
+            app:indicatorColor="#8DB52A"
+            app:trackColor="#DFF3FF"
+            app:trackCornerRadius="8dp"
+            app:trackThickness="7dp" />
+
     </LinearLayout>
 
-    <!-- Area playground / tanah bawah -->
+    <!-- Area tanah bawah -->
     <View
         android:id="@+id/ground"
         android:layout_width="0dp"
@@ -137,18 +153,18 @@
         android:layout_height="130dp"
         android:layout_marginEnd="-65dp"
         android:layout_marginBottom="104dp"
-        android:background="@drawable/bg_hill"
         android:alpha="0.9"
+        android:background="@drawable/bg_hill"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Karakter utama -->
+    <!-- Karakter utama, dibuat lebih turun supaya tidak tabrakan loading -->
     <ImageView
         android:id="@+id/ivBlue"
-        android:layout_width="118dp"
-        android:layout_height="118dp"
+        android:layout_width="112dp"
+        android:layout_height="112dp"
         android:layout_marginStart="30dp"
-        android:layout_marginBottom="106dp"
+        android:layout_marginBottom="118dp"
         android:contentDescription="Karakter biru"
         android:src="@drawable/char_blue"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -156,9 +172,9 @@
 
     <ImageView
         android:id="@+id/ivStar"
-        android:layout_width="142dp"
-        android:layout_height="142dp"
-        android:layout_marginBottom="124dp"
+        android:layout_width="138dp"
+        android:layout_height="138dp"
+        android:layout_marginBottom="130dp"
         android:contentDescription="Karakter bintang"
         android:src="@drawable/char_star"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -168,10 +184,10 @@
 
     <ImageView
         android:id="@+id/ivMushroom"
-        android:layout_width="112dp"
-        android:layout_height="112dp"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
         android:layout_marginEnd="26dp"
-        android:layout_marginBottom="106dp"
+        android:layout_marginBottom="118dp"
         android:contentDescription="Karakter jamur"
         android:src="@drawable/char_mushroom"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -180,10 +196,10 @@
     <!-- Karakter kecil dekorasi -->
     <ImageView
         android:id="@+id/ivRed"
-        android:layout_width="78dp"
-        android:layout_height="78dp"
+        android:layout_width="76dp"
+        android:layout_height="76dp"
         android:layout_marginStart="24dp"
-        android:layout_marginBottom="42dp"
+        android:layout_marginBottom="48dp"
         android:contentDescription="Karakter merah"
         android:rotation="-8"
         android:src="@drawable/char_red"
@@ -192,61 +208,30 @@
 
     <ImageView
         android:id="@+id/ivPurple"
-        android:layout_width="82dp"
-        android:layout_height="82dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="36dp"
+        android:layout_marginBottom="42dp"
         android:contentDescription="Karakter ungu"
         android:rotation="8"
         android:src="@drawable/char_purple"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Loading card -->
-    <LinearLayout
-        android:id="@+id/loadingCard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="96dp"
-        android:background="@drawable/bg_loading_card"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingHorizontal="18dp"
-        android:paddingVertical="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <ProgressBar
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:indeterminateTint="#8DB52A" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:fontFamily="@font/quicksand"
-            android:text="Menyiapkan permainan..."
-            android:textColor="#4B5563"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
     <TextView
         android:id="@+id/tvFooter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="22dp"
         android:fontFamily="@font/quicksand"
-        android:text="Aman &amp; menyenangkan untuk anak"
-        android:textColor="#FFFFFF"
-        android:textSize="13sp"
-        android:textStyle="bold"
         android:shadowColor="#80000000"
         android:shadowDx="0"
         android:shadowDy="2"
         android:shadowRadius="3"
+        android:text="Aman dan menyenangkan untuk anak"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
