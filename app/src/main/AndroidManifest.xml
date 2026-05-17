@@ -49,6 +49,14 @@
             android:name=".view.TambahAnakActivity"
             android:exported="false" />
         <activity
+            android:name=".view.RiwayatPermainanActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.PengaturanPermainanActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".view.RegisterActivity"
             android:exported="false" />
         <activity
@@ -64,8 +72,9 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-        <activity android:name=".view.EvaluasiActivity" />
-        <activity android:name=".view.PinActivity" />
+        <activity
+            android:name=".view.EvaluasiActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
