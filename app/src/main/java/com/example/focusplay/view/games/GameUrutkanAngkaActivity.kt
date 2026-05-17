@@ -16,10 +16,7 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
     private lateinit var gridLayoutAngka: GridLayout
     private lateinit var tvTargetAngka: TextView
 
-    // Membuat daftar angka 1-9 dan mengacak posisinya
     private val listAngkaAcak = (1..9).toList().shuffled()
-
-    // Angka pertama yang harus dicari anak adalah 1
     private var angkaYangHarusDitekan = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,21 +30,32 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
     }
 
     private fun buatPapanAngkaOtomatis() {
-        val ukuranKotak = (100 * resources.displayMetrics.density).toInt()
-        val marginKotak = (8 * resources.displayMetrics.density).toInt()
+        // --- PERBAIKAN UX/UI: Kalkulasi ukuran kotak secara dinamis menyesuaikan lebar HP ---
+        val displayMetrics = resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+
+        // Kita hitung total ruang yang mau disisakan untuk batas layar (padding) dan jarak antar kotak
+        val totalRuangKosong = (80 * displayMetrics.density).toInt()
+
+        // Ukuran 1 kotak = (Lebar layar penuh - total ruang kosong) dibagi 3 kolom
+        val ukuranKotak = (screenWidth - totalRuangKosong) / 3
+        val marginKotak = (6 * displayMetrics.density).toInt() // Jarak tipis antar kotak
 
         for (angka in listAngkaAcak) {
             val kotak = TextView(this)
             val params = GridLayout.LayoutParams()
+
+            // Terapkan hasil perhitungan matematika ke kotak
             params.width = ukuranKotak
             params.height = ukuranKotak
             params.setMargins(marginKotak, marginKotak, marginKotak, marginKotak)
+
+            // Kunci posisi kotak agar benar-benar diam di tengah sel Grid-nya
+            params.setGravity(Gravity.CENTER)
             kotak.layoutParams = params
 
-            // Desain awal kotak angka
             resetDesainKotak(kotak, angka)
 
-            // Logika saat kotak ditekan
             kotak.setOnClickListener {
                 cekTebakanAngka(kotak, angka)
             }
@@ -60,22 +68,20 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
         kotak.text = angka.toString()
         kotak.textSize = 40f
         kotak.gravity = Gravity.CENTER
-        kotak.setBackgroundColor(Color.parseColor("#FFB300")) // Warna Kuning/Orange
+        kotak.setBackgroundColor(Color.parseColor("#FFB300"))
         kotak.setTextColor(Color.WHITE)
         kotak.elevation = 8f
     }
 
     private fun cekTebakanAngka(kotak: TextView, angkaYangDitekan: Int) {
         if (angkaYangDitekan == angkaYangHarusDitekan) {
-            // BENAR! Angka sesuai urutan
-            kotak.setBackgroundColor(Color.parseColor("#4CAF50")) // Ubah jadi Hijau
+            kotak.setBackgroundColor(Color.parseColor("#4CAF50"))
             kotak.elevation = 2f
-            kotak.setOnClickListener(null) // Kunci kotak agar tidak bisa diklik lagi
+            kotak.setOnClickListener(null)
 
-            angkaYangHarusDitekan++ // Lanjut ke angka berikutnya
+            angkaYangHarusDitekan++
 
             if (angkaYangHarusDitekan > 9) {
-                // Menang! Semua angka sudah diurutkan
                 tvTargetAngka.text = "Selesai! Pintar Sekali! 🎉"
                 tvTargetAngka.setTextColor(Color.parseColor("#4CAF50"))
                 Toast.makeText(this, "Berhasil mengurutkan semua angka!", Toast.LENGTH_LONG).show()
@@ -84,10 +90,8 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
             }
 
         } else if (angkaYangDitekan > angkaYangHarusDitekan) {
-            // SALAH! Anak menekan angka yang lebih besar dari urutan seharusnya
-            kotak.setBackgroundColor(Color.parseColor("#E53935")) // Beri peringatan warna Merah
+            kotak.setBackgroundColor(Color.parseColor("#E53935"))
 
-            // Kembalikan ke warna asli setelah 0.3 detik
             Handler(Looper.getMainLooper()).postDelayed({
                 kotak.setBackgroundColor(Color.parseColor("#FFB300"))
             }, 300)
