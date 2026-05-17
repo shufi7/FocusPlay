@@ -31,7 +31,7 @@ class DashboardActivity : AppCompatActivity() {
 
         hubungkanView()
         tampilkanNamaUser()
-        tampilkanRingkasanSementara()
+        tampilkanRingkasanAwal()
         tampilkanGrafikSesi()
         aturAksiTombol()
     }
@@ -59,35 +59,24 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    private fun tampilkanRingkasanSementara() {
-        // Nanti bagian ini diganti dari data sesi bermain asli
+    private fun tampilkanRingkasanAwal() {
+        /*
+            Karena belum tersambung ke data sesi bermain,
+            nilai ringkasan dibuat 0 dulu.
+        */
         tvWaktuBermain.text = "0 menit"
         tvRataAkurasi.text = "0%"
     }
 
     private fun tampilkanGrafikSesi() {
         /*
-            Ini contoh struktur data sementara.
-            Nanti bagian ini diganti dengan data asli dari Firebase/API.
+            Jangan isi data dummy di sini.
+            Kalau belum ada anak yang bermain, grafik harus kosong.
 
-            Alur data asli:
-            Anak selesai bermain
-            -> data sesi tersimpan
-            -> dashboard mengambil data sesi
-            -> data dihitung rata-rata per hari
-            -> chartWeekly.setData(dataGrafik)
+            Nanti kalau Firebase/data sesi sudah siap,
+            emptyList() ini diganti dengan data asli dari sesi bermain anak.
         */
-
-        val dataGrafikSementara = listOf(
-            DataGrafikHarian("Sen", 80f),
-            DataGrafikHarian("Sel", 75f),
-            DataGrafikHarian("Rab", 90f),
-            DataGrafikHarian("Kam", 85f),
-            DataGrafikHarian("Jum", 92f),
-            DataGrafikHarian("Sab", 88f)
-        )
-
-        chartWeekly.setData(dataGrafikSementara)
+        chartWeekly.setData(emptyList())
     }
 
     private fun aturAksiTombol() {

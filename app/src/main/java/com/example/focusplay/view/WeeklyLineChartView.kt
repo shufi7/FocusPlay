@@ -1,7 +1,11 @@
 package com.example.focusplay.view
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
 
@@ -38,6 +42,7 @@ class WeeklyLineChartView @JvmOverloads constructor(
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#6B7280")
         textSize = 24f
+        typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
     }
 
     private val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -49,6 +54,14 @@ class WeeklyLineChartView @JvmOverloads constructor(
     private val subTitlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#6B7280")
         textSize = 23f
+        typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+    }
+
+    private val emptyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#6B7280")
+        textSize = 25f
+        textAlign = Paint.Align.CENTER
+        typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
     }
 
     fun setData(data: List<DataGrafikHarian>) {
@@ -61,25 +74,32 @@ class WeeklyLineChartView @JvmOverloads constructor(
 
         val paddingLeft = 70f
         val paddingRight = 32f
-        val paddingTop = 90f
-        val paddingBottom = 60f
+        val paddingTop = 95f
+        val paddingBottom = 62f
 
         val chartWidth = width - paddingLeft - paddingRight
         val chartHeight = height - paddingTop - paddingBottom
 
         canvas.drawText("Visualisasi Data Sesi", paddingLeft, 38f, titlePaint)
-        canvas.drawText("Rata-rata akurasi per hari", paddingLeft, 70f, subTitlePaint)
+        canvas.drawText("Rata-rata akurasi per hari", paddingLeft, 72f, subTitlePaint)
+
+        gambarGrid(canvas, paddingLeft, paddingRight, paddingTop, chartHeight)
 
         if (dataGrafik.isEmpty()) {
-            canvas.drawText(
-                "Belum ada data sesi bermain",
-                paddingLeft,
-                paddingTop + 80f,
-                textPaint
-            )
+            gambarDataKosong(canvas, paddingTop, chartHeight)
             return
         }
 
+        gambarGarisGrafik(canvas, paddingLeft, chartWidth, paddingTop, chartHeight)
+    }
+
+    private fun gambarGrid(
+        canvas: Canvas,
+        paddingLeft: Float,
+        paddingRight: Float,
+        paddingTop: Float,
+        chartHeight: Float
+    ) {
         val minValue = 0f
         val maxValue = 100f
         val totalGrid = 5
@@ -87,17 +107,55 @@ class WeeklyLineChartView @JvmOverloads constructor(
 
         for (i in 0..totalGrid) {
             val y = paddingTop + (i * stepY)
-            canvas.drawLine(paddingLeft, y, width - paddingRight, y, gridPaint)
+
+            canvas.drawLine(
+                paddingLeft,
+                y,
+                width - paddingRight,
+                y,
+                gridPaint
+            )
 
             val value = (maxValue - (i * ((maxValue - minValue) / totalGrid))).toInt()
             canvas.drawText(value.toString(), 18f, y + 8f, textPaint)
         }
+    }
+
+    private fun gambarDataKosong(
+        canvas: Canvas,
+        paddingTop: Float,
+        chartHeight: Float
+    ) {
+        canvas.drawText(
+            "Belum ada data sesi bermain",
+            width / 2f,
+            paddingTop + (chartHeight / 2f),
+            emptyPaint
+        )
+
+        canvas.drawText(
+            "Grafik akan muncul setelah anak bermain",
+            width / 2f,
+            paddingTop + (chartHeight / 2f) + 36f,
+            emptyPaint
+        )
+    }
+
+    private fun gambarGarisGrafik(
+        canvas: Canvas,
+        paddingLeft: Float,
+        chartWidth: Float,
+        paddingTop: Float,
+        chartHeight: Float
+    ) {
+        val minValue = 0f
+        val maxValue = 100f
 
         val path = Path()
 
         dataGrafik.forEachIndexed { index, item ->
             val x = if (dataGrafik.size == 1) {
-                paddingLeft + chartWidth / 2
+                paddingLeft + chartWidth / 2f
             } else {
                 paddingLeft + (index * (chartWidth / (dataGrafik.size - 1)))
             }
@@ -113,7 +171,7 @@ class WeeklyLineChartView @JvmOverloads constructor(
             }
 
             canvas.drawCircle(x, y, 8f, titikPaint)
-            canvas.drawText(item.labelHari, x - 18f, height - 18f, textPaint)
+            canvas.drawText(item.labelHari, x - 18f, height - 20f, textPaint)
         }
 
         canvas.drawPath(path, garisPaint)
