@@ -37,7 +37,7 @@ class PilihPeranActivity : AppCompatActivity() {
 
         // Mengarahkan tombol Anak (Sementara masih ke TambahAnak)
         cardAnak.setOnClickListener {
-            val intent = Intent(this, TambahAnakActivity::class.java)
+            val intent = Intent(this, PilihAnakActivity::class.java)
             startActivity(intent)
         }
     }

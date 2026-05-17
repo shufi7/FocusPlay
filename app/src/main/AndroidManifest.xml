@@ -46,6 +46,9 @@
             android:name=".view.PilihPeranActivity"
             android:exported="false" />
         <activity
+            android:name=".view.PilihAnakActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.TambahAnakActivity"
             android:exported="false" />
         <activity
