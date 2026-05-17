@@ -59,4 +59,14 @@ class SessionManager(context: Context) {
         editor.clear()
         editor.apply()
     }
+    // Fungsi untuk menyimpan PIN
+    fun simpanPin(pin: String) {
+        editor.putString("PIN_ORTU", pin)
+        editor.apply()
+    }
+
+    // Fungsi untuk mengambil PIN
+    fun getPin(): String {
+        return pref.getString("PIN_ORTU", "") ?: ""
+    }
 }
