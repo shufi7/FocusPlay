@@ -10,27 +10,26 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Date
 
 class GamePasangKartuActivity : AppCompatActivity() {
 
     private lateinit var gridLayoutKartu: GridLayout
     private lateinit var tvStatus: TextView
 
-    // Daftar 6 pasang Emoji yang sudah diacak posisinya
-    private val listEmojiHewan = listOf(
-        "🐶", "🐱", "🐰", "🦊", "🐻", "🐼",
-        "🐶", "🐱", "🐰", "🦊", "🐻", "🐼"
-    ).shuffled()
-
-    // Variabel Memori (Menyimpan status kartu yang sedang ditekan)
+    private val listEmojiHewan = listOf("🐶", "🐱", "🐰", "🦊", "🐻", "🐼", "🐶", "🐱", "🐰", "🦊", "🐻", "🐼").shuffled()
     private var kartuPertama: TextView? = null
     private var indexPertama: Int? = null
-    private var isMengecek = false // Agar anak tidak bisa spam klik saat kartu sedang dicek
+    private var isMengecek = false
     private var pasanganDitemukan = 0
+    private var idAnak = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_pasang_kartu)
+
+        idAnak = intent.getStringExtra("ID_ANAK") ?: ""
 
         tvStatus = findViewById(R.id.tvStatus)
         gridLayoutKartu = findViewById(R.id.gridLayoutKartu)
@@ -39,11 +38,9 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun buatPapanKartuOtomatis() {
-        // Atur ukuran kartu agar pas di layar (sekitar 90dp)
         val ukuranKartu = (90 * resources.displayMetrics.density).toInt()
         val marginKartu = (8 * resources.displayMetrics.density).toInt()
 
-        // Looping untuk mencetak 12 kartu
         for (i in listEmojiHewan.indices) {
             val kartu = TextView(this)
             val params = GridLayout.LayoutParams()
@@ -52,28 +49,21 @@ class GamePasangKartuActivity : AppCompatActivity() {
             params.setMargins(marginKartu, marginKartu, marginKartu, marginKartu)
             kartu.layoutParams = params
 
-            // Desain awal kartu (Tertutup)
             tutupKartu(kartu)
 
-            // Logika saat kartu ditekan
             kartu.setOnClickListener {
-                // Jika sedang mengecek atau kartu sudah terbuka, abaikan klik
                 if (isMengecek || kartu.text != "❓") return@setOnClickListener
 
-                // Buka Kartu
                 bukaKartu(kartu, listEmojiHewan[i])
 
                 if (kartuPertama == null) {
-                    // Ini adalah tebakan pertama
                     kartuPertama = kartu
                     indexPertama = i
                 } else {
-                    // Ini adalah tebakan kedua
                     isMengecek = true
                     cekKecocokanKartu(kartu, i)
                 }
             }
-
             gridLayoutKartu.addView(kartu)
         }
     }
@@ -82,7 +72,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         kartu.text = "❓"
         kartu.textSize = 36f
         kartu.gravity = Gravity.CENTER
-        kartu.setBackgroundColor(Color.parseColor("#1565C0")) // Warna Biru Gelap
+        kartu.setBackgroundColor(Color.parseColor("#1565C0"))
         kartu.setTextColor(Color.WHITE)
         kartu.elevation = 8f
     }
@@ -94,22 +84,20 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun cekKecocokanKartu(kartuKedua: TextView, indexKedua: Int) {
-        // Bandingkan emoji di index pertama dan kedua
         if (listEmojiHewan[indexPertama!!] == listEmojiHewan[indexKedua]) {
-            // BENAR! Pasangan cocok
             pasanganDitemukan++
             tvStatus.text = "Pasangan: $pasanganDitemukan / 6"
-
             resetMemoriPengecekan()
 
-            // Jika semua sudah ditemukan
             if (pasanganDitemukan == 6) {
                 tvStatus.text = "Luar Biasa! 🎉"
                 tvStatus.setTextColor(Color.parseColor("#4CAF50"))
-                Toast.makeText(this, "Semua hewan berhasil dipasangkan!", Toast.LENGTH_LONG).show()
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    simpanSkorKeFirebase("Pasang Kartu", 100)
+                }, 1500)
             }
         } else {
-            // SALAH! Tutup kembali kedua kartu setelah menunggu 1 detik
             Handler(Looper.getMainLooper()).postDelayed({
                 tutupKartu(kartuPertama!!)
                 tutupKartu(kartuKedua)
@@ -122,5 +110,12 @@ class GamePasangKartuActivity : AppCompatActivity() {
         kartuPertama = null
         indexPertama = null
         isMengecek = false
+    }
+
+    private fun simpanSkorKeFirebase(namaGame: String, skorAkhir: Int) {
+        if (idAnak.isEmpty()) { finish(); return }
+        val db = FirebaseFirestore.getInstance()
+        val dataSkor = hashMapOf("id_anak" to idAnak, "nama_game" to namaGame, "skor" to skorAkhir, "tanggal_main" to Date())
+        db.collection("tb_riwayat_game").add(dataSkor).addOnSuccessListener { finish() }.addOnFailureListener { finish() }
     }
 }

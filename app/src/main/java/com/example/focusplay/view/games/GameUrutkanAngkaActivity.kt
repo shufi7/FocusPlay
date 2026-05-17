@@ -10,6 +10,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Date
 
 class GameUrutkanAngkaActivity : AppCompatActivity() {
 
@@ -18,10 +20,13 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
 
     private val listAngkaAcak = (1..9).toList().shuffled()
     private var angkaYangHarusDitekan = 1
+    private var idAnak = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_urutkan_angka)
+
+        idAnak = intent.getStringExtra("ID_ANAK") ?: ""
 
         tvTargetAngka = findViewById(R.id.tvTargetAngka)
         gridLayoutAngka = findViewById(R.id.gridLayoutAngka)
@@ -30,27 +35,18 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
     }
 
     private fun buatPapanAngkaOtomatis() {
-        // --- PERBAIKAN UX/UI: Kalkulasi ukuran kotak secara dinamis menyesuaikan lebar HP ---
         val displayMetrics = resources.displayMetrics
         val screenWidth = displayMetrics.widthPixels
-
-        // Kita hitung total ruang yang mau disisakan untuk batas layar (padding) dan jarak antar kotak
         val totalRuangKosong = (80 * displayMetrics.density).toInt()
-
-        // Ukuran 1 kotak = (Lebar layar penuh - total ruang kosong) dibagi 3 kolom
         val ukuranKotak = (screenWidth - totalRuangKosong) / 3
-        val marginKotak = (6 * displayMetrics.density).toInt() // Jarak tipis antar kotak
+        val marginKotak = (6 * displayMetrics.density).toInt()
 
         for (angka in listAngkaAcak) {
             val kotak = TextView(this)
             val params = GridLayout.LayoutParams()
-
-            // Terapkan hasil perhitungan matematika ke kotak
             params.width = ukuranKotak
             params.height = ukuranKotak
             params.setMargins(marginKotak, marginKotak, marginKotak, marginKotak)
-
-            // Kunci posisi kotak agar benar-benar diam di tengah sel Grid-nya
             params.setGravity(Gravity.CENTER)
             kotak.layoutParams = params
 
@@ -59,7 +55,6 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
             kotak.setOnClickListener {
                 cekTebakanAngka(kotak, angka)
             }
-
             gridLayoutAngka.addView(kotak)
         }
     }
@@ -84,17 +79,26 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
             if (angkaYangHarusDitekan > 9) {
                 tvTargetAngka.text = "Selesai! Pintar Sekali! 🎉"
                 tvTargetAngka.setTextColor(Color.parseColor("#4CAF50"))
-                Toast.makeText(this, "Berhasil mengurutkan semua angka!", Toast.LENGTH_LONG).show()
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    simpanSkorKeFirebase("Urutkan Angka", 100)
+                }, 1500)
             } else {
                 tvTargetAngka.text = "Cari Angka: $angkaYangHarusDitekan"
             }
 
         } else if (angkaYangDitekan > angkaYangHarusDitekan) {
             kotak.setBackgroundColor(Color.parseColor("#E53935"))
-
             Handler(Looper.getMainLooper()).postDelayed({
                 kotak.setBackgroundColor(Color.parseColor("#FFB300"))
             }, 300)
         }
+    }
+
+    private fun simpanSkorKeFirebase(namaGame: String, skorAkhir: Int) {
+        if (idAnak.isEmpty()) { finish(); return }
+        val db = FirebaseFirestore.getInstance()
+        val dataSkor = hashMapOf("id_anak" to idAnak, "nama_game" to namaGame, "skor" to skorAkhir, "tanggal_main" to Date())
+        db.collection("tb_riwayat_game").add(dataSkor).addOnSuccessListener { finish() }.addOnFailureListener { finish() }
     }
 }
