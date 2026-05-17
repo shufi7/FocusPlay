@@ -48,18 +48,17 @@ class DashboardActivity : AppCompatActivity() {
 
         tvWelcomeName.text = "Halo, ${session.getNamaUser()}!"
 
-        // Konfigurasi List & Aturan Klik Ganda
         rvDaftarAnak.layoutManager = LinearLayoutManager(this)
         anakAdapter = AnakAdapter(
             listAnak,
             onClickAnak = { anakYangDipilih ->
-                // KLIK BIASA: Buka area bermain anak dan lempar nama anaknya
+                // SEKARANG KITA KIRIM NAMA DAN ID DOKUMEN ANAK NYA KEDASHBOARD ANAK
                 val intent = Intent(this, DashboardAnakActivity::class.java)
+                intent.putExtra("ID_ANAK", anakYangDipilih.id_dokumen)
                 intent.putExtra("NAMA_ANAK", anakYangDipilih.nama_anak)
                 startActivity(intent)
             },
             onLongClickAnak = { anakYangDipilih ->
-                // TEKAN TAHAN: Hapus Data
                 tampilkanDialogHapus(anakYangDipilih)
             }
         )
