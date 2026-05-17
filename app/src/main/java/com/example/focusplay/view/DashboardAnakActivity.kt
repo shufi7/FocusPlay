@@ -2,26 +2,13 @@ package com.example.focusplay.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.example.focusplay.R
-import java.util.Locale
 
 class DashboardAnakActivity : AppCompatActivity() {
-
-    private lateinit var tvTimer: TextView
-    private lateinit var btnMulaiFokus: Button
-    private lateinit var btnResetFokus: Button
-
-    private var countDownTimer: CountDownTimer? = null
-    private var timerRunning = false
-
-    private val START_TIME_IN_MILLIS: Long = 1500000
-    private var timeLeftInMillis: Long = START_TIME_IN_MILLIS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,32 +17,15 @@ class DashboardAnakActivity : AppCompatActivity() {
         val tvWelcomeAnak = findViewById<TextView>(R.id.tvWelcomeAnak)
         val btnKembaliKeOrtu = findViewById<Button>(R.id.btnKembaliKeOrtu)
 
-        tvTimer = findViewById(R.id.tvTimer)
-        btnMulaiFokus = findViewById(R.id.btnMulaiFokus)
-        btnResetFokus = findViewById(R.id.btnResetFokus)
-
         // Tangkap data dari Orang Tua
         val idAnak = intent.getStringExtra("ID_ANAK") ?: ""
         val namaAnak = intent.getStringExtra("NAMA_ANAK") ?: "Anak Hebat"
         tvWelcomeAnak.text = "Halo, $namaAnak!"
 
-        btnMulaiFokus.setOnClickListener {
-            if (timerRunning) {
-                pauseTimer()
-            } else {
-                startTimer()
-            }
-        }
-
-        btnResetFokus.setOnClickListener {
-            resetTimer()
-        }
-
+        // Tombol Keluar dari Area Anak
         btnKembaliKeOrtu.setOnClickListener {
             finish()
         }
-
-        updateCountDownText()
 
         // --- SISTEM TOMBOL PERMAINAN (DENGAN ALIRAN ID ANAK) ---
         findViewById<CardView>(R.id.cardGame1).setOnClickListener {
@@ -63,63 +33,29 @@ class DashboardAnakActivity : AppCompatActivity() {
             intent.putExtra("ID_ANAK", idAnak) // Lempar ID Anak ke dalam Game
             startActivity(intent)
         }
+
         findViewById<CardView>(R.id.cardGame2).setOnClickListener {
             val intent = Intent(this, com.example.focusplay.view.games.GameAntarRumahActivity::class.java)
             intent.putExtra("ID_ANAK", idAnak)
             startActivity(intent)
         }
+
         findViewById<CardView>(R.id.cardGame3).setOnClickListener {
             val intent = Intent(this, com.example.focusplay.view.games.GamePasangKartuActivity::class.java)
             intent.putExtra("ID_ANAK", idAnak)
             startActivity(intent)
         }
+
         findViewById<CardView>(R.id.cardGame4).setOnClickListener {
             val intent = Intent(this, com.example.focusplay.view.games.GameUrutkanAngkaActivity::class.java)
             intent.putExtra("ID_ANAK", idAnak)
             startActivity(intent)
         }
+
         findViewById<CardView>(R.id.cardGame5).setOnClickListener {
             val intent = Intent(this, com.example.focusplay.view.games.GameTangkapWarnaActivity::class.java)
             intent.putExtra("ID_ANAK", idAnak)
             startActivity(intent)
         }
-    }
-
-    private fun startTimer() {
-        countDownTimer = object : CountDownTimer(timeLeftInMillis, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                timeLeftInMillis = millisUntilFinished
-                updateCountDownText()
-            }
-
-            override fun onFinish() {
-                timerRunning = false
-                btnMulaiFokus.text = "Mulai Fokus"
-            }
-        }.start()
-
-        timerRunning = true
-        btnMulaiFokus.text = "Jeda (Pause)"
-    }
-
-    private fun pauseTimer() {
-        countDownTimer?.cancel()
-        timerRunning = false
-        btnMulaiFokus.text = "Lanjutkan"
-    }
-
-    private fun resetTimer() {
-        countDownTimer?.cancel()
-        timerRunning = false
-        timeLeftInMillis = START_TIME_IN_MILLIS
-        updateCountDownText()
-        btnMulaiFokus.text = "Mulai Fokus"
-    }
-
-    private fun updateCountDownText() {
-        val minutes = (timeLeftInMillis / 1000) / 60
-        val seconds = (timeLeftInMillis / 1000) % 60
-        val timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
-        tvTimer.text = timeLeftFormatted
     }
 }
