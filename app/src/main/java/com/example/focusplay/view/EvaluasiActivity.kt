@@ -8,15 +8,24 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
-import com.google.ai.client.generativeai.GenerativeModel
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.IOException
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
-// Struktur data lokal untuk mempermudah penyusunan statistik
 data class RiwayatGame(val namaGame: String, val skor: Long, val tanggal: Date)
 
 class EvaluasiActivity : AppCompatActivity() {
@@ -31,8 +40,9 @@ class EvaluasiActivity : AppCompatActivity() {
     private var idAnak = ""
     private var namaAnak = ""
 
-    // PASTIKAN API KEY KAMU TERTULIS DI SINI:
-    private val GEMINI_API_KEY = "AIzaSyAAfdyLY4NCgosYBj1FwmkyDqYsXyIEV0A"
+    // KREDENSIAL FREEMODEL AI KAMU
+    private val FREEMODEL_API_KEY = "fe_oa_1b4e26927d2353545e6de41533c50dc6446a02d577f04ed6"
+    private val URL_API = "https://api.freemodel.dev/v1/chat/completions"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +59,7 @@ class EvaluasiActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
 
-        tvNamaAnakEvaluasi.text = "🧠 Analisis AI untuk $namaAnak"
+        tvNamaAnakEvaluasi.text = "🧠 Analisis FreeModel AI untuk $namaAnak"
 
         btnTutupEvaluasi.setOnClickListener { finish() }
 
@@ -68,11 +78,10 @@ class EvaluasiActivity : AppCompatActivity() {
                 if (documents.isEmpty) {
                     progressBar.visibility = View.GONE
                     tvStatistikVisual.text = "Belum ada data permainan."
-                    tvHasilAI.text = "Silakan minta anak memainkan beberapa game terlebih dahulu agar AI bisa memberikan evaluasi."
+                    tvHasilAI.text = "Silakan minta anak memainkan beberapa game terlebih dahulu."
                     return@addOnSuccessListener
                 }
 
-                // 1. Tarik semua data mentah ke dalam list lokal
                 val listRiwayat = mutableListOf<RiwayatGame>()
                 for (doc in documents) {
                     val namaGame = doc.getString("nama_game") ?: "Tidak Diketahui"
@@ -81,64 +90,104 @@ class EvaluasiActivity : AppCompatActivity() {
                     listRiwayat.add(RiwayatGame(namaGame, skor, tanggal))
                 }
 
-                // 2. Urutkan berdasarkan tanggal (paling lama ke terbaru)
                 listRiwayat.sortBy { it.tanggal }
-
-                // 3. Kelompokkan berdasarkan jenis game
                 val dikelompokkanPerGame = listRiwayat.groupBy { it.namaGame }
 
                 val teksUIStatistik = StringBuilder()
                 val teksPromptAI = StringBuilder()
 
-                teksPromptAI.append("Berikut adalah riwayat skor permainan anak bernama $namaAnak. Skor ditulis secara berurutan dari waktu terlama hingga terbaru (menunjukkan progres):\n\n")
+                teksPromptAI.append("Berikut adalah riwayat skor permainan anak bernama $namaAnak. Skor diurutkan dari waktu terlama hingga terbaru:\n\n")
 
-                // 4. Susun format visual (10 ➔ 15 ➔ 20)
                 for ((namaGame, riwayat) in dikelompokkanPerGame) {
                     val daftarSkor = riwayat.map { it.skor }
                     val progresSkorStr = daftarSkor.joinToString(" ➔ ")
 
-                    // Cetak untuk layar Orang Tua
                     teksUIStatistik.append("🎮 $namaGame\nSkor: $progresSkorStr\n\n")
-
-                    // Cetak untuk dibaca mesin AI
                     teksPromptAI.append("- $namaGame: $progresSkorStr\n")
                 }
 
                 tvStatistikVisual.text = teksUIStatistik.toString().trimEnd()
 
-                teksPromptAI.append("\nSebagai psikolog anak dan ahli stimulasi kognitif, tolong analisis tren skor di atas. Apakah ada peningkatan, stagnan, atau fluktuatif? Hubungkan setiap game dengan fungsi kognitif yang dilatih (misal: refleks, koordinasi visual, memori, logika). Berikan kesimpulan dan saran edukatif yang sangat singkat, padat, dan ramah untuk orang tua.")
+                teksPromptAI.append("\nSebagai psikolog anak, analisis tren skor di atas. Apakah ada peningkatan? Hubungkan dengan fungsi kognitif yang dilatih. Berikan saran untuk orang tua.")
 
-                // 5. Lempar data matang ini ke AI
-                panggilGeminiAI(teksPromptAI.toString())
+                // Panggil server FreeModel AI
+                panggilFreeModelAI(teksPromptAI.toString())
             }
             .addOnFailureListener { e ->
                 progressBar.visibility = View.GONE
                 tvStatistikVisual.text = "Gagal memuat data."
                 tvHasilAI.text = "Terjadi kesalahan sistem."
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
-    private fun panggilGeminiAI(prompt: String) {
-        val generativeModel = GenerativeModel(
-            modelName = "gemini-2.5-flash",
-            apiKey = GEMINI_API_KEY
-        )
+    private fun panggilFreeModelAI(promptUser: String) {
+        // Siapkan klien HTTP (Browser tanpa layar)
+        val client = OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .build()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = generativeModel.generateContent(prompt)
-                withContext(Dispatchers.Main) {
+        // Susun payload JSON sesuai standar antarmuka chat
+        val jsonPayload = JSONObject()
+        jsonPayload.put("model", "gpt-5.5") // Sesuai config kamu
+
+        val pesanArray = JSONArray()
+        val pesanSystem = JSONObject()
+        pesanSystem.put("role", "system")
+        pesanSystem.put("content", "Kamu adalah psikolog anak yang ahli.")
+        val pesanUser = JSONObject()
+        pesanUser.put("role", "user")
+        pesanUser.put("content", promptUser)
+
+        pesanArray.put(pesanSystem)
+        pesanArray.put(pesanUser)
+        jsonPayload.put("messages", pesanArray)
+
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val body = jsonPayload.toString().toRequestBody(mediaType)
+
+        // Buat paket pengiriman
+        val request = Request.Builder()
+            .url(URL_API)
+            .post(body)
+            .addHeader("Authorization", "Bearer $FREEMODEL_API_KEY") // API Key dimasukkan di sini
+            .addHeader("Content-Type", "application/json")
+            .build()
+
+        // Kirim permintaan di latar belakang
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread {
                     progressBar.visibility = View.GONE
-                    tvHasilAI.text = response.text ?: "AI tidak memberikan respon."
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    progressBar.visibility = View.GONE
-                    tvHasilAI.text = "Gagal memproses analisis AI. Pastikan internet aktif."
-                    Toast.makeText(this@EvaluasiActivity, "AI Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    tvHasilAI.text = "Gagal menghubungi server FreeModel: ${e.message}"
                 }
             }
-        }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseData = response.body?.string()
+
+                runOnUiThread {
+                    progressBar.visibility = View.GONE
+                    if (response.isSuccessful && responseData != null) {
+                        try {
+                            // Ekstrak teks balasan dari JSON
+                            val jsonResponse = JSONObject(responseData)
+                            val balasanAI = jsonResponse
+                                .getJSONArray("choices")
+                                .getJSONObject(0)
+                                .getJSONObject("message")
+                                .getString("content")
+
+                            tvHasilAI.text = balasanAI
+
+                        } catch (e: Exception) {
+                            tvHasilAI.text = "Gagal membaca format jawaban dari FreeModel."
+                        }
+                    } else {
+                        tvHasilAI.text = "Ditolak oleh Server. Kode Error: ${response.code}\nPastikan API Key dan nama model valid."
+                    }
+                }
+            }
+        })
     }
 }
