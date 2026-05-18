@@ -20,7 +20,7 @@ class AnakAdapter(
 
         fun bind(anak: Anak) {
             tvNama.text = anak.nama_anak
-            tvUmur.text = "Umur: ${anak.umur} Tahun"
+            tvUmur.text = "Umur: ${anak.usia} Tahun"
 
             itemView.setOnClickListener { onClickAnak(anak) }
             itemView.setOnLongClickListener {

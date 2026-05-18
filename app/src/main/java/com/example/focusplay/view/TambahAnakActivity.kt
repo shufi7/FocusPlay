@@ -16,14 +16,20 @@ class TambahAnakActivity : AppCompatActivity() {
     private lateinit var etUsiaAnak: EditText
     private lateinit var btnSimpanAnak: Button
 
+    private lateinit var avatarRed: ImageView
+    private lateinit var avatarBlue: ImageView
+    private lateinit var avatarPurple: ImageView
+    private lateinit var avatarStar: ImageView
+
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+
+    private var selectedAvatar = "char_red"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tambah_anak)
 
-        // Inisialisasi Firebase
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
@@ -31,43 +37,85 @@ class TambahAnakActivity : AppCompatActivity() {
         etUsiaAnak = findViewById(R.id.etUsiaAnak)
         btnSimpanAnak = findViewById(R.id.btnSimpanAnak)
 
+        avatarRed = findViewById(R.id.avatarRed)
+        avatarBlue = findViewById(R.id.avatarBlue)
+        avatarPurple = findViewById(R.id.avatarPurple)
+        avatarStar = findViewById(R.id.avatarStar)
+
         val ivBack = findViewById<ImageView>(R.id.ivBack)
         ivBack.setOnClickListener { finish() }
 
+        avatarRed.setOnClickListener {
+            pilihAvatar("char_red")
+        }
+
+        avatarBlue.setOnClickListener {
+            pilihAvatar("char_blue")
+        }
+
+        avatarPurple.setOnClickListener {
+            pilihAvatar("char_purple")
+        }
+
+        avatarStar.setOnClickListener {
+            pilihAvatar("char_star")
+        }
+
         btnSimpanAnak.setOnClickListener {
             val nama = etNamaAnak.text.toString().trim()
-            val usia = etUsiaAnak.text.toString().trim()
+            val usiaText = etUsiaAnak.text.toString().trim()
 
-            if (nama.isEmpty() || usia.isEmpty()) {
+            if (nama.isEmpty() || usiaText.isEmpty()) {
                 Toast.makeText(this, "Data tidak boleh kosong", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            prosesSimpanAnakFirebase(nama, usia.toInt())
+            val usia = usiaText.toIntOrNull()
+            if (usia == null) {
+                Toast.makeText(this, "Usia harus berupa angka", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            prosesSimpanAnakFirebase(nama, usia)
+        }
+    }
+
+    private fun pilihAvatar(avatar: String) {
+        selectedAvatar = avatar
+
+        avatarRed.setBackgroundResource(R.drawable.bg_avatar_normal)
+        avatarBlue.setBackgroundResource(R.drawable.bg_avatar_normal)
+        avatarPurple.setBackgroundResource(R.drawable.bg_avatar_normal)
+        avatarStar.setBackgroundResource(R.drawable.bg_avatar_normal)
+
+        when (avatar) {
+            "char_red" -> avatarRed.setBackgroundResource(R.drawable.bg_avatar_selected)
+            "char_blue" -> avatarBlue.setBackgroundResource(R.drawable.bg_avatar_selected)
+            "char_purple" -> avatarPurple.setBackgroundResource(R.drawable.bg_avatar_selected)
+            "char_star" -> avatarStar.setBackgroundResource(R.drawable.bg_avatar_selected)
         }
     }
 
     private fun prosesSimpanAnakFirebase(nama: String, usia: Int) {
-        // Pastikan ada user yang sedang login
         val currentUser = auth.currentUser
+
         if (currentUser == null) {
             Toast.makeText(this, "Sesi login tidak ditemukan. Silakan login ulang.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Siapkan data yang akan disimpan ke Firestore
         val anakData = hashMapOf(
-            "id_pendamping" to currentUser.uid, // Menggunakan UID unik dari akun Google
+            "id_pendamping" to currentUser.uid,
             "nama_anak" to nama,
-            "usia" to usia
+            "usia" to usia,
+            "avatar" to selectedAvatar
         )
 
-        // Simpan ke koleksi "tb_anak" di Firestore
         db.collection("tb_anak")
             .add(anakData)
             .addOnSuccessListener {
-                Toast.makeText(this, "Profil $nama berhasil disimpan ke awan!", Toast.LENGTH_SHORT).show()
-                finish() // Kembali ke Dashboard
+                Toast.makeText(this, "Profil $nama berhasil disimpan!", Toast.LENGTH_SHORT).show()
+                finish()
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Gagal menyimpan: ${e.message}", Toast.LENGTH_LONG).show()

@@ -37,7 +37,8 @@ class DashboardActivity : AppCompatActivity() {
     data class AnakDashboard(
         val idDokumen: String,
         val namaAnak: String,
-        val umur: Int
+        val umur: Int,
+        val avatar: String
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,7 +104,7 @@ class DashboardActivity : AppCompatActivity() {
             .addOnSuccessListener { result ->
                 val daftarAnak = result.documents.mapNotNull { doc ->
                     val nama = doc.getString("nama_anak") ?: return@mapNotNull null
-
+                    val avatar = doc.getString("avatar") ?: "char_red"
                     // --- SOLUSI SAKTI PENGAMBILAN UMUR ---
                     // Coba ambil "umur", kalau tidak ada coba "usia".
                     // Ubah jadi String dulu apa pun bentuknya, baru dipaksa jadi Angka (Int).
@@ -113,7 +114,8 @@ class DashboardActivity : AppCompatActivity() {
                     AnakDashboard(
                         idDokumen = doc.id,
                         namaAnak = nama,
-                        umur = umur
+                        umur = umur,
+                        avatar = avatar
                     )
                 }
 
@@ -194,12 +196,16 @@ class DashboardActivity : AppCompatActivity() {
             else -> "#FFF3EA"
         }
 
-        val karakter = when (index % 5) {
-            0 -> R.drawable.char_moon_purple
-            1 -> R.drawable.char_cucumber
-            2 -> R.drawable.char_cloud_blue
-            3 -> R.drawable.char_heart
-            else -> R.drawable.char_diamond_orange
+        val karakter = when (anak.avatar) {
+            "char_blue" -> R.drawable.char_blue
+            "char_purple" -> R.drawable.char_purple
+            "char_star" -> R.drawable.char_star
+            "char_moon_purple" -> R.drawable.char_moon_purple
+            "char_cucumber" -> R.drawable.char_cucumber
+            "char_cloud_blue" -> R.drawable.char_cloud_blue
+            "char_heart" -> R.drawable.char_heart
+            "char_diamond_orange" -> R.drawable.char_diamond_orange
+            else -> R.drawable.char_red
         }
 
         val card = LinearLayout(this).apply {

@@ -28,7 +28,8 @@ class PilihAnakActivity : AppCompatActivity() {
     data class Anak(
         val idDokumen: String,
         val namaAnak: String,
-        val usia: Int
+        val usia: Int,
+        val avatar: String
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,11 +75,12 @@ class PilihAnakActivity : AppCompatActivity() {
                 val daftarAnak = result.documents.mapNotNull { doc ->
                     val nama = doc.getString("nama_anak") ?: return@mapNotNull null
                     val usiaLong = doc.getLong("usia") ?: 0L
-
+                    val avatar = doc.getString("avatar") ?: "char_red"
                     Anak(
                         idDokumen = doc.id,
                         namaAnak = nama,
-                        usia = usiaLong.toInt()
+                        usia = usiaLong.toInt(),
+                        avatar = avatar
                     )
                 }
 
@@ -104,12 +106,11 @@ class PilihAnakActivity : AppCompatActivity() {
             else -> "#FFF3EA"
         }
 
-        val karakterAnak = when (index % 5) {
-            0 -> R.drawable.char_moon_purple
-            1 -> R.drawable.char_cucumber
-            2 -> R.drawable.char_cloud_blue
-            3 -> R.drawable.char_heart
-            else -> R.drawable.char_diamond_orange
+        val karakterAnak = when (anak.avatar) {
+            "char_blue" -> R.drawable.char_blue
+            "char_purple" -> R.drawable.char_purple
+            "char_star" -> R.drawable.char_star
+            else -> R.drawable.char_red
         }
 
         val card = LinearLayout(this).apply {

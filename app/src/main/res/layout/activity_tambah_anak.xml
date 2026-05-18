@@ -117,14 +117,7 @@
                 android:textColor="#1F2937"
                 android:textSize="25sp"
                 android:textStyle="bold" />
-
         </LinearLayout>
-
-        <ImageView
-            android:layout_width="58dp"
-            android:layout_height="58dp"
-            android:contentDescription="Karakter hati"
-            android:src="@drawable/char_red" />
 
     </LinearLayout>
 
@@ -149,58 +142,11 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Hero card -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="88dp"
-                app:cardBackgroundColor="#F4EEFF"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="94dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="14dp">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:fontFamily="@font/quicksand"
-                            android:text="Data anak akan digunakan untuk menyimpan progres bermain."
-                            android:textColor="#6B7280"
-                            android:textSize="13sp" />
-
-                        <View
-                            android:layout_width="125dp"
-                            android:layout_height="5dp"
-                            android:layout_marginTop="10dp"
-                            android:background="@drawable/bg_splash_ribbon" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="78dp"
-                        android:layout_height="78dp"
-                        android:contentDescription="Karakter"
-                        android:src="@drawable/char_purple" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
             <!-- Form title -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/quicksand"
                 android:text="Data Anak"
                 android:textColor="#1F2937"
@@ -257,6 +203,70 @@
                 android:textColorHint="#A0AEC0"
                 android:textSize="15sp" />
 
+            <!-- Pilih avatar -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:fontFamily="@font/quicksand"
+                android:text="Pilih Profil Anak"
+                android:textColor="#374151"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="6dp">
+
+                    <ImageView
+                        android:id="@+id/avatarRed"
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:layout_margin="6dp"
+                        android:background="@drawable/bg_avatar_selected"
+                        android:padding="8dp"
+                        android:src="@drawable/char_red" />
+
+                    <ImageView
+                        android:id="@+id/avatarBlue"
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:layout_margin="6dp"
+                        android:background="@drawable/bg_avatar_normal"
+                        android:padding="8dp"
+                        android:src="@drawable/char_blue" />
+
+                    <ImageView
+                        android:id="@+id/avatarPurple"
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:layout_margin="6dp"
+                        android:background="@drawable/bg_avatar_normal"
+                        android:padding="8dp"
+                        android:src="@drawable/char_purple" />
+
+                    <ImageView
+                        android:id="@+id/avatarStar"
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:layout_margin="6dp"
+                        android:background="@drawable/bg_avatar_normal"
+                        android:padding="8dp"
+                        android:src="@drawable/char_star" />
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Info -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -265,12 +275,6 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="14dp">
-
-                <ImageView
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:contentDescription="Info"
-                    android:src="@drawable/char_blue" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -283,6 +287,7 @@
                     android:textSize="13sp" />
             </LinearLayout>
 
+            <!-- Tombol -->
             <Button
                 android:id="@+id/btnSimpanAnak"
                 android:layout_width="match_parent"

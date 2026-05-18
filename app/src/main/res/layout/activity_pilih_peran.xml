@@ -4,50 +4,57 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    android:fitsSystemWindows="true"
+    android:overScrollMode="never"
+    android:scrollbarStyle="outsideOverlay"
+    android:smoothScrollbar="true"
+
     android:background="@drawable/bg_splash_playground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <!-- Dekorasi awan -->
         <View
             android:id="@+id/cloudLeft"
-            android:layout_width="120dp"
-            android:layout_height="36dp"
-            android:layout_marginStart="-22dp"
-            android:layout_marginTop="78dp"
-            android:alpha="0.85"
+            android:layout_width="110dp"
+            android:layout_height="34dp"
+            android:layout_marginStart="-18dp"
+            android:layout_marginTop="72dp"
+            android:alpha="0.80"
             android:background="@drawable/bg_cloud"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:id="@+id/cloudRight"
-            android:layout_width="135dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="58dp"
-            android:layout_marginEnd="-28dp"
-            android:alpha="0.85"
+            android:layout_width="125dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="54dp"
+            android:layout_marginEnd="-24dp"
+            android:alpha="0.80"
             android:background="@drawable/bg_cloud"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Bubble dekorasi -->
+        <!-- Bubble -->
         <View
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="54dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="52dp"
+            android:alpha="0.75"
             android:background="@drawable/bg_bubble"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            android:layout_marginTop="48dp"
-            android:layout_marginEnd="38dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="46dp"
+            android:layout_marginEnd="32dp"
+            android:alpha="0.75"
             android:background="@drawable/bg_bubble"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -57,9 +64,9 @@
             android:id="@+id/headerPeran"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="42dp"
+            android:layout_marginEnd="20dp"
             android:gravity="center"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
@@ -68,9 +75,11 @@
 
             <ImageView
                 android:id="@+id/ivLogoPeran"
-                android:layout_width="88dp"
-                android:layout_height="88dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:adjustViewBounds="true"
                 android:contentDescription="Logo FocusPlay"
+                android:scaleType="fitCenter"
                 android:src="@drawable/logo_focusplay" />
 
             <TextView
@@ -78,16 +87,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:ellipsize="end"
                 android:fontFamily="@font/quicksand"
                 android:gravity="center"
+                android:maxLines="1"
                 android:text="Halo!"
                 android:textColor="#FFFFFF"
-                android:textSize="25sp"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 android:shadowColor="#2F80ED"
                 android:shadowDx="0"
-                android:shadowDy="3"
-                android:shadowRadius="3" />
+                android:shadowDy="2"
+                android:shadowRadius="2" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -96,34 +107,35 @@
                 android:background="@drawable/bg_splash_ribbon"
                 android:fontFamily="@font/quicksand"
                 android:gravity="center"
-                android:paddingHorizontal="20dp"
+                android:paddingHorizontal="18dp"
                 android:paddingVertical="7dp"
                 android:text="Kamu ingin masuk sebagai siapa?"
                 android:textColor="#FFFFFF"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Card container -->
+        <!-- Card utama -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardContainerPeran"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="22dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="22dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginBottom="280dp"
             app:cardBackgroundColor="#FDFDFD"
-            app:cardCornerRadius="30dp"
-            app:cardElevation="6dp"
-            app:layout_constraintTop_toBottomOf="@id/headerPeran"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="3dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/headerPeran">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="22dp">
+                android:padding="20dp">
 
                 <!-- Judul -->
                 <LinearLayout
@@ -141,20 +153,24 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:ellipsize="end"
                             android:fontFamily="@font/quicksand"
+                            android:maxLines="1"
                             android:text="Pilih Peran"
                             android:textColor="#1F2937"
-                            android:textSize="27sp"
+                            android:textSize="24sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
+                            android:ellipsize="end"
                             android:fontFamily="@font/quicksand"
+                            android:maxLines="2"
                             android:text="Masuk sesuai kebutuhanmu hari ini"
                             android:textColor="#7B8794"
-                            android:textSize="14sp" />
+                            android:textSize="13sp" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -163,26 +179,29 @@
                 <LinearLayout
                     android:id="@+id/cardOrangTua"
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="110dp"
+                    android:layout_marginTop="22dp"
                     android:background="@drawable/bg_role_parent"
                     android:clickable="true"
-                    android:elevation="2dp"
+                    android:elevation="1dp"
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:padding="15dp">
 
                     <ImageView
-                        android:layout_width="78dp"
-                        android:layout_height="78dp"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:adjustViewBounds="true"
                         android:contentDescription="Karakter orang tua"
+                        android:scaleType="fitCenter"
                         android:src="@drawable/char_cloud_blue" />
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="14dp"
                         android:layout_weight="1"
                         android:orientation="vertical">
 
@@ -192,25 +211,28 @@
                             android:fontFamily="@font/quicksand"
                             android:text="Orang Tua"
                             android:textColor="#1F2937"
-                            android:textSize="20sp"
+                            android:textSize="18sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="4dp"
+                            android:ellipsize="end"
                             android:fontFamily="@font/quicksand"
+                            android:maxLines="2"
                             android:text="Pantau progres dan kelola aktivitas anak"
                             android:textColor="#6B7280"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <ImageView
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:background="@drawable/bg_circle_arrow"
                         android:contentDescription="Lanjut"
-                        android:padding="8dp"
+                        android:padding="7dp"
+                        android:scaleType="fitCenter"
                         android:src="@drawable/ic_arrow_right" />
                 </LinearLayout>
 
@@ -218,26 +240,29 @@
                 <LinearLayout
                     android:id="@+id/cardAnak"
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="110dp"
                     android:layout_marginTop="14dp"
                     android:background="@drawable/bg_role_child"
                     android:clickable="true"
-                    android:elevation="2dp"
+                    android:elevation="1dp"
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:padding="15dp">
 
                     <ImageView
-                        android:layout_width="78dp"
-                        android:layout_height="78dp"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:adjustViewBounds="true"
                         android:contentDescription="Karakter anak"
+                        android:scaleType="fitCenter"
                         android:src="@drawable/char_mushroom" />
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="14dp"
                         android:layout_weight="1"
                         android:orientation="vertical">
 
@@ -247,103 +272,113 @@
                             android:fontFamily="@font/quicksand"
                             android:text="Anak"
                             android:textColor="#1F2937"
-                            android:textSize="20sp"
+                            android:textSize="18sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="4dp"
+                            android:ellipsize="end"
                             android:fontFamily="@font/quicksand"
+                            android:maxLines="2"
                             android:text="Mulai bermain dan latihan fokus"
                             android:textColor="#6B7280"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <ImageView
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:background="@drawable/bg_circle_arrow"
                         android:contentDescription="Lanjut"
-                        android:padding="8dp"
+                        android:padding="7dp"
+                        android:scaleType="fitCenter"
                         android:src="@drawable/ic_arrow_right" />
                 </LinearLayout>
 
-                <!-- Info bawah -->
+                <!-- Info -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="18dp"
                     android:background="@drawable/bg_info_soft"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="14dp">
+                    android:padding="13dp">
 
                     <ImageView
-                        android:layout_width="46dp"
-                        android:layout_height="46dp"
-                        android:contentDescription="Karakter diamond"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="Karakter star"
+                        android:scaleType="fitCenter"
                         android:src="@drawable/char_star" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="10dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/quicksand"
+                        android:maxLines="3"
                         android:text="FocusPlay membantu anak belajar fokus dengan cara yang menyenangkan."
                         android:textColor="#5A6B76"
-                        android:textSize="13sp" />
+                        android:textSize="12sp" />
                 </LinearLayout>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Area bawah playground -->
+        <!-- Playground bawah -->
         <View
             android:id="@+id/groundBottomPeran"
             android:layout_width="0dp"
-            android:layout_height="190dp"
+            android:layout_height="170dp"
             android:background="@drawable/bg_ground_soft"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <View
-            android:layout_width="235dp"
-            android:layout_height="112dp"
-            android:layout_marginStart="-48dp"
-            android:layout_marginBottom="94dp"
+            android:layout_width="210dp"
+            android:layout_height="100dp"
+            android:layout_marginStart="-42dp"
+            android:layout_marginBottom="84dp"
             android:background="@drawable/bg_hill"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <View
-            android:layout_width="250dp"
-            android:layout_height="118dp"
-            android:layout_marginEnd="-55dp"
-            android:layout_marginBottom="88dp"
+            android:layout_width="225dp"
+            android:layout_height="108dp"
+            android:layout_marginEnd="-48dp"
+            android:layout_marginBottom="80dp"
             android:background="@drawable/bg_hill"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Karakter bawah -->
         <ImageView
-            android:layout_width="76dp"
-            android:layout_height="76dp"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
             android:layout_marginStart="18dp"
-            android:layout_marginBottom="48dp"
+            android:layout_marginBottom="42dp"
+            android:adjustViewBounds="true"
             android:contentDescription="Karakter cloud blue"
+            android:scaleType="fitCenter"
             android:src="@drawable/char_cloud_blue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
             android:layout_marginEnd="18dp"
-            android:layout_marginBottom="48dp"
+            android:layout_marginBottom="42dp"
+            android:adjustViewBounds="true"
             android:contentDescription="Karakter moon purple"
+            android:scaleType="fitCenter"
             android:src="@drawable/char_moon_purple"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
