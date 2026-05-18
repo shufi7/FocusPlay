@@ -1,5 +1,6 @@
 package com.example.focusplay.view
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
@@ -36,7 +37,7 @@ class DashboardActivity : AppCompatActivity() {
     data class AnakDashboard(
         val idDokumen: String,
         val namaAnak: String,
-        val usia: Int
+        val umur: Int
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +61,6 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun hubungkanView() {
         ivBackDashboard = findViewById(R.id.ivBackDashboard)
-
         tvWelcomeName = findViewById(R.id.tvWelcomeName)
         tvProfilAnakKosong = findViewById(R.id.tvProfilAnakKosong)
         containerProfilAnakDashboard = findViewById(R.id.containerProfilAnakDashboard)
@@ -74,7 +74,6 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun tampilkanNamaUser() {
         val namaUser = session.getNamaUser()
-
         tvWelcomeName.text = if (namaUser.isNotEmpty()) {
             "Halo, $namaUser!"
         } else {
@@ -83,7 +82,6 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun tampilkanGrafikSesi() {
-        // Kosong dulu. Nanti diisi berdasarkan data sesi anak yang dipilih.
         chartWeekly.setData(emptyList())
     }
 
@@ -105,12 +103,17 @@ class DashboardActivity : AppCompatActivity() {
             .addOnSuccessListener { result ->
                 val daftarAnak = result.documents.mapNotNull { doc ->
                     val nama = doc.getString("nama_anak") ?: return@mapNotNull null
-                    val usia = doc.getLong("usia")?.toInt() ?: 0
+
+                    // --- SOLUSI SAKTI PENGAMBILAN UMUR ---
+                    // Coba ambil "umur", kalau tidak ada coba "usia".
+                    // Ubah jadi String dulu apa pun bentuknya, baru dipaksa jadi Angka (Int).
+                    val umurMentah = doc.get("umur") ?: doc.get("usia")
+                    val umur = umurMentah?.toString()?.toIntOrNull() ?: 0
 
                     AnakDashboard(
                         idDokumen = doc.id,
                         namaAnak = nama,
-                        usia = usia
+                        umur = umur
                     )
                 }
 
@@ -213,14 +216,7 @@ class DashboardActivity : AppCompatActivity() {
             }
 
             setOnClickListener {
-                Toast.makeText(
-                    this@DashboardActivity,
-                    "Profil ${anak.namaAnak} dipilih",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                // Nanti bisa dipakai untuk memuat grafik sesuai anak yang dipilih.
-                // loadDataSesiAnak(anak.idDokumen)
+                tampilkanPilihanMenu(anak)
             }
         }
 
@@ -247,7 +243,7 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         val usia = TextView(this).apply {
-            text = "${anak.usia} tahun"
+            text = "${anak.umur} tahun"
             gravity = Gravity.CENTER
             textSize = 12f
             setTextColor(Color.parseColor("#6B7280"))
@@ -263,6 +259,30 @@ class DashboardActivity : AppCompatActivity() {
         card.addView(usia)
 
         containerProfilAnakDashboard.addView(card)
+    }
+
+    private fun tampilkanPilihanMenu(anak: AnakDashboard) {
+        val opsi = arrayOf("Masuk Area Anak 🎮", "Lihat Evaluasi AI 🤖")
+        AlertDialog.Builder(this)
+            .setTitle("Pilih Menu untuk ${anak.namaAnak}")
+            .setItems(opsi) { _, index ->
+                when (index) {
+                    0 -> {
+                        val intent = Intent(this, DashboardAnakActivity::class.java)
+                        intent.putExtra("ID_ANAK", anak.idDokumen)
+                        intent.putExtra("NAMA_ANAK", anak.namaAnak)
+                        startActivity(intent)
+                    }
+                    1 -> {
+                        val intent = Intent(this, EvaluasiActivity::class.java)
+                        intent.putExtra("ID_ANAK", anak.idDokumen)
+                        intent.putExtra("NAMA_ANAK", anak.namaAnak)
+                        startActivity(intent)
+                    }
+                }
+            }
+            .setNegativeButton("Batal", null)
+            .show()
     }
 
     private fun aturAksiTombol() {
