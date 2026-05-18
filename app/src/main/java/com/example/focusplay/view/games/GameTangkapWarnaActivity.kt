@@ -202,6 +202,7 @@ class GameTangkapWarnaActivity : AppCompatActivity() {
         } else if (skor >= 150) {
             Toast.makeText(this, "Luar Biasa! Kamu ahli warna!", Toast.LENGTH_LONG).show()
             timerFase3?.cancel()
+            simpanRiwayatAkhir("Tangkap Warna")
             finish()
             return
         }
@@ -233,5 +234,20 @@ class GameTangkapWarnaActivity : AppCompatActivity() {
         super.onDestroy()
         timerFase3?.cancel()
         handlerGerak.removeCallbacks(runnableGerak)
+    }
+
+    private fun simpanRiwayatAkhir(namaGame: String) {
+        val nama = intent.getStringExtra("NAMA_ANAK") ?: "Anak"
+        // Simulasi kalkulasi: semakin tinggi skor, akurasi dianggap 100%
+        val akurasiSimulasi = if (skor >= 100) 100 else 80
+
+        com.example.focusplay.utils.GameResultHelper.simpanHasilPermainan(
+            idAnak = idAnak,
+            namaAnak = nama,
+            namaGame = namaGame,
+            skor = skor,
+            akurasi = akurasiSimulasi,
+            durasiMenit = 2 // Simulasi durasi bermain 2 menit
+        )
     }
 }

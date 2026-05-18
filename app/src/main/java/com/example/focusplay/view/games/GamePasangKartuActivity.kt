@@ -217,6 +217,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Sempurna! Kamu memiliki ingatan fotografis!", Toast.LENGTH_LONG).show()
             timerPermainan?.cancel()
+            simpanRiwayatAkhir("Pasang Kartu")
             finish()
             return
         }
@@ -246,5 +247,20 @@ class GamePasangKartuActivity : AppCompatActivity() {
         super.onDestroy()
         timerPermainan?.cancel()
         handler.removeCallbacksAndMessages(null) // Hapus antrean animasi
+    }
+
+    private fun simpanRiwayatAkhir(namaGame: String) {
+        val nama = intent.getStringExtra("NAMA_ANAK") ?: "Anak"
+        // Simulasi kalkulasi: semakin tinggi skor, akurasi dianggap 100%
+        val akurasiSimulasi = if (skor >= 100) 100 else 80
+
+        com.example.focusplay.utils.GameResultHelper.simpanHasilPermainan(
+            idAnak = idAnak,
+            namaAnak = nama,
+            namaGame = namaGame,
+            skor = skor,
+            akurasi = akurasiSimulasi,
+            durasiMenit = 2 // Simulasi durasi bermain 2 menit
+        )
     }
 }
