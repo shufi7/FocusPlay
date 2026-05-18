@@ -143,6 +143,7 @@ class GameTapMerahActivity : AppCompatActivity() {
             Toast.makeText(this, "Luar Biasa! Lanjut ke Fase 3", Toast.LENGTH_SHORT).show()
         } else if (skor == 150) {
             Toast.makeText(this, "Kamu berhasil menyelesaikan permainan!", Toast.LENGTH_LONG).show()
+            simpanRiwayatAkhir("Tap Si Merah")
             finish() // Mengakhiri permainan
             return
         }
@@ -182,5 +183,20 @@ class GameTapMerahActivity : AppCompatActivity() {
         super.onDestroy()
         // Wajib menghentikan timer saat keluar game agar tidak error / memori bocor
         handlerGerak.removeCallbacks(runnableGerak)
+    }
+
+    private fun simpanRiwayatAkhir(namaGame: String) {
+        val nama = intent.getStringExtra("NAMA_ANAK") ?: "Anak"
+        // Simulasi kalkulasi: semakin tinggi skor, akurasi dianggap 100%
+        val akurasiSimulasi = if (skor >= 100) 100 else 80
+
+        com.example.focusplay.utils.GameResultHelper.simpanHasilPermainan(
+            idAnak = idAnak,
+            namaAnak = nama,
+            namaGame = namaGame,
+            skor = skor,
+            akurasi = akurasiSimulasi,
+            durasiMenit = 2 // Simulasi durasi bermain 2 menit
+        )
     }
 }

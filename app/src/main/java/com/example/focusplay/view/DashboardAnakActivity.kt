@@ -17,44 +17,47 @@ class DashboardAnakActivity : AppCompatActivity() {
         val tvWelcomeAnak = findViewById<TextView>(R.id.tvWelcomeAnak)
         val btnKembaliKeOrtu = findViewById<Button>(R.id.btnKembaliKeOrtu)
 
-        // Tangkap data dari Orang Tua
         val idAnak = intent.getStringExtra("ID_ANAK") ?: ""
         val namaAnak = intent.getStringExtra("NAMA_ANAK") ?: "Anak Hebat"
         tvWelcomeAnak.text = "Halo, $namaAnak!"
 
-        // Tombol Keluar dari Area Anak
         btnKembaliKeOrtu.setOnClickListener {
             finish()
         }
 
-        // --- SISTEM TOMBOL PERMAINAN (DENGAN ALIRAN ID ANAK) ---
+        // --- SISTEM TOMBOL PERMAINAN (MENGIRIM ID & NAMA ANAK) ---
         findViewById<CardView>(R.id.cardGame1).setOnClickListener {
             val intent = Intent(this, com.example.focusplay.view.games.GameTapMerahActivity::class.java)
-            intent.putExtra("ID_ANAK", idAnak) // Lempar ID Anak ke dalam Game
+            intent.putExtra("ID_ANAK", idAnak)
+            intent.putExtra("NAMA_ANAK", namaAnak)
             startActivity(intent)
         }
 
         findViewById<CardView>(R.id.cardGame2).setOnClickListener {
             val intent = Intent(this, com.example.focusplay.view.games.GameAntarRumahActivity::class.java)
             intent.putExtra("ID_ANAK", idAnak)
+            intent.putExtra("NAMA_ANAK", namaAnak)
             startActivity(intent)
         }
 
         findViewById<CardView>(R.id.cardGame3).setOnClickListener {
             val intent = Intent(this, com.example.focusplay.view.games.GamePasangKartuActivity::class.java)
             intent.putExtra("ID_ANAK", idAnak)
+            intent.putExtra("NAMA_ANAK", namaAnak)
             startActivity(intent)
         }
 
         findViewById<CardView>(R.id.cardGame4).setOnClickListener {
             val intent = Intent(this, com.example.focusplay.view.games.GameUrutkanAngkaActivity::class.java)
             intent.putExtra("ID_ANAK", idAnak)
+            intent.putExtra("NAMA_ANAK", namaAnak)
             startActivity(intent)
         }
 
         findViewById<CardView>(R.id.cardGame5).setOnClickListener {
             val intent = Intent(this, com.example.focusplay.view.games.GameTangkapWarnaActivity::class.java)
             intent.putExtra("ID_ANAK", idAnak)
+            intent.putExtra("NAMA_ANAK", namaAnak)
             startActivity(intent)
         }
     }

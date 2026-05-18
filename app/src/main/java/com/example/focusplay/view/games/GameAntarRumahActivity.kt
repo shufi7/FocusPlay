@@ -243,6 +243,7 @@ class GameAntarRumahActivity : AppCompatActivity() {
         } else if (skor >= 240) {
             Toast.makeText(this, "Sempurna! Permainan Selesai.", Toast.LENGTH_LONG).show()
             timerFase3?.cancel()
+            simpanRiwayatAkhir("Antar Ke Rumah")
             finish()
             return
         }
@@ -273,5 +274,20 @@ class GameAntarRumahActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         timerFase3?.cancel() // Mencegah memori bocor
+    }
+
+    private fun simpanRiwayatAkhir(namaGame: String) {
+        val nama = intent.getStringExtra("NAMA_ANAK") ?: "Anak"
+        // Simulasi kalkulasi: semakin tinggi skor, akurasi dianggap 100%
+        val akurasiSimulasi = if (skor >= 100) 100 else 80
+
+        com.example.focusplay.utils.GameResultHelper.simpanHasilPermainan(
+            idAnak = idAnak,
+            namaAnak = nama,
+            namaGame = namaGame,
+            skor = skor,
+            akurasi = akurasiSimulasi,
+            durasiMenit = 2 // Simulasi durasi bermain 2 menit
+        )
     }
 }
