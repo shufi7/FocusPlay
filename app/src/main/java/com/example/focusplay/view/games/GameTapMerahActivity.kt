@@ -1,161 +1,186 @@
 package com.example.focusplay.view.games
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
-import com.google.firebase.firestore.FirebaseFirestore
-import java.util.Date
 import kotlin.random.Random
 
 class GameTapMerahActivity : AppCompatActivity() {
 
+    private lateinit var arenaGame: FrameLayout
     private lateinit var tvSkor: TextView
-    private lateinit var tvWaktu: TextView
-    private lateinit var viewTargetMerah: View
-    private lateinit var viewTargetBiru: View
-    private lateinit var layStatus: View
+    private lateinit var tvFase: TextView
 
     private var skor = 0
-    private var timer: CountDownTimer? = null
-    private var isGameRunning = false
-    private var idAnak = "" // Tempat menyimpan ID Anak
+    private var faseSaatIni = 1
+    private var idAnak = ""
 
-    private val handler = Handler(Looper.getMainLooper())
-    private lateinit var gerakOtomatis: Runnable
-
-    private var kecepatanLompat: Long = 1500
-    private val kecepatanMaksimal: Long = 600
+    // Pengatur Waktu untuk target bergerak di Fase 2 & 3
+    private val handlerGerak = Handler(Looper.getMainLooper())
+    private var delayGerak: Long = 2000L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_tap_merah)
 
-        // Tangkap ID Anak yang dikirim oleh Dashboard Anak
         idAnak = intent.getStringExtra("ID_ANAK") ?: ""
 
+        arenaGame = findViewById(R.id.arenaGame)
         tvSkor = findViewById(R.id.tvSkor)
-        tvWaktu = findViewById(R.id.tvWaktu)
-        viewTargetMerah = findViewById(R.id.viewTargetMerah)
-        viewTargetBiru = findViewById(R.id.viewTargetBiru)
-        layStatus = findViewById(R.id.layStatus)
+        tvFase = findViewById(R.id.tvFase)
 
-        gerakOtomatis = Runnable {
-            if (isGameRunning) {
-                pindahkanTargetSecaraAcak()
-                handler.postDelayed(gerakOtomatis, kecepatanLompat)
-            }
-        }
-
-        viewTargetMerah.setOnClickListener {
-            if (isGameRunning) {
-                skor++
-                tvSkor.text = "Skor: $skor"
-                if (kecepatanLompat > kecepatanMaksimal) {
-                    kecepatanLompat -= 30
-                }
-                handler.removeCallbacks(gerakOtomatis)
-                pindahkanTargetSecaraAcak()
-                handler.postDelayed(gerakOtomatis, kecepatanLompat)
-            }
-        }
-
-        viewTargetBiru.setOnClickListener {
-            if (isGameRunning) {
-                skor--
-                tvSkor.text = "Skor: $skor"
-                handler.removeCallbacks(gerakOtomatis)
-                pindahkanTargetSecaraAcak()
-                handler.postDelayed(gerakOtomatis, kecepatanLompat)
-            }
-        }
-
-        mulaiPermainan()
-    }
-
-    private fun mulaiPermainan() {
-        skor = 0
-        kecepatanLompat = 1500
-        tvSkor.text = "Skor: 0"
-        isGameRunning = true
-
-        handler.postDelayed(gerakOtomatis, kecepatanLompat)
-
-        timer = object : CountDownTimer(30000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                tvWaktu.text = "Sisa: ${millisUntilFinished / 1000}s"
-            }
-
-            override fun onFinish() {
-                isGameRunning = false
-                tvWaktu.text = "Waktu Habis!"
-                viewTargetMerah.visibility = View.GONE
-                viewTargetBiru.visibility = View.GONE
-
-                handler.removeCallbacks(gerakOtomatis)
-
-                // JALANKAN FUNGSI SIMPAN SKOR KE FIRESTORE SEBELUM KELUAR
-                simpanSkorKeFirebase()
-            }
-        }.start()
-    }
-
-    private fun simpanSkorKeFirebase() {
-        if (idAnak.isEmpty()) {
-            Toast.makeText(this, "Gagal menyimpan: ID Anak tidak valid", Toast.LENGTH_SHORT).show()
+        findViewById<ImageView>(R.id.btnKembali).setOnClickListener {
             finish()
+        }
+
+        // Tunggu sampai arena selesai digambar di layar, baru mulai gamenya
+        arenaGame.post {
+            mulaiRonde()
+        }
+    }
+
+    private fun mulaiRonde() {
+        arenaGame.removeAllViews() // Bersihkan arena
+
+        // Atur parameter berdasarkan fase
+        val ukuranTargetDp: Int
+        val jumlahPengecoh: Int
+        val warnaPengecoh: List<String>
+
+        when (faseSaatIni) {
+            1 -> {
+                tvFase.text = "Fase 1: Pengenalan"
+                ukuranTargetDp = 120
+                jumlahPengecoh = 2
+                // Pengecoh sangat beda warnanya
+                warnaPengecoh = listOf("#2196F3", "#4CAF50", "#FFEB3B")
+                handlerGerak.removeCallbacks(runnableGerak) // Diam
+            }
+            2 -> {
+                tvFase.text = "Fase 2: Target Bergerak"
+                ukuranTargetDp = 90
+                jumlahPengecoh = 4
+                warnaPengecoh = listOf("#2196F3", "#4CAF50", "#FFEB3B", "#9C27B0")
+                delayGerak = 1200L
+                mulaiPergerakanTarget()
+            }
+            else -> {
+                tvFase.text = "Fase 3: Uji Fokus Ekstra!"
+                ukuranTargetDp = 70
+                jumlahPengecoh = 6
+                // Pengecoh mirip dengan warna target (Merah Tua, Oranye, Pink)
+                warnaPengecoh = listOf("#B71C1C", "#FF9800", "#E91E63", "#FF5722", "#FFC107")
+                delayGerak = 800L
+                mulaiPergerakanTarget()
+            }
+        }
+
+        // 1. Buat Pengecoh (Distraktor)
+        for (i in 0 until jumlahPengecoh) {
+            val warnaRandom = warnaPengecoh[Random.nextInt(warnaPengecoh.size)]
+            buatLingkaran(warnaRandom, ukuranTargetDp, isTarget = false)
+        }
+
+        // 2. Buat Target (Merah)
+        buatLingkaran("#F44336", ukuranTargetDp, isTarget = true)
+    }
+
+    private fun buatLingkaran(warnaHex: String, ukuranDp: Int, isTarget: Boolean) {
+        val ukuranPx = (ukuranDp * resources.displayMetrics.density).toInt()
+
+        val view = View(this)
+        view.layoutParams = FrameLayout.LayoutParams(ukuranPx, ukuranPx)
+
+        // Membuat bentuk bulat berwarna
+        val bentukBulat = GradientDrawable()
+        bentukBulat.shape = GradientDrawable.OVAL
+        bentukBulat.setColor(Color.parseColor(warnaHex))
+        view.background = bentukBulat
+
+        // Menentukan posisi acak di dalam arena
+        val maxX = arenaGame.width - ukuranPx
+        val maxY = arenaGame.height - ukuranPx
+        view.x = Random.nextInt(0, maxX).toFloat()
+        view.y = Random.nextInt(0, maxY).toFloat()
+
+        if (isTarget) {
+            view.tag = "TARGET"
+            view.elevation = 4f // Target selalu di atas pengecoh
+            view.setOnClickListener {
+                targetBerhasilDitekan()
+            }
+        } else {
+            view.tag = "PENGECOH"
+            view.elevation = 2f
+            view.setOnClickListener {
+                Toast.makeText(this, "Itu bukan merah!", Toast.LENGTH_SHORT).show()
+                // Opsional: kurangi skor jika salah tekan
+            }
+        }
+
+        arenaGame.addView(view)
+    }
+
+    private fun targetBerhasilDitekan() {
+        skor += 10
+        tvSkor.text = "Skor: $skor"
+
+        // Logika naik level
+        if (skor == 50 && faseSaatIni == 1) {
+            faseSaatIni = 2
+            Toast.makeText(this, "Hebat! Lanjut ke Fase 2", Toast.LENGTH_SHORT).show()
+        } else if (skor == 100 && faseSaatIni == 2) {
+            faseSaatIni = 3
+            Toast.makeText(this, "Luar Biasa! Lanjut ke Fase 3", Toast.LENGTH_SHORT).show()
+        } else if (skor == 150) {
+            Toast.makeText(this, "Kamu berhasil menyelesaikan permainan!", Toast.LENGTH_LONG).show()
+            finish() // Mengakhiri permainan
             return
         }
 
-        val db = FirebaseFirestore.getInstance()
-
-        // Siapkan cetakan bungkus data skor
-        val dataSkor = hashMapOf(
-            "id_anak" to idAnak,
-            "nama_game" to "Tap si Merah",
-            "skor" to skor,
-            "tanggal_main" to Date() // Menyimpan waktu real-time saat ini
-        )
-
-        // Tembak ke koleksi "tb_riwayat_game"
-        db.collection("tb_riwayat_game")
-            .add(dataSkor)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Skor game berhasil dicatat di Cloud Firebase!", Toast.LENGTH_SHORT).show()
-                finish() // Menutup game otomatis dan kembali ke halaman anak
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Gagal mencatat skor: ${e.message}", Toast.LENGTH_SHORT).show()
-                finish()
-            }
+        mulaiRonde() // Refresh arena dengan posisi baru
     }
 
-    private fun pindahkanTargetSecaraAcak() {
-        val rootLayout = findViewById<View>(android.R.id.content)
-        val batasKanan = rootLayout.width - viewTargetMerah.width
-        val batasBawah = rootLayout.height - viewTargetMerah.height - layStatus.height
+    // --- LOGIKA PERGERAKAN UNTUK FASE 2 & 3 ---
+    private val runnableGerak = object : Runnable {
+        override fun run() {
+            // Acak posisi semua objek di arena
+            for (i in 0 until arenaGame.childCount) {
+                val view = arenaGame.getChildAt(i)
+                val ukuranPx = view.width
+                val maxX = arenaGame.width - ukuranPx
+                val maxY = arenaGame.height - ukuranPx
 
-        if (batasKanan > 0 && batasBawah > 0) {
-            val merahX = Random.nextInt(0, batasKanan).toFloat()
-            val merahY = Random.nextInt(layStatus.height, batasBawah + layStatus.height).toFloat()
-            val biruX = Random.nextInt(0, batasKanan).toFloat()
-            val biruY = Random.nextInt(layStatus.height, batasBawah + layStatus.height).toFloat()
-
-            viewTargetMerah.x = merahX
-            viewTargetMerah.y = merahY
-            viewTargetBiru.x = biruX
-            viewTargetBiru.y = biruY
+                // Mencegah error jika arena belum siap
+                if (maxX > 0 && maxY > 0) {
+                    view.animate()
+                        .x(Random.nextInt(0, maxX).toFloat())
+                        .y(Random.nextInt(0, maxY).toFloat())
+                        .setDuration(delayGerak / 2)
+                        .start()
+                }
+            }
+            handlerGerak.postDelayed(this, delayGerak)
         }
+    }
+
+    private fun mulaiPergerakanTarget() {
+        handlerGerak.removeCallbacks(runnableGerak)
+        handlerGerak.postDelayed(runnableGerak, delayGerak)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        timer?.cancel()
-        handler.removeCallbacks(gerakOtomatis)
+        // Wajib menghentikan timer saat keluar game agar tidak error / memori bocor
+        handlerGerak.removeCallbacks(runnableGerak)
     }
 }
