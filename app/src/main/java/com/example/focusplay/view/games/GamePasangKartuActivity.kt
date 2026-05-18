@@ -1,29 +1,40 @@
 package com.example.focusplay.view.games
 
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
+import android.view.View
 import android.widget.GridLayout
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
-import com.google.firebase.firestore.FirebaseFirestore
-import java.util.Date
 
 class GamePasangKartuActivity : AppCompatActivity() {
 
-    private lateinit var gridLayoutKartu: GridLayout
-    private lateinit var tvStatus: TextView
+    private lateinit var gridKartu: GridLayout
+    private lateinit var tvSkor: TextView
+    private lateinit var tvFase: TextView
+    private lateinit var tvTimer: TextView
 
-    private val listEmojiHewan = listOf("🐶", "🐱", "🐰", "🦊", "🐻", "🐼", "🐶", "🐱", "🐰", "🦊", "🐻", "🐼").shuffled()
-    private var kartuPertama: TextView? = null
-    private var indexPertama: Int? = null
-    private var isMengecek = false
-    private var pasanganDitemukan = 0
+    private var skor = 0
+    private var faseSaatIni = 1
     private var idAnak = ""
+
+    private var jumlahPasanganSelesai = 0
+    private var totalPasanganRondeIni = 0
+
+    private var kartuPertama: TextView? = null
+    private var kartuKedua: TextView? = null
+    private var sedangMemeriksa = false // Mencegah klik liar saat animasi
+
+    private var timerPermainan: CountDownTimer? = null
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,91 +42,209 @@ class GamePasangKartuActivity : AppCompatActivity() {
 
         idAnak = intent.getStringExtra("ID_ANAK") ?: ""
 
-        tvStatus = findViewById(R.id.tvStatus)
-        gridLayoutKartu = findViewById(R.id.gridLayoutKartu)
+        gridKartu = findViewById(R.id.gridKartu)
+        tvSkor = findViewById(R.id.tvSkor)
+        tvFase = findViewById(R.id.tvFase)
+        tvTimer = findViewById(R.id.tvTimer)
 
-        buatPapanKartuOtomatis()
+        findViewById<ImageView>(R.id.btnKembali).setOnClickListener {
+            finish()
+        }
+
+        mulaiRonde()
     }
 
-    private fun buatPapanKartuOtomatis() {
-        val ukuranKartu = (90 * resources.displayMetrics.density).toInt()
-        val marginKartu = (8 * resources.displayMetrics.density).toInt()
+    private fun mulaiRonde() {
+        gridKartu.removeAllViews()
+        jumlahPasanganSelesai = 0
+        kartuPertama = null
+        kartuKedua = null
+        sedangMemeriksa = false
+        timerPermainan?.cancel()
 
-        for (i in listEmojiHewan.indices) {
-            val kartu = TextView(this)
-            val params = GridLayout.LayoutParams()
-            params.width = ukuranKartu
-            params.height = ukuranKartu
-            params.setMargins(marginKartu, marginKartu, marginKartu, marginKartu)
-            kartu.layoutParams = params
+        val isiKartu = mutableListOf<String>()
+        val waktuPreview: Long
 
-            tutupKartu(kartu)
+        when (faseSaatIni) {
+            1 -> {
+                tvFase.text = "Fase 1: Pengenalan"
+                tvTimer.visibility = View.GONE
+                gridKartu.columnCount = 2
+                gridKartu.rowCount = 2
+                totalPasanganRondeIni = 2
+                waktuPreview = 3000L // 3 Detik lihat kartu
 
-            kartu.setOnClickListener {
-                if (isMengecek || kartu.text != "❓") return@setOnClickListener
-
-                bukaKartu(kartu, listEmojiHewan[i])
-
-                if (kartuPertama == null) {
-                    kartuPertama = kartu
-                    indexPertama = i
-                } else {
-                    isMengecek = true
-                    cekKecocokanKartu(kartu, i)
-                }
+                // Ikon beda jauh
+                isiKartu.addAll(listOf("🍎", "🍎", "🐶", "🐶"))
             }
-            gridLayoutKartu.addView(kartu)
+            2 -> {
+                tvFase.text = "Fase 2: Memori Bertambah"
+                tvTimer.visibility = View.GONE
+                gridKartu.columnCount = 3
+                gridKartu.rowCount = 3 // Akan ada 1 tempat kosong tapi aman untuk 8 kartu
+                totalPasanganRondeIni = 4
+                waktuPreview = 2000L // 2 Detik lihat kartu
+
+                // 4 Pasang
+                isiKartu.addAll(listOf("🍎", "🍎", "🐶", "🐶", "🚗", "🚗", "⚽", "⚽"))
+            }
+            else -> {
+                tvFase.text = "Fase 3: Tantangan Mirip!"
+                tvTimer.visibility = View.VISIBLE
+                gridKartu.columnCount = 3
+                gridKartu.rowCount = 4
+                totalPasanganRondeIni = 6
+                waktuPreview = 1000L // Cuma 1 Detik!
+
+                // Ikon mirip sebagai pengecoh (Apel vs Tomat, Anjing vs Serigala)
+                isiKartu.addAll(listOf("🍎", "🍎", "🍅", "🍅", "🐶", "🐶", "🐺", "🐺", "🚗", "🚗", "🚙", "🚙"))
+                mulaiTimer(45000) // Waktu mencari: 45 detik
+            }
         }
+
+        isiKartu.shuffle() // Acak posisi
+
+        // Buat kartu secara dinamis
+        for (i in 0 until (totalPasanganRondeIni * 2)) {
+            val ukuranKartuPx = dpToPx(80)
+            val kartu = TextView(this).apply {
+                layoutParams = GridLayout.LayoutParams().apply {
+                    width = ukuranKartuPx
+                    height = ukuranKartuPx
+                    setMargins(12, 12, 12, 12)
+                }
+                textSize = 36f
+                gravity = Gravity.CENTER
+                elevation = 4f
+                tag = isiKartu[i] // Simpan isi sebenarnya di tag
+
+                // Tampilan Awal: Tampilkan isi (Preview)
+                text = isiKartu[i]
+                background = buatBackgroundKartu("#FFFFFF", "#E0E0E0")
+            }
+            gridKartu.addView(kartu)
+        }
+
+        // Tutup kartu setelah waktu preview habis
+        handler.postDelayed({
+            for (i in 0 until gridKartu.childCount) {
+                val kartu = gridKartu.getChildAt(i) as TextView
+                tutupKartu(kartu)
+
+                // Aktifkan fitur klik
+                kartu.setOnClickListener { klikKartu(kartu) }
+            }
+        }, waktuPreview)
+    }
+
+    private fun klikKartu(kartuDipilih: TextView) {
+        // Jangan lakukan apa-apa jika kartu sedang animasi, kartu sudah terbuka, atau permainan dikunci
+        if (sedangMemeriksa || kartuDipilih.text.isNotEmpty()) return
+
+        bukaKartu(kartuDipilih)
+
+        if (kartuPertama == null) {
+            kartuPertama = kartuDipilih
+        } else {
+            kartuKedua = kartuDipilih
+            sedangMemeriksa = true
+            cekKecocokan()
+        }
+    }
+
+    private fun cekKecocokan() {
+        if (kartuPertama?.tag == kartuKedua?.tag) {
+            // Cocok!
+            kartuPertama?.setBackgroundColor(Color.parseColor("#C8E6C9")) // Hijau
+            kartuKedua?.setBackgroundColor(Color.parseColor("#C8E6C9"))
+
+            // Kunci kartu
+            kartuPertama?.setOnClickListener(null)
+            kartuKedua?.setOnClickListener(null)
+
+            jumlahPasanganSelesai++
+            skor += 15
+            tvSkor.text = "Skor: $skor"
+
+            resetPilihan()
+
+            if (jumlahPasanganSelesai == totalPasanganRondeIni) {
+                handler.postDelayed({ cekNaikFase() }, 500)
+            }
+
+        } else {
+            // Tidak Cocok, tutup kembali setelah setengah detik
+            handler.postDelayed({
+                kartuPertama?.let { tutupKartu(it) }
+                kartuKedua?.let { tutupKartu(it) }
+                resetPilihan()
+            }, 600)
+        }
+    }
+
+    private fun resetPilihan() {
+        kartuPertama = null
+        kartuKedua = null
+        sedangMemeriksa = false
+    }
+
+    private fun bukaKartu(kartu: TextView) {
+        kartu.text = kartu.tag.toString()
+        kartu.background = buatBackgroundKartu("#FFFFFF", "#2196F3") // Border Biru
     }
 
     private fun tutupKartu(kartu: TextView) {
-        kartu.text = "❓"
-        kartu.textSize = 36f
-        kartu.gravity = Gravity.CENTER
-        kartu.setBackgroundColor(Color.parseColor("#1565C0"))
-        kartu.setTextColor(Color.WHITE)
-        kartu.elevation = 8f
+        kartu.text = ""
+        kartu.background = buatBackgroundKartu("#2196F3", "#1565C0") // Punggung Kartu Biru
     }
 
-    private fun bukaKartu(kartu: TextView, emoji: String) {
-        kartu.text = emoji
-        kartu.setBackgroundColor(Color.WHITE)
-        kartu.elevation = 2f
-    }
-
-    private fun cekKecocokanKartu(kartuKedua: TextView, indexKedua: Int) {
-        if (listEmojiHewan[indexPertama!!] == listEmojiHewan[indexKedua]) {
-            pasanganDitemukan++
-            tvStatus.text = "Pasangan: $pasanganDitemukan / 6"
-            resetMemoriPengecekan()
-
-            if (pasanganDitemukan == 6) {
-                tvStatus.text = "Luar Biasa! 🎉"
-                tvStatus.setTextColor(Color.parseColor("#4CAF50"))
-
-                Handler(Looper.getMainLooper()).postDelayed({
-                    simpanSkorKeFirebase("Pasang Kartu", 100)
-                }, 1500)
-            }
-        } else {
-            Handler(Looper.getMainLooper()).postDelayed({
-                tutupKartu(kartuPertama!!)
-                tutupKartu(kartuKedua)
-                resetMemoriPengecekan()
-            }, 1000)
+    private fun buatBackgroundKartu(warnaBg: String, warnaBorder: String): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = 16f
+            setColor(Color.parseColor(warnaBg))
+            setStroke(4, Color.parseColor(warnaBorder))
         }
     }
 
-    private fun resetMemoriPengecekan() {
-        kartuPertama = null
-        indexPertama = null
-        isMengecek = false
+    private fun cekNaikFase() {
+        if (faseSaatIni == 1) {
+            faseSaatIni = 2
+            Toast.makeText(this, "Ingatan Bagus! Lanjut ke Fase 2", Toast.LENGTH_SHORT).show()
+        } else if (faseSaatIni == 2) {
+            faseSaatIni = 3
+            Toast.makeText(this, "Super! Hati-hati jebakan di Fase 3", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Sempurna! Kamu memiliki ingatan fotografis!", Toast.LENGTH_LONG).show()
+            timerPermainan?.cancel()
+            finish()
+            return
+        }
+        mulaiRonde()
     }
 
-    private fun simpanSkorKeFirebase(namaGame: String, skorAkhir: Int) {
-        if (idAnak.isEmpty()) { finish(); return }
-        val db = FirebaseFirestore.getInstance()
-        val dataSkor = hashMapOf("id_anak" to idAnak, "nama_game" to namaGame, "skor" to skorAkhir, "tanggal_main" to Date())
-        db.collection("tb_riwayat_game").add(dataSkor).addOnSuccessListener { finish() }.addOnFailureListener { finish() }
+    private fun mulaiTimer(durasiMillis: Long) {
+        timerPermainan = object : CountDownTimer(durasiMillis, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val detik = millisUntilFinished / 1000
+                tvTimer.text = "⏳ ${detik}s"
+            }
+
+            override fun onFinish() {
+                tvTimer.text = "Habis!"
+                Toast.makeText(this@GamePasangKartuActivity, "Waktu Habis! Coba lagi.", Toast.LENGTH_SHORT).show()
+                mulaiRonde() // Restart ronde
+            }
+        }.start()
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        timerPermainan?.cancel()
+        handler.removeCallbacksAndMessages(null) // Hapus antrean animasi
     }
 }
