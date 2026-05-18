@@ -1,30 +1,45 @@
 package com.example.focusplay.view.games
 
+import android.graphics.Color
+import android.graphics.Rect
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.CountDownTimer
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
-import com.google.firebase.firestore.FirebaseFirestore
-import java.util.Date
+import kotlin.random.Random
 
 class GameAntarRumahActivity : AppCompatActivity() {
 
-    private lateinit var viewMobil: TextView
-    private lateinit var viewRumah: TextView
-    private lateinit var tvInstruksi: TextView
-    private lateinit var layStatus: View
+    private lateinit var arenaGame: FrameLayout
+    private lateinit var tvSkor: TextView
+    private lateinit var tvFase: TextView
+    private lateinit var tvTimer: TextView
 
-    private var dX = 0f
-    private var dY = 0f
-    private var posisiAwalX = 0f
-    private var posisiAwalY = 0f
-
+    private var skor = 0
+    private var faseSaatIni = 1
     private var idAnak = ""
+
+    private var jumlahObjekSelesai = 0
+    private var targetSelesaiRondeIni = 0
+
+    private val warnaTersedia = listOf(
+        "#F44336", // Merah
+        "#2196F3", // Biru
+        "#4CAF50", // Hijau
+        "#FF9800", // Oranye
+        "#9C27B0"  // Ungu
+    )
+
+    private var timerFase3: CountDownTimer? = null
+    private var waktuHabis = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,78 +47,231 @@ class GameAntarRumahActivity : AppCompatActivity() {
 
         idAnak = intent.getStringExtra("ID_ANAK") ?: ""
 
-        viewMobil = findViewById(R.id.viewMobil)
-        viewRumah = findViewById(R.id.viewRumah)
-        tvInstruksi = findViewById(R.id.tvInstruksi)
-        layStatus = findViewById(R.id.layStatus)
+        arenaGame = findViewById(R.id.arenaGame)
+        tvSkor = findViewById(R.id.tvSkor)
+        tvFase = findViewById(R.id.tvFase)
+        tvTimer = findViewById(R.id.tvTimer)
 
-        viewMobil.post {
-            posisiAwalX = viewMobil.x
-            posisiAwalY = viewMobil.y
+        findViewById<ImageView>(R.id.btnKembali).setOnClickListener {
+            finish()
         }
 
-        viewMobil.setOnTouchListener { view, event ->
+        arenaGame.post {
+            mulaiRonde()
+        }
+    }
+
+    private fun mulaiRonde() {
+        arenaGame.removeAllViews()
+        jumlahObjekSelesai = 0
+        waktuHabis = false
+        timerFase3?.cancel()
+
+        val jumlahRumah: Int
+        val jumlahObjek: Int
+
+        when (faseSaatIni) {
+            1 -> {
+                tvFase.text = "Fase 1: Pengenalan"
+                tvTimer.visibility = View.GONE
+                jumlahRumah = 1
+                jumlahObjek = 1
+            }
+            2 -> {
+                tvFase.text = "Fase 2: Target Ganda"
+                tvTimer.visibility = View.GONE
+                jumlahRumah = 2
+                jumlahObjek = 2
+            }
+            else -> {
+                tvFase.text = "Fase 3: Kecepatan & Pengecoh"
+                tvTimer.visibility = View.VISIBLE
+                jumlahRumah = 3 // 1 Pengecoh
+                jumlahObjek = 2
+                mulaiTimer(15000) // 15 Detik
+            }
+        }
+
+        targetSelesaiRondeIni = jumlahObjek
+
+        // Pilih warna acak untuk ronde ini
+        val warnaRondeIni = warnaTersedia.shuffled().take(jumlahRumah)
+
+        // 1. Buat Rumah (Di bagian atas arena)
+        val lebarArena = arenaGame.width
+        val jarakX = lebarArena / (jumlahRumah + 1)
+        val listRumah = mutableListOf<View>()
+
+        for (i in 0 until jumlahRumah) {
+            val rumah = buatKotakRumah(warnaRondeIni[i])
+            val ukuranPx = dpToPx(80)
+
+            // Atur posisi rumah berjajar di atas
+            rumah.x = (jarakX * (i + 1) - (ukuranPx / 2)).toFloat()
+            rumah.y = dpToPx(40).toFloat()
+
+            // Simpan warna di tag untuk dicocokkan nanti
+            rumah.tag = warnaRondeIni[i]
+            arenaGame.addView(rumah)
+            listRumah.add(rumah)
+        }
+
+        // 2. Buat Objek yang bisa diseret (Di bagian bawah arena)
+        // Objek hanya dibuat untuk warna yang BUKAN pengecoh (Fase 3 ada 1 pengecoh)
+        val warnaObjek = warnaRondeIni.take(jumlahObjek).shuffled()
+
+        for (i in 0 until jumlahObjek) {
+            val objek = buatLingkaranObjek(warnaObjek[i])
+            val ukuranPx = dpToPx(60)
+
+            // Atur posisi awal objek berjajar di bawah
+            val jarakObjekX = lebarArena / (jumlahObjek + 1)
+            val posisiAwalX = (jarakObjekX * (i + 1) - (ukuranPx / 2)).toFloat()
+            val posisiAwalY = arenaGame.height - dpToPx(120).toFloat()
+
+            objek.x = posisiAwalX
+            objek.y = posisiAwalY
+            objek.tag = warnaObjek[i]
+
+            pasangFiturSeret(objek, posisiAwalX, posisiAwalY, listRumah)
+            arenaGame.addView(objek)
+        }
+    }
+
+    private fun buatKotakRumah(warnaHex: String): TextView {
+        val ukuranPx = dpToPx(80)
+        val view = TextView(this).apply {
+            layoutParams = FrameLayout.LayoutParams(ukuranPx, ukuranPx)
+            text = "🏠"
+            textSize = 32f
+            gravity = Gravity.CENTER
+
+            val kotakBg = GradientDrawable()
+            kotakBg.shape = GradientDrawable.RECTANGLE
+            kotakBg.cornerRadius = 16f
+            kotakBg.setColor(Color.parseColor(warnaHex))
+            background = kotakBg
+            elevation = 2f
+        }
+        return view
+    }
+
+    private fun buatLingkaranObjek(warnaHex: String): View {
+        val ukuranPx = dpToPx(60)
+        val view = View(this).apply {
+            layoutParams = FrameLayout.LayoutParams(ukuranPx, ukuranPx)
+            val bulatBg = GradientDrawable()
+            bulatBg.shape = GradientDrawable.OVAL
+            bulatBg.setColor(Color.parseColor(warnaHex))
+            background = bulatBg
+            elevation = 6f // Objek selalu melayang di atas rumah
+        }
+        return view
+    }
+
+    private fun pasangFiturSeret(objek: View, awalX: Float, awalY: Float, listRumah: List<View>) {
+        var dX = 0f
+        var dY = 0f
+
+        objek.setOnTouchListener { v, event ->
+            if (waktuHabis) return@setOnTouchListener false
+
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    dX = view.x - event.rawX
-                    dY = view.y - event.rawY
+                    dX = v.x - event.rawX
+                    dY = v.y - event.rawY
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    view.animate().x(event.rawX + dX).y(event.rawY + dY).setDuration(0).start()
+                    v.x = event.rawX + dX
+                    v.y = event.rawY + dY
                 }
                 MotionEvent.ACTION_UP -> {
-                    cekKeberhasilan()
+                    // Cek apakah objek dilepas di atas rumah yang warnanya sama
+                    var diletakkanBenar = false
+
+                    for (rumah in listRumah) {
+                        if (isOverlap(v, rumah)) {
+                            if (v.tag == rumah.tag) {
+                                // Benar! Warnanya cocok
+                                diletakkanBenar = true
+                                v.x = rumah.x + dpToPx(10) // Paskan posisi
+                                v.y = rumah.y + dpToPx(10)
+                                v.setOnTouchListener(null) // Kunci objek agar tidak bisa diseret lagi
+
+                                objekBerhasilMasuk()
+                            } else {
+                                Toast.makeText(this@GameAntarRumahActivity, "Warnanya beda!", Toast.LENGTH_SHORT).show()
+                            }
+                            break
+                        }
+                    }
+
+                    // Jika salah tempat, kembalikan ke posisi awal animasi memantul
+                    if (!diletakkanBenar) {
+                        v.animate().x(awalX).y(awalY).setDuration(300).start()
+                    }
                 }
-                else -> return@setOnTouchListener false
             }
             true
         }
     }
 
-    private fun cekKeberhasilan() {
-        val mobilTengahX = viewMobil.x + (viewMobil.width / 2)
-        val mobilTengahY = viewMobil.y + (viewMobil.height / 2)
+    private fun isOverlap(view1: View, view2: View): Boolean {
+        val rect1 = Rect()
+        view1.getHitRect(rect1)
+        val rect2 = Rect()
+        view2.getHitRect(rect2)
+        return Rect.intersects(rect1, rect2)
+    }
 
-        val rumahKiri = viewRumah.x
-        val rumahKanan = viewRumah.x + viewRumah.width
-        val rumahAtas = viewRumah.y
-        val rumahBawah = viewRumah.y + viewRumah.height
-
-        if (mobilTengahX >= rumahKiri && mobilTengahX <= rumahKanan &&
-            mobilTengahY >= rumahAtas && mobilTengahY <= rumahBawah) {
-
-            tvInstruksi.text = "Berhasil! 🚗 sudah di rumah! 🎉"
-            layStatus.setBackgroundColor(android.graphics.Color.parseColor("#4CAF50"))
-            tvInstruksi.setTextColor(android.graphics.Color.parseColor("#FFFFFF"))
-
-            viewMobil.setOnTouchListener(null)
-
-            // Jeda 1,5 detik agar anak bisa melihat hasilnya sebelum keluar
-            Handler(Looper.getMainLooper()).postDelayed({
-                simpanSkorKeFirebase("Antar ke Rumah", 100)
-            }, 1500)
-
-        } else {
-            viewMobil.animate().x(posisiAwalX).y(posisiAwalY).setDuration(300).start()
+    private fun objekBerhasilMasuk() {
+        jumlahObjekSelesai++
+        if (jumlahObjekSelesai == targetSelesaiRondeIni) {
+            skor += 20
+            tvSkor.text = "Skor: $skor"
+            cekNaikFase()
         }
     }
 
-    private fun simpanSkorKeFirebase(namaGame: String, skorAkhir: Int) {
-        if (idAnak.isEmpty()) { finish(); return }
+    private fun cekNaikFase() {
+        if (skor == 60 && faseSaatIni == 1) {
+            faseSaatIni = 2
+            Toast.makeText(this, "Mantap! Lanjut ke Fase 2", Toast.LENGTH_SHORT).show()
+        } else if (skor == 140 && faseSaatIni == 2) {
+            faseSaatIni = 3
+            Toast.makeText(this, "Fokus Hebat! Lanjut ke Fase 3", Toast.LENGTH_SHORT).show()
+        } else if (skor >= 240) {
+            Toast.makeText(this, "Sempurna! Permainan Selesai.", Toast.LENGTH_LONG).show()
+            timerFase3?.cancel()
+            finish()
+            return
+        }
+        mulaiRonde()
+    }
 
-        val db = FirebaseFirestore.getInstance()
-        val dataSkor = hashMapOf(
-            "id_anak" to idAnak,
-            "nama_game" to namaGame,
-            "skor" to skorAkhir,
-            "tanggal_main" to Date()
-        )
-
-        db.collection("tb_riwayat_game").add(dataSkor)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Skor disimpan!", Toast.LENGTH_SHORT).show()
-                finish()
+    private fun mulaiTimer(durasiMillis: Long) {
+        timerFase3 = object : CountDownTimer(durasiMillis, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val detik = millisUntilFinished / 1000
+                tvTimer.text = "⏳ ${detik}s"
             }
-            .addOnFailureListener { finish() }
+
+            override fun onFinish() {
+                waktuHabis = true
+                tvTimer.text = "Habis!"
+                Toast.makeText(this@GameAntarRumahActivity, "Waktu Habis! Coba lagi.", Toast.LENGTH_SHORT).show()
+                // Ulangi ronde tanpa menambah skor
+                mulaiRonde()
+            }
+        }.start()
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        timerFase3?.cancel() // Mencegah memori bocor
     }
 }
