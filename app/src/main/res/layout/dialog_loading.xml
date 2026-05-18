@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="@drawable/bg_dialog_success">
+
+    <ImageView
+        android:layout_width="78dp"
+        android:layout_height="78dp"
+        android:layout_marginBottom="14dp"
+        android:contentDescription="Loading"
+        android:src="@drawable/char_moon_purple" />
+
+    <ProgressBar
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:indeterminate="true"
+        android:indeterminateTint="#8DB52A" />
+
+    <TextView
+        android:id="@+id/tvLoadingTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/quicksand"
+        android:text="Sedang masuk..."
+        android:textColor="#1F2937"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvLoadingMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:fontFamily="@font/quicksand"
+        android:gravity="center"
+        android:text="Menyiapkan halaman pilih peran"
+        android:textColor="#6B7280"
+        android:textSize="14sp" />
+
+</LinearLayout>
