@@ -278,16 +278,29 @@ class GameAntarRumahActivity : AppCompatActivity() {
 
     private fun simpanRiwayatAkhir(namaGame: String) {
         val nama = intent.getStringExtra("NAMA_ANAK") ?: "Anak"
-        // Simulasi kalkulasi: semakin tinggi skor, akurasi dianggap 100%
+        val idAnak = intent.getStringExtra("ID_ANAK") ?: ""
         val akurasiSimulasi = if (skor >= 100) 100 else 80
 
-        com.example.focusplay.utils.GameResultHelper.simpanHasilPermainan(
+        com.example.focusplay.utils.GameResultHelper.evaluasiDanSimpanRealtime(
+            activity = this,
             idAnak = idAnak,
             namaAnak = nama,
             namaGame = namaGame,
             skor = skor,
             akurasi = akurasiSimulasi,
-            durasiMenit = 2 // Simulasi durasi bermain 2 menit
+            durasiMenit = 2,
+            onSelesai = { hasilEvaluasi ->
+
+                // Melompat ke halaman Evaluasi dengan membawa hasil AI
+                val intentToEvaluasi = android.content.Intent(this, com.example.focusplay.view.EvaluasiActivity::class.java)
+                intentToEvaluasi.putExtra("ID_ANAK", idAnak)
+                intentToEvaluasi.putExtra("NAMA_ANAK", nama)
+                intentToEvaluasi.putExtra("EVALUASI_LANGSUNG", hasilEvaluasi)
+                startActivity(intentToEvaluasi)
+
+                // Menutup layar game setelah pindah
+                finish()
+            }
         )
     }
 }
