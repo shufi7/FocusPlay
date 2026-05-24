@@ -1,280 +1,306 @@
 package com.example.focusplay.view.games
 
 import android.graphics.Color
-import android.graphics.Typeface
+import android.graphics.Rect
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.DragEvent
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
-import com.example.focusplay.utils.AdaptiveGameManager
 import kotlin.random.Random
 
 class GameAntarRumahActivity : AppCompatActivity() {
 
-    private lateinit var btnKembali: ImageView
+    private lateinit var arenaGame: FrameLayout
+    private lateinit var tvSkor: TextView
     private lateinit var tvFase: TextView
     private lateinit var tvTimer: TextView
-    private lateinit var tvSkor: TextView
-    private lateinit var arenaGame: FrameLayout
 
-    private lateinit var adaptiveManager: AdaptiveGameManager
-
-    private var faseSekarang = 1
-    private var modeAdaptif = true
     private var skor = 0
-    private var totalBenar = 0
-    private var totalSalah = 0
-    private var targetWaktuMenit = 10
-    private var delayItemMuncul = 1200L
+    private var faseSaatIni = 1
+    private var idAnak = ""
 
-    private var countDownTimer: CountDownTimer? = null
+    private var jumlahObjekSelesai = 0
+    private var targetSelesaiRondeIni = 0
 
-    private val daftarWarna = listOf(
-        WarnaGame("Merah", Color.parseColor("#EF4444")),
-        WarnaGame("Biru", Color.parseColor("#3B82F6")),
-        WarnaGame("Hijau", Color.parseColor("#22C55E")),
-        WarnaGame("Kuning", Color.parseColor("#FACC15"))
+    private val warnaTersedia = listOf(
+        "#F44336", // Merah
+        "#2196F3", // Biru
+        "#4CAF50", // Hijau
+        "#FF9800", // Oranye
+        "#9C27B0"  // Ungu
     )
 
-    data class WarnaGame(
-        val nama: String,
-        val warna: Int
-    )
+    private var timerFase3: CountDownTimer? = null
+    private var waktuHabis = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_antar_rumah)
 
-        hubungkanView()
-        bacaPengaturanGame()
-        aturTombol()
-        mulaiTimer()
-        terapkanFase(faseSekarang)
-    }
+        idAnak = intent.getStringExtra("ID_ANAK") ?: ""
 
-    private fun hubungkanView() {
-        btnKembali = findViewById(R.id.btnKembali)
+        arenaGame = findViewById(R.id.arenaGame)
+        tvSkor = findViewById(R.id.tvSkor)
         tvFase = findViewById(R.id.tvFase)
         tvTimer = findViewById(R.id.tvTimer)
-        tvSkor = findViewById(R.id.tvSkor)
-        arenaGame = findViewById(R.id.arenaGame)
-    }
 
-    private fun bacaPengaturanGame() {
-        val prefs = getSharedPreferences("pengaturan_permainan", MODE_PRIVATE)
-
-        val faseIndex = prefs.getInt("fase_index", 0)
-        modeAdaptif = prefs.getBoolean("mode_adaptif", true)
-
-        val kecepatanItem = prefs.getInt("kecepatan_item", 1)
-        targetWaktuMenit = prefs.getString("target_waktu", "10")?.toIntOrNull() ?: 10
-
-        faseSekarang = faseIndex + 1
-
-        delayItemMuncul = when (kecepatanItem) {
-            0 -> 2000L
-            1 -> 1200L
-            else -> 700L
-        }
-
-        adaptiveManager = AdaptiveGameManager(
-            faseSekarang = faseSekarang,
-            modeAdaptifAktif = modeAdaptif
-        )
-    }
-
-    private fun aturTombol() {
-        btnKembali.setOnClickListener {
+        findViewById<ImageView>(R.id.btnKembali).setOnClickListener {
             finish()
         }
+
+        arenaGame.post {
+            mulaiRonde()
+        }
     }
 
-    private fun mulaiTimer() {
-        val totalMillis = targetWaktuMenit * 60 * 1000L
+    private fun mulaiRonde() {
+        arenaGame.removeAllViews()
+        jumlahObjekSelesai = 0
+        waktuHabis = false
+        timerFase3?.cancel()
 
-        tvTimer.visibility = View.VISIBLE
+        val jumlahRumah: Int
+        val jumlahObjek: Int
 
-        countDownTimer = object : CountDownTimer(totalMillis, 1000L) {
+        when (faseSaatIni) {
+            1 -> {
+                tvFase.text = "Fase 1: Pengenalan"
+                tvTimer.visibility = View.GONE
+                jumlahRumah = 1
+                jumlahObjek = 1
+            }
+            2 -> {
+                tvFase.text = "Fase 2: Target Ganda"
+                tvTimer.visibility = View.GONE
+                jumlahRumah = 2
+                jumlahObjek = 2
+            }
+            else -> {
+                tvFase.text = "Fase 3: Kecepatan & Pengecoh"
+                tvTimer.visibility = View.VISIBLE
+                jumlahRumah = 3 // 1 Pengecoh
+                jumlahObjek = 2
+                mulaiTimer(15000) // 15 Detik
+            }
+        }
+
+        targetSelesaiRondeIni = jumlahObjek
+
+        // Pilih warna acak untuk ronde ini
+        val warnaRondeIni = warnaTersedia.shuffled().take(jumlahRumah)
+
+        // 1. Buat Rumah (Di bagian atas arena)
+        val lebarArena = arenaGame.width
+        val jarakX = lebarArena / (jumlahRumah + 1)
+        val listRumah = mutableListOf<View>()
+
+        for (i in 0 until jumlahRumah) {
+            val rumah = buatKotakRumah(warnaRondeIni[i])
+            val ukuranPx = dpToPx(80)
+
+            // Atur posisi rumah berjajar di atas
+            rumah.x = (jarakX * (i + 1) - (ukuranPx / 2)).toFloat()
+            rumah.y = dpToPx(40).toFloat()
+
+            // Simpan warna di tag untuk dicocokkan nanti
+            rumah.tag = warnaRondeIni[i]
+            arenaGame.addView(rumah)
+            listRumah.add(rumah)
+        }
+
+        // 2. Buat Objek yang bisa diseret (Di bagian bawah arena)
+        // Objek hanya dibuat untuk warna yang BUKAN pengecoh (Fase 3 ada 1 pengecoh)
+        val warnaObjek = warnaRondeIni.take(jumlahObjek).shuffled()
+
+        for (i in 0 until jumlahObjek) {
+            val objek = buatLingkaranObjek(warnaObjek[i])
+            val ukuranPx = dpToPx(60)
+
+            // Atur posisi awal objek berjajar di bawah
+            val jarakObjekX = lebarArena / (jumlahObjek + 1)
+            val posisiAwalX = (jarakObjekX * (i + 1) - (ukuranPx / 2)).toFloat()
+            val posisiAwalY = arenaGame.height - dpToPx(120).toFloat()
+
+            objek.x = posisiAwalX
+            objek.y = posisiAwalY
+            objek.tag = warnaObjek[i]
+
+            pasangFiturSeret(objek, posisiAwalX, posisiAwalY, listRumah)
+            arenaGame.addView(objek)
+        }
+    }
+
+    private fun buatKotakRumah(warnaHex: String): TextView {
+        val ukuranPx = dpToPx(80)
+        val view = TextView(this).apply {
+            layoutParams = FrameLayout.LayoutParams(ukuranPx, ukuranPx)
+            text = "🏠"
+            textSize = 32f
+            gravity = Gravity.CENTER
+
+            val kotakBg = GradientDrawable()
+            kotakBg.shape = GradientDrawable.RECTANGLE
+            kotakBg.cornerRadius = 16f
+            kotakBg.setColor(Color.parseColor(warnaHex))
+            background = kotakBg
+            elevation = 2f
+        }
+        return view
+    }
+
+    private fun buatLingkaranObjek(warnaHex: String): View {
+        val ukuranPx = dpToPx(60)
+        val view = View(this).apply {
+            layoutParams = FrameLayout.LayoutParams(ukuranPx, ukuranPx)
+            val bulatBg = GradientDrawable()
+            bulatBg.shape = GradientDrawable.OVAL
+            bulatBg.setColor(Color.parseColor(warnaHex))
+            background = bulatBg
+            elevation = 6f // Objek selalu melayang di atas rumah
+        }
+        return view
+    }
+
+    private fun pasangFiturSeret(objek: View, awalX: Float, awalY: Float, listRumah: List<View>) {
+        var dX = 0f
+        var dY = 0f
+
+        objek.setOnTouchListener { v, event ->
+            if (waktuHabis) return@setOnTouchListener false
+
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    dX = v.x - event.rawX
+                    dY = v.y - event.rawY
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    v.x = event.rawX + dX
+                    v.y = event.rawY + dY
+                }
+                MotionEvent.ACTION_UP -> {
+                    // Cek apakah objek dilepas di atas rumah yang warnanya sama
+                    var diletakkanBenar = false
+
+                    for (rumah in listRumah) {
+                        if (isOverlap(v, rumah)) {
+                            if (v.tag == rumah.tag) {
+                                // Benar! Warnanya cocok
+                                diletakkanBenar = true
+                                v.x = rumah.x + dpToPx(10) // Paskan posisi
+                                v.y = rumah.y + dpToPx(10)
+                                v.setOnTouchListener(null) // Kunci objek agar tidak bisa diseret lagi
+
+                                objekBerhasilMasuk()
+                            } else {
+                                Toast.makeText(this@GameAntarRumahActivity, "Warnanya beda!", Toast.LENGTH_SHORT).show()
+                            }
+                            break
+                        }
+                    }
+
+                    // Jika salah tempat, kembalikan ke posisi awal animasi memantul
+                    if (!diletakkanBenar) {
+                        v.animate().x(awalX).y(awalY).setDuration(300).start()
+                    }
+                }
+            }
+            true
+        }
+    }
+
+    private fun isOverlap(view1: View, view2: View): Boolean {
+        val rect1 = Rect()
+        view1.getHitRect(rect1)
+        val rect2 = Rect()
+        view2.getHitRect(rect2)
+        return Rect.intersects(rect1, rect2)
+    }
+
+    private fun objekBerhasilMasuk() {
+        jumlahObjekSelesai++
+        if (jumlahObjekSelesai == targetSelesaiRondeIni) {
+            skor += 20
+            tvSkor.text = "Skor: $skor"
+            cekNaikFase()
+        }
+    }
+
+    private fun cekNaikFase() {
+        if (skor == 60 && faseSaatIni == 1) {
+            faseSaatIni = 2
+            Toast.makeText(this, "Mantap! Lanjut ke Fase 2", Toast.LENGTH_SHORT).show()
+        } else if (skor == 140 && faseSaatIni == 2) {
+            faseSaatIni = 3
+            Toast.makeText(this, "Fokus Hebat! Lanjut ke Fase 3", Toast.LENGTH_SHORT).show()
+        } else if (skor >= 240) {
+            Toast.makeText(this, "Sempurna! Permainan Selesai.", Toast.LENGTH_LONG).show()
+            timerFase3?.cancel()
+            simpanRiwayatAkhir("Antar Ke Rumah")
+            finish()
+            return
+        }
+        mulaiRonde()
+    }
+
+    private fun mulaiTimer(durasiMillis: Long) {
+        timerFase3 = object : CountDownTimer(durasiMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val detik = millisUntilFinished / 1000
-                val menit = detik / 60
-                val sisaDetik = detik % 60
-                tvTimer.text = "⏳ ${menit}:${sisaDetik.toString().padStart(2, '0')}"
+                tvTimer.text = "⏳ ${detik}s"
             }
 
             override fun onFinish() {
-                tvTimer.text = "⏳ 0:00"
-                tampilkanHasilSementara()
+                waktuHabis = true
+                tvTimer.text = "Habis!"
+                Toast.makeText(this@GameAntarRumahActivity, "Waktu Habis! Coba lagi.", Toast.LENGTH_SHORT).show()
+                // Ulangi ronde tanpa menambah skor
+                mulaiRonde()
             }
         }.start()
     }
 
-    private fun terapkanFase(fase: Int) {
-        faseSekarang = fase
-
-        tvFase.text = when (faseSekarang) {
-            1 -> "Fase 1: Mudah"
-            2 -> "Fase 2: Sedang"
-            else -> "Fase 3: Sulit"
-        }
-
-        arenaGame.removeAllViews()
-
-        val warnaAktif = when (faseSekarang) {
-            1 -> daftarWarna.take(2)
-            2 -> daftarWarna.take(3)
-            else -> daftarWarna.take(4)
-        }
-
-        buatRumah(warnaAktif)
-        arenaGame.postDelayed({
-            buatItem(warnaAktif)
-        }, delayItemMuncul)
-    }
-
-    private fun buatRumah(warnaAktif: List<WarnaGame>) {
-        val jumlah = warnaAktif.size
-        val ukuranRumah = 86
-        val jarak = 22
-
-        warnaAktif.forEachIndexed { index, warnaGame ->
-            val rumah = TextView(this).apply {
-                text = "🏠"
-                textSize = 34f
-                gravity = Gravity.CENTER
-                tag = warnaGame.nama
-                setBackgroundColor(warnaGame.warna)
-
-                setOnDragListener { targetView, event ->
-                    when (event.action) {
-                        DragEvent.ACTION_DROP -> {
-                            val warnaItem = event.clipDescription.label.toString()
-                            val warnaRumah = targetView.tag.toString()
-                            cekJawaban(warnaItem, warnaRumah)
-                            true
-                        }
-
-                        else -> true
-                    }
-                }
-            }
-
-            val params = FrameLayout.LayoutParams(dp(ukuranRumah), dp(ukuranRumah))
-            params.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-            val totalLebar = (jumlah * ukuranRumah) + ((jumlah - 1) * jarak)
-            val startX = -totalLebar / 2 + ukuranRumah / 2
-            params.leftMargin = dp(startX + index * (ukuranRumah + jarak))
-            params.bottomMargin = dp(24)
-
-            arenaGame.addView(rumah, params)
-        }
-    }
-
-    private fun buatItem(warnaAktif: List<WarnaGame>) {
-        val warnaGame = warnaAktif.random()
-
-        val item = TextView(this).apply {
-            text = "●"
-            textSize = 44f
-            gravity = Gravity.CENTER
-            setTextColor(warnaGame.warna)
-            tag = warnaGame.nama
-            typeface = Typeface.DEFAULT_BOLD
-
-            setOnTouchListener { view, event ->
-                if (event.action == MotionEvent.ACTION_DOWN) {
-                    val shadow = View.DragShadowBuilder(view)
-                    view.startDragAndDrop(
-                        android.content.ClipData.newPlainText(warnaGame.nama, warnaGame.nama),
-                        shadow,
-                        view,
-                        0
-                    )
-                    true
-                } else {
-                    false
-                }
-            }
-        }
-
-        val params = FrameLayout.LayoutParams(dp(80), dp(80))
-        params.leftMargin = Random.nextInt(20, maxOf(21, arenaGame.width - dp(100)))
-        params.topMargin = dp(30)
-
-        arenaGame.addView(item, params)
-    }
-
-    private fun cekJawaban(warnaItem: String, warnaRumah: String) {
-        val benar = warnaItem == warnaRumah
-
-        if (benar) {
-            skor += 10
-            totalBenar++
-        } else {
-            totalSalah++
-        }
-
-        tvSkor.text = "Skor: $skor"
-
-        val faseBaru = adaptiveManager.prosesJawaban(benar)
-
-        if (faseBaru != faseSekarang) {
-            terapkanFase(faseBaru)
-        } else {
-            arenaGame.removeAllViews()
-            val warnaAktif = when (faseSekarang) {
-                1 -> daftarWarna.take(2)
-                2 -> daftarWarna.take(3)
-                else -> daftarWarna.take(4)
-            }
-            buatRumah(warnaAktif)
-            arenaGame.postDelayed({
-                buatItem(warnaAktif)
-            }, delayItemMuncul)
-        }
-    }
-
-    private fun tampilkanHasilSementara() {
-        arenaGame.removeAllViews()
-
-        val totalJawaban = totalBenar + totalSalah
-        val akurasi = if (totalJawaban > 0) {
-            (totalBenar * 100) / totalJawaban
-        } else {
-            0
-        }
-
-        val hasil = TextView(this).apply {
-            text = "Sesi selesai!\n\nSkor: $skor\nBenar: $totalBenar\nSalah: $totalSalah\nAkurasi: $akurasi%"
-            textSize = 20f
-            gravity = Gravity.CENTER
-            setTextColor(Color.parseColor("#1F2937"))
-            typeface = Typeface.DEFAULT_BOLD
-        }
-
-        arenaGame.addView(
-            hasil,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        )
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        countDownTimer?.cancel()
+        timerFase3?.cancel() // Mencegah memori bocor
     }
 
-    private fun dp(value: Int): Int {
-        return (value * resources.displayMetrics.density).toInt()
+    private fun simpanRiwayatAkhir(namaGame: String) {
+        val nama = intent.getStringExtra("NAMA_ANAK") ?: "Anak"
+        val idAnak = intent.getStringExtra("ID_ANAK") ?: ""
+        val akurasiSimulasi = if (skor >= 100) 100 else 80
+
+        com.example.focusplay.utils.GameResultHelper.evaluasiDanSimpanRealtime(
+            activity = this,
+            idAnak = idAnak,
+            namaAnak = nama,
+            namaGame = namaGame,
+            skor = skor,
+            akurasi = akurasiSimulasi,
+            durasiMenit = 2,
+            onSelesai = { hasilEvaluasi ->
+                // LOMPAT KE HALAMAN EVALUASI
+                val intentToEvaluasi = android.content.Intent(this, com.example.focusplay.view.EvaluasiActivity::class.java)
+                intentToEvaluasi.putExtra("ID_ANAK", idAnak)
+                intentToEvaluasi.putExtra("NAMA_ANAK", nama)
+                intentToEvaluasi.putExtra("EVALUASI_LANGSUNG", hasilEvaluasi)
+                startActivity(intentToEvaluasi)
+
+                // Tutup game setelah melompat
+                finish()
+            }
+        )
+        // 🚨 SANGAT PENTING: JANGAN ADA TULISAN finish() SAMA SEKALI DI AREA SINI!
     }
 }
