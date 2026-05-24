@@ -15,7 +15,7 @@
         <!-- HEADER -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="270dp"
+            android:layout_height="250dp"
             android:orientation="vertical"
             android:paddingStart="24dp"
             android:paddingTop="34dp"
@@ -52,13 +52,22 @@
                         android:textSize="24sp"
                         android:textStyle="bold" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:fontFamily="@font/quicksand"
+                        android:text="Atur durasi dan mode bermain"
+                        android:textColor="#406915"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
 
             <!-- HERO CARD -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="126dp"
+                android:layout_height="110dp"
                 android:layout_marginTop="22dp"
                 app:cardBackgroundColor="#EAF7FF"
                 app:cardCornerRadius="28dp"
@@ -68,46 +77,27 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:paddingStart="20dp"
-                    android:paddingEnd="16dp">
+                    android:paddingEnd="20dp">
 
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:fontFamily="@font/quicksand"
+                        android:text="Permainan selalu dimulai dari Fase 1"
+                        android:textColor="#1F2937"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/quicksand"
-                            android:text="Atur permainan dengan nyaman"
-                            android:textColor="#1F2937"
-                            android:textSize="19sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:fontFamily="@font/quicksand"
-                            android:text="Sesuaikan fase, durasi, dan kecepatan item."
-                            android:textColor="#6B7280"
-                            android:textSize="13sp" />
-
-                        <View
-                            android:layout_width="128dp"
-                            android:layout_height="5dp"
-                            android:layout_marginTop="12dp"
-                            android:background="@drawable/bg_splash_ribbon" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="82dp"
-                        android:layout_height="82dp"
-                        android:contentDescription="Karakter pengaturan"
-                        android:src="@drawable/char_cloud_blue" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:fontFamily="@font/quicksand"
+                        android:text="Jika mode adaptif aktif, fase akan naik atau turun otomatis sesuai performa anak."
+                        android:textColor="#6B7280"
+                        android:textSize="13sp" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -118,13 +108,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-10dp"
+            android:layout_marginTop="-24dp"
             android:orientation="vertical"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
             android:paddingBottom="34dp">
 
-            <!-- CARD KONFIGURASI -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -138,78 +127,29 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <!-- Judul Card -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/quicksand"
-                                android:text="Konfigurasi Awal"
-                                android:textColor="#1F2937"
-                                android:textSize="21sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:fontFamily="@font/quicksand"
-                                android:text="Pengaturan ini dipakai saat anak mulai bermain"
-                                android:textColor="#6B7280"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                        <ImageView
-                            android:layout_width="52dp"
-                            android:layout_height="52dp"
-                            android:contentDescription="Karakter"
-                            android:src="@drawable/char_cucumber" />
-                    </LinearLayout>
-
-                    <!-- FASE -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="22dp"
                         android:fontFamily="@font/quicksand"
-                        android:text="Fase Awal Permainan"
-                        android:textColor="#374151"
-                        android:textSize="14sp"
+                        android:text="Konfigurasi Bermain"
+                        android:textColor="#1F2937"
+                        android:textSize="21sp"
                         android:textStyle="bold" />
 
-                    <Spinner
-                        android:id="@+id/spinnerFase"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_input_login"
-                        android:paddingHorizontal="12dp" />
-
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginTop="4dp"
                         android:fontFamily="@font/quicksand"
-                        android:text="Pilih tingkat awal sebelum permainan dimulai"
+                        android:text="Pengaturan ini akan dipakai saat anak memulai permainan."
                         android:textColor="#6B7280"
-                        android:textSize="12sp" />
+                        android:textSize="13sp" />
 
                     <!-- TARGET WAKTU -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="22dp"
                         android:fontFamily="@font/quicksand"
                         android:text="Target Waktu Bermain"
                         android:textColor="#374151"
@@ -239,7 +179,7 @@
                         android:textColor="#6B7280"
                         android:textSize="12sp" />
 
-                    <!-- KECEPATAN ITEM MUNCUL -->
+                    <!-- KECEPATAN ITEM -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -275,7 +215,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:fontFamily="@font/quicksand"
-                                    android:text="Atur seberapa cepat objek muncul saat permainan"
+                                    android:text="Atur cepat lambatnya item muncul"
                                     android:textColor="#6B7280"
                                     android:textSize="13sp" />
 
@@ -371,7 +311,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:fontFamily="@font/quicksand"
-                                android:text="Kesulitan game menyesuaikan kemampuan anak"
+                                android:text="Benar 5 kali naik fase, salah 3 kali turun fase"
                                 android:textColor="#6B7280"
                                 android:textSize="12sp" />
                         </LinearLayout>
@@ -383,44 +323,9 @@
                             android:checked="true" />
                     </LinearLayout>
 
-                    <!-- INFO MODE ADAPTIF -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        app:cardBackgroundColor="#FFF8E8"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="0dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:padding="14dp">
-
-                            <ImageView
-                                android:layout_width="46dp"
-                                android:layout_height="46dp"
-                                android:contentDescription="Info mode adaptif"
-                                android:src="@drawable/char_diamond_orange" />
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/quicksand"
-                                android:text="Jika mode adaptif aktif, game dapat dibuat lebih mudah atau lebih sulit sesuai hasil bermain anak."
-                                android:textColor="#6B7280"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- TOMBOL SIMPAN -->
             <Button
                 android:id="@+id/btnSimpanPengaturan"
                 android:layout_width="match_parent"
