@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
 import com.example.focusplay.utils.AdaptiveGameManager
+import com.example.focusplay.utils.GameResultHelper
 import com.example.focusplay.view.EvaluasiActivity
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -305,126 +306,33 @@ class GameAntarRumahActivity : AppCompatActivity() {
         arenaGame.removeAllViews()
 
         val totalJawaban = totalBenar + totalSalah
+
         val akurasi = if (totalJawaban > 0) {
-            (totalBenar * 100f) / totalJawaban
+            ((totalBenar * 100f) / totalJawaban).toInt()
         } else {
-            0f
+            0
         }
 
         val durasiMillis = System.currentTimeMillis() - waktuMulaiSesi
         val durasiMenit = maxOf(1, (durasiMillis / 60000L).toInt())
 
-        val rataResponseDetik = if (totalJawaban > 0) {
-            (totalResponseMillis / totalJawaban) / 1000f
-        } else {
-            0f
-        }
-
-        simpanHasilKeFirestore(
+        GameResultHelper.evaluasiDanSimpanRealtime(
+            activity = this,
+            idAnak = idAnak,
+            namaAnak = namaAnak,
+            namaGame = namaGame,
             skor = skor,
             akurasi = akurasi,
-            durasiMenit = durasiMenit,
-            faseTerakhir = faseSekarang,
-            responseTime = rataResponseDetik
-        )
-    }
+            durasiMenit = durasiMenit
+        ) { hasilAI ->
 
-    private fun simpanHasilKeFirestore(
-        skor: Int,
-        akurasi: Float,
-        durasiMenit: Int,
-        faseTerakhir: Int,
-        responseTime: Float
-    ) {
-        val currentUser = auth.currentUser
+            val intent = Intent(this, EvaluasiActivity::class.java)
+            intent.putExtra("NAMA_ANAK", namaAnak)
+            intent.putExtra("EVALUASI_LANGSUNG", hasilAI)
 
-        if (currentUser == null) {
-            Toast.makeText(this, "Sesi login tidak ditemukan.", Toast.LENGTH_SHORT).show()
-            bukaHalamanEvaluasi(
-                skor = skor,
-                akurasi = akurasi,
-                durasiMenit = durasiMenit,
-                faseTerakhir = faseTerakhir,
-                responseTime = responseTime,
-                idRiwayat = ""
-            )
-            return
+            startActivity(intent)
+            finish()
         }
-
-        val dataRiwayat = hashMapOf(
-            "id_pendamping" to currentUser.uid,
-            "id_anak" to idAnak,
-            "nama_anak" to namaAnak,
-            "nama_game" to namaGame,
-            "skor" to skor,
-            "akurasi" to akurasi,
-            "durasi_menit" to durasiMenit,
-            "fase" to faseTerakhir,
-            "response_time" to responseTime,
-            "benar" to totalBenar,
-            "salah" to totalSalah,
-            "timestamp" to Timestamp.now(),
-            "evaluasi_ai" to ""
-        )
-
-        db.collection("tb_riwayat")
-            .add(dataRiwayat)
-            .addOnSuccessListener { document ->
-                bukaHalamanEvaluasi(
-                    skor = skor,
-                    akurasi = akurasi,
-                    durasiMenit = durasiMenit,
-                    faseTerakhir = faseTerakhir,
-                    responseTime = responseTime,
-                    idRiwayat = document.id
-                )
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(
-                    this,
-                    "Gagal menyimpan hasil: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
-
-                bukaHalamanEvaluasi(
-                    skor = skor,
-                    akurasi = akurasi,
-                    durasiMenit = durasiMenit,
-                    faseTerakhir = faseTerakhir,
-                    responseTime = responseTime,
-                    idRiwayat = ""
-                )
-            }
-    }
-
-    private fun bukaHalamanEvaluasi(
-        skor: Int,
-        akurasi: Float,
-        durasiMenit: Int,
-        faseTerakhir: Int,
-        responseTime: Float,
-        idRiwayat: String
-    ) {
-        val intent = Intent(this, EvaluasiActivity::class.java)
-
-        intent.putExtra("ID_RIWAYAT", idRiwayat)
-        intent.putExtra("ID_ANAK", idAnak)
-        intent.putExtra("NAMA_ANAK", namaAnak)
-        intent.putExtra("NAMA_GAME", namaGame)
-
-        intent.putExtra("SKOR", skor)
-        intent.putExtra("AKURASI", akurasi)
-        intent.putExtra("DURASI_MENIT", durasiMenit)
-        intent.putExtra("FASE", faseTerakhir)
-        intent.putExtra("RESPONSE_TIME", responseTime)
-
-        intent.putExtra("BENAR", totalBenar)
-        intent.putExtra("SALAH", totalSalah)
-
-        intent.putExtra("EVALUASI_LANGSUNG", true)
-
-        startActivity(intent)
-        finish()
     }
 
     override fun onDestroy() {

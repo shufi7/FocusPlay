@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
@@ -48,8 +49,13 @@ class RiwayatPermainanActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
 
-        idAnak = intent.getStringExtra("ID_ANAK") ?: ""
-        namaAnak = intent.getStringExtra("NAMA_ANAK") ?: "Anak"
+        idAnak = intent.getStringExtra("ID_ANAK")
+            ?: intent.getStringExtra("id_anak")
+                    ?: ""
+
+        namaAnak = intent.getStringExtra("NAMA_ANAK")
+            ?: intent.getStringExtra("nama_anak")
+                    ?: "Anak"
 
         hubungkanView()
         aturTombol()
@@ -58,7 +64,6 @@ class RiwayatPermainanActivity : AppCompatActivity() {
 
     private fun hubungkanView() {
         ivBack = findViewById(R.id.ivBackRiwayat)
-
         tvTotalSesi = findViewById(R.id.tvTotalSesi)
         tvRataAkurasiRiwayat = findViewById(R.id.tvRataAkurasiRiwayat)
         tvTotalDurasi = findViewById(R.id.tvTotalDurasi)
@@ -96,9 +101,7 @@ class RiwayatPermainanActivity : AppCompatActivity() {
     }
 
     private fun docKeRiwayat(doc: DocumentSnapshot): RiwayatPermainan {
-        val timestampMillis = doc.getTimestamp("timestamp")?.toDate()?.time
-            ?: doc.getLong("timestamp")
-            ?: 0L
+        val timestampMillis = ambilTimestampMillis(doc)
 
         val tanggalLabel = if (timestampMillis > 0) {
             SimpleDateFormat("dd MMM yyyy", Locale("id", "ID")).format(timestampMillis)
@@ -226,8 +229,16 @@ class RiwayatPermainanActivity : AppCompatActivity() {
                 is String -> value.toIntOrNull()?.let { return it }
             }
         }
-
         return 0
+    }
+
+    private fun ambilTimestampMillis(doc: DocumentSnapshot): Long {
+        return when (val value = doc.get("timestamp")) {
+            is Timestamp -> value.toDate().time
+            is Number -> value.toLong()
+            is String -> value.toLongOrNull() ?: 0L
+            else -> 0L
+        }
     }
 
     private fun roundedDrawable(color: String, radius: Int, strokeColor: String): GradientDrawable {
