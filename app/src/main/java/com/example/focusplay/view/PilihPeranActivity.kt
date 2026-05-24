@@ -20,25 +20,54 @@ class PilihPeranActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pilih_peran)
 
+        supportActionBar?.hide()
+
         session = SessionManager(this)
 
+        initView()
+        tampilkanNamaUser()
+        setupKlikPeran()
+    }
+
+    private fun initView() {
         tvNamaUser = findViewById(R.id.tvNamaUser)
         cardOrangTua = findViewById(R.id.cardOrangTua)
         cardAnak = findViewById(R.id.cardAnak)
+    }
 
+    private fun tampilkanNamaUser() {
         val namaUser = session.getNamaUser()
-        tvNamaUser.text = "Halo, $namaUser!"
+        val namaPanggilan = ambilNamaPanggilan(namaUser)
 
-        // Mengarahkan tombol Orang Tua LANGSUNG ke Dasbor (Tanpa PIN)
+        tvNamaUser.text = if (namaPanggilan.isBlank()) {
+            "Halo!"
+        } else {
+            "Halo, $namaPanggilan!"
+        }
+    }
+
+    private fun ambilNamaPanggilan(namaLengkap: String?): String {
+        if (namaLengkap.isNullOrBlank()) return ""
+
+        return namaLengkap
+            .trim()
+            .split(" ")
+            .firstOrNull()
+            ?: ""
+    }
+
+    private fun setupKlikPeran() {
         cardOrangTua.setOnClickListener {
-            val intent = Intent(this, DashboardActivity::class.java)
-            startActivity(intent)
+            bukaHalaman(DashboardActivity::class.java)
         }
 
-        // Mengarahkan tombol Anak (Sementara masih ke TambahAnak)
         cardAnak.setOnClickListener {
-            val intent = Intent(this, PilihAnakActivity::class.java)
-            startActivity(intent)
+            bukaHalaman(PilihAnakActivity::class.java)
         }
+    }
+
+    private fun bukaHalaman(tujuan: Class<*>) {
+        val intent = Intent(this, tujuan)
+        startActivity(intent)
     }
 }

@@ -1,202 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@drawable/bg_splash_playground">
+    android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!-- Background custom -->
+    <ImageView
+        android:id="@+id/bgRegister"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:contentDescription="Background Register"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background" />
 
-        <!-- Dekorasi atas -->
-        <View
-            android:layout_width="115dp"
-            android:layout_height="35dp"
-            android:layout_marginTop="82dp"
-            android:layout_marginStart="-22dp"
-            android:background="@drawable/bg_cloud"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <!-- Overlay tipis agar tulisan lebih terbaca -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#16000000" />
 
-        <View
-            android:layout_width="135dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="68dp"
-            android:layout_marginEnd="-22dp"
-            android:background="@drawable/bg_cloud"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <!-- Area atas -->
+    <LinearLayout
+        android:id="@+id/topRegisterContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="58dp"
+        android:layout_marginEnd="28dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-        <View
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginStart="34dp"
-            android:layout_marginTop="58dp"
-            android:background="@drawable/bg_bubble"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:layout_width="82dp"
+            android:layout_height="82dp"
+            android:contentDescription="Logo FocusPlay"
+            android:src="@drawable/logo_focusplay" />
 
-        <View
-            android:layout_width="34dp"
-            android:layout_height="34dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginTop="54dp"
-            android:background="@drawable/bg_bubble"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- Header -->
-        <LinearLayout
-            android:id="@+id/registerHeader"
+        <TextView
+            android:id="@+id/tvWelcomeRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="54dp"
+            android:layout_marginTop="14dp"
+            android:fontFamily="@font/quicksand"
             android:gravity="center"
-            android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            android:shadowColor="#66000000"
+            android:shadowDx="0"
+            android:shadowDy="3"
+            android:shadowRadius="5"
+            android:text="Daftar Akun Baru"
+            android:textColor="#FFFFFF"
+            android:textSize="27sp"
+            android:textStyle="bold" />
 
-            <ImageView
-                android:layout_width="82dp"
-                android:layout_height="82dp"
-                android:contentDescription="Logo FocusPlay"
-                android:src="@drawable/logo_focusplay" />
-        </LinearLayout>
-
-        <!-- Card Register -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardRegister"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="22dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="22dp"
-            android:layout_marginBottom="190dp"
-            app:cardBackgroundColor="#FDFDFD"
-            app:cardCornerRadius="30dp"
-            app:cardElevation="6dp"
-            app:layout_constraintTop_toBottomOf="@id/registerHeader"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            android:layout_marginTop="9dp"
+            android:background="@drawable/bg_subtitle_splash"
+            android:fontFamily="@font/quicksand"
+            android:gravity="center"
+            android:maxWidth="290dp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="7dp"
+            android:text="Mulai latihan fokus yang menyenangkan"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Panel putih bawah, dibuat match_parent + marginTop agar aman untuk HP pendek -->
+    <LinearLayout
+        android:id="@+id/cardRegisterBottom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="235dp"
+        android:background="@drawable/bg_register_bottom_sheet"
+        android:elevation="10dp"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="false"
+            android:overScrollMode="never"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:paddingStart="24dp"
+                android:paddingTop="18dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="34dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                <!-- Handle kecil -->
+                <View
+                    android:layout_width="54dp"
+                    android:layout_height="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="18dp"
+                    android:background="@drawable/bg_handle_bottom_sheet" />
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/quicksand"
-                            android:text="Daftar Akun Baru"
-                            android:textColor="#1F2937"
-                            android:textSize="26sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="@font/quicksand"
-                            android:text="Lengkapi data untuk bergabung"
-                            android:textColor="#7B8794"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:contentDescription="Karakter hati"
-                        android:src="@drawable/char_cucumber" />
-                </LinearLayout>
-
-                <!-- Nama -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="22dp"
+                    android:fontFamily="@font/quicksand"
+                    android:text="Get Started"
+                    android:textColor="#3566D6"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/quicksand"
+                    android:text="Buat akun baru untuk melanjutkan"
+                    android:textColor="#7B8794"
+                    android:textSize="13sp" />
+
+                <!-- Nama Lengkap -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
                     android:fontFamily="@font/quicksand"
                     android:text="Nama Lengkap"
                     android:textColor="#374151"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/etNamaRegister"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="54dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_input_login"
+                    android:background="@drawable/bg_input_soft"
                     android:fontFamily="@font/quicksand"
                     android:hint="Masukkan nama lengkap"
                     android:inputType="textPersonName"
                     android:paddingHorizontal="16dp"
                     android:textColor="#1F2937"
                     android:textColorHint="#A0AEC0"
-                    android:textSize="15sp" />
+                    android:textSize="14sp" />
 
                 <!-- Email -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="14dp"
                     android:fontFamily="@font/quicksand"
                     android:text="Email"
                     android:textColor="#374151"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/etEmailRegister"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="54dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_input_login"
+                    android:background="@drawable/bg_input_soft"
                     android:fontFamily="@font/quicksand"
                     android:hint="Masukkan email"
                     android:inputType="textEmailAddress"
                     android:paddingHorizontal="16dp"
                     android:textColor="#1F2937"
                     android:textColorHint="#A0AEC0"
-                    android:textSize="15sp" />
+                    android:textSize="14sp" />
 
                 <!-- Password -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="14dp"
                     android:fontFamily="@font/quicksand"
                     android:text="Password"
                     android:textColor="#374151"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="54dp"
                     android:layout_marginTop="8dp">
 
                     <EditText
                         android:id="@+id/etPasswordRegister"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/bg_input_login"
+                        android:background="@drawable/bg_input_soft"
                         android:fontFamily="@font/quicksand"
                         android:hint="Masukkan password"
                         android:inputType="textPassword"
@@ -204,17 +200,17 @@
                         android:paddingEnd="52dp"
                         android:textColor="#1F2937"
                         android:textColorHint="#A0AEC0"
-                        android:textSize="15sp" />
+                        android:textSize="14sp" />
 
                     <ImageButton
                         android:id="@+id/btnTogglePasswordRegister"
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="end|center_vertical"
                         android:layout_marginEnd="8dp"
                         android:background="@android:color/transparent"
                         android:contentDescription="Lihat password"
-                        android:padding="9dp"
+                        android:padding="8dp"
                         android:src="@drawable/ic_eye" />
                 </FrameLayout>
 
@@ -222,23 +218,23 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="14dp"
                     android:fontFamily="@font/quicksand"
                     android:text="Konfirmasi Password"
                     android:textColor="#374151"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="54dp"
                     android:layout_marginTop="8dp">
 
                     <EditText
                         android:id="@+id/etKonfirmasiPasswordRegister"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/bg_input_login"
+                        android:background="@drawable/bg_input_soft"
                         android:fontFamily="@font/quicksand"
                         android:hint="Ulangi password"
                         android:inputType="textPassword"
@@ -246,33 +242,65 @@
                         android:paddingEnd="52dp"
                         android:textColor="#1F2937"
                         android:textColorHint="#A0AEC0"
-                        android:textSize="15sp" />
+                        android:textSize="14sp" />
 
                     <ImageButton
                         android:id="@+id/btnToggleKonfirmasiPasswordRegister"
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="end|center_vertical"
                         android:layout_marginEnd="8dp"
                         android:background="@android:color/transparent"
                         android:contentDescription="Lihat konfirmasi password"
-                        android:padding="9dp"
+                        android:padding="8dp"
                         android:src="@drawable/ic_eye" />
                 </FrameLayout>
 
+                <!-- Tombol daftar -->
                 <Button
                     android:id="@+id/btnProsesRegister"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:layout_marginTop="24dp"
-                    android:background="@drawable/bg_button_green"
+                    android:layout_marginTop="22dp"
+                    android:background="@drawable/bg_button_register_blue"
                     android:fontFamily="@font/quicksand"
                     android:text="Daftar Sekarang"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"
-                    android:textSize="17sp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
+                <!-- Divider -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"
+                        android:background="#E5E7EB" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
+                        android:fontFamily="@font/quicksand"
+                        android:text="atau"
+                        android:textColor="#9CA3AF"
+                        android:textSize="12sp" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"
+                        android:background="#E5E7EB" />
+                </LinearLayout>
+
+                <!-- Link masuk -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -286,7 +314,7 @@
                         android:fontFamily="@font/quicksand"
                         android:text="Sudah punya akun?"
                         android:textColor="#7B8794"
-                        android:textSize="15sp" />
+                        android:textSize="14sp" />
 
                     <TextView
                         android:id="@+id/tvMasukSini"
@@ -295,69 +323,13 @@
                         android:layout_marginStart="6dp"
                         android:fontFamily="@font/quicksand"
                         android:text="Masuk di sini"
-                        android:textColor="#2F80ED"
-                        android:textSize="15sp"
+                        android:textColor="#3566D6"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
+
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </ScrollView>
+    </LinearLayout>
 
-        <!-- Area bawah -->
-        <View
-            android:layout_width="0dp"
-            android:layout_height="200dp"
-            android:background="@drawable/bg_ground_soft"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <View
-            android:layout_width="235dp"
-            android:layout_height="112dp"
-            android:layout_marginStart="-46dp"
-            android:layout_marginBottom="98dp"
-            android:background="@drawable/bg_hill"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <View
-            android:layout_width="245dp"
-            android:layout_height="118dp"
-            android:layout_marginEnd="-52dp"
-            android:layout_marginBottom="92dp"
-            android:background="@drawable/bg_hill"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <ImageView
-            android:layout_width="78dp"
-            android:layout_height="78dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginBottom="54dp"
-            android:contentDescription="Karakter cloud biru"
-            android:src="@drawable/char_cloud_blue"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <ImageView
-            android:layout_width="82dp"
-            android:layout_height="82dp"
-            android:layout_marginBottom="82dp"
-            android:contentDescription="Karakter diamond orange"
-            android:src="@drawable/char_diamond_orange"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <ImageView
-            android:layout_width="82dp"
-            android:layout_height="82dp"
-            android:layout_marginEnd="18dp"
-            android:layout_marginBottom="54dp"
-            android:contentDescription="Karakter moon ungu"
-            android:src="@drawable/char_moon_purple"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+</FrameLayout>

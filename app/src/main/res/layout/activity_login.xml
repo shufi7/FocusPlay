@@ -1,136 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@drawable/bg_splash_playground">
+    android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <!-- Background custom -->
+    <ImageView
+        android:id="@+id/bgLogin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:contentDescription="Background Login"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background" />
 
-        <!-- Dekorasi awan -->
-        <View
-            android:id="@+id/cloudTopLeft"
-            android:layout_width="110dp"
-            android:layout_height="34dp"
-            android:layout_marginTop="78dp"
-            android:layout_marginStart="-18dp"
-            android:background="@drawable/bg_cloud"
-            android:alpha="0.85"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <!-- Overlay tipis -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#16000000" />
 
-        <View
-            android:id="@+id/cloudTopRight"
-            android:layout_width="125dp"
-            android:layout_height="38dp"
-            android:layout_marginTop="64dp"
-            android:layout_marginEnd="-18dp"
-            android:background="@drawable/bg_cloud"
-            android:alpha="0.85"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <!-- Area atas -->
+    <LinearLayout
+        android:id="@+id/topLoginContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="62dp"
+        android:layout_marginEnd="28dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-        <!-- Bubble -->
-        <View
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:layout_marginTop="56dp"
-            android:layout_marginStart="28dp"
-            android:background="@drawable/bg_bubble"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:layout_width="82dp"
+            android:layout_height="82dp"
+            android:contentDescription="Logo FocusPlay"
+            android:src="@drawable/logo_focusplay" />
 
-        <View
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_marginTop="52dp"
-            android:layout_marginEnd="36dp"
-            android:background="@drawable/bg_bubble"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- Logo -->
-        <LinearLayout
-            android:id="@+id/headerBox"
+        <TextView
+            android:id="@+id/tvWelcomeLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="58dp"
+            android:layout_marginTop="14dp"
+            android:fontFamily="@font/quicksand"
             android:gravity="center"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:shadowColor="#66000000"
+            android:shadowDx="0"
+            android:shadowDy="3"
+            android:shadowRadius="5"
+            android:text="Selamat Datang"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold" />
 
-            <ImageView
-                android:layout_width="86dp"
-                android:layout_height="86dp"
-                android:contentDescription="Logo FocusPlay"
-                android:src="@drawable/logo_focusplay" />
-        </LinearLayout>
-
-        <!-- Card Login -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardLogin"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="180dp"
-            app:cardBackgroundColor="#FDFDFD"
-            app:cardCornerRadius="30dp"
-            app:cardElevation="6dp"
-            app:layout_constraintTop_toBottomOf="@id/headerBox"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            android:layout_marginTop="9dp"
+            android:background="@drawable/bg_subtitle_splash"
+            android:fontFamily="@font/quicksand"
+            android:gravity="center"
+            android:maxWidth="290dp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="7dp"
+            android:text="Masuk untuk melanjutkan ke FocusPlay"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Panel login bawah -->
+    <LinearLayout
+        android:id="@+id/cardLoginBottom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="275dp"
+        android:background="@drawable/bg_register_bottom_sheet"
+        android:elevation="10dp"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="false"
+            android:overScrollMode="never"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:paddingStart="24dp"
+                android:paddingTop="18dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="34dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <!-- Handle kecil -->
+                <View
+                    android:layout_width="54dp"
+                    android:layout_height="5dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="18dp"
+                    android:background="@drawable/bg_handle_bottom_sheet" />
+
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:fontFamily="@font/quicksand"
+                    android:text="Masuk Akun"
+                    android:textColor="#3566D6"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/quicksand"
+                    android:text="Gunakan email dan password kamu"
+                    android:textColor="#7B8794"
+                    android:textSize="13sp" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/quicksand"
-                            android:text="Masuk Akun"
-                            android:textColor="#1F2937"
-                            android:textSize="28sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="@font/quicksand"
-                            android:text="Ayo lanjutkan permainan serumu"
-                            android:textColor="#7B8794"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_width="54dp"
-                        android:layout_height="54dp"
-                        android:contentDescription="Karakter hati"
-                        android:src="@drawable/char_heart" />
-                </LinearLayout>
-
+                <!-- Email -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -138,148 +130,169 @@
                     android:fontFamily="@font/quicksand"
                     android:text="Email"
                     android:textColor="#374151"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/etEmail"
+                    android:id="@+id/etEmailLogin"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="54dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_input_login"
+                    android:background="@drawable/bg_input_soft"
                     android:fontFamily="@font/quicksand"
                     android:hint="Masukkan email"
                     android:inputType="textEmailAddress"
                     android:paddingHorizontal="16dp"
                     android:textColor="#1F2937"
                     android:textColorHint="#A0AEC0"
-                    android:textSize="15sp" />
+                    android:textSize="14sp" />
 
+                <!-- Password -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginTop="14dp"
                     android:fontFamily="@font/quicksand"
                     android:text="Password"
                     android:textColor="#374151"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/etPassword"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_input_login"
-                    android:fontFamily="@font/quicksand"
-                    android:hint="Masukkan password"
-                    android:inputType="textPassword"
-                    android:paddingHorizontal="16dp"
-                    android:textColor="#1F2937"
-                    android:textColorHint="#A0AEC0"
-                    android:textSize="15sp" />
+                    android:layout_height="54dp"
+                    android:layout_marginTop="8dp">
 
+                    <EditText
+                        android:id="@+id/etPasswordLogin"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_input_soft"
+                        android:fontFamily="@font/quicksand"
+                        android:hint="Masukkan password"
+                        android:inputType="textPassword"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="52dp"
+                        android:textColor="#1F2937"
+                        android:textColorHint="#A0AEC0"
+                        android:textSize="14sp" />
+
+                    <ImageButton
+                        android:id="@+id/btnTogglePasswordLogin"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_marginEnd="8dp"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="Lihat password"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_eye" />
+                </FrameLayout>
+
+                <!-- Tombol masuk -->
                 <Button
-                    android:id="@+id/btnLogin"
+                    android:id="@+id/btnProsesLogin"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:layout_marginTop="24dp"
-                    android:background="@drawable/bg_button_green"
+                    android:layout_marginTop="22dp"
+                    android:background="@drawable/bg_button_register_blue"
                     android:fontFamily="@font/quicksand"
                     android:text="Masuk"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"
-                    android:textSize="17sp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <TextView
+                <!-- Divider -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"
+                        android:background="#E5E7EB" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
+                        android:fontFamily="@font/quicksand"
+                        android:text="atau masuk dengan"
+                        android:textColor="#9CA3AF"
+                        android:textSize="12sp" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"
+                        android:background="#E5E7EB" />
+                </LinearLayout>
+
+                <!-- Tombol Google -->
+                <LinearLayout
                     android:id="@+id/btnLoginGoogle"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_button_white_outline"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_button_google"
                     android:clickable="true"
                     android:focusable="true"
-                    android:fontFamily="@font/quicksand"
                     android:gravity="center"
-                    android:text="Masuk dengan Google"
-                    android:textColor="#374151"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
 
-                <Button
-                    android:id="@+id/btnRegister"
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:contentDescription="Logo Google"
+                        android:src="@drawable/logo_focusplay" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:fontFamily="@font/quicksand"
+                        android:text="Masuk dengan Google"
+                        android:textColor="#374151"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Link daftar -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:layout_marginTop="14dp"
-                    android:background="@android:color/transparent"
-                    android:fontFamily="@font/quicksand"
-                    android:text="Daftar Akun"
-                    android:textAllCaps="false"
-                    android:textColor="#2F80ED"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand"
+                        android:text="Belum punya akun?"
+                        android:textColor="#7B8794"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvDaftarSini"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/quicksand"
+                        android:text="Daftar di sini"
+                        android:textColor="#3566D6"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </ScrollView>
+    </LinearLayout>
 
-        <!-- Area bawah -->
-        <View
-            android:id="@+id/groundBottom"
-            android:layout_width="0dp"
-            android:layout_height="190dp"
-            android:background="@drawable/bg_ground_soft"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <View
-            android:layout_width="230dp"
-            android:layout_height="110dp"
-            android:layout_marginStart="-44dp"
-            android:layout_marginBottom="96dp"
-            android:background="@drawable/bg_hill"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <View
-            android:layout_width="250dp"
-            android:layout_height="118dp"
-            android:layout_marginEnd="-56dp"
-            android:layout_marginBottom="90dp"
-            android:background="@drawable/bg_hill"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Karakter bawah -->
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginStart="18dp"
-            android:layout_marginBottom="64dp"
-            android:contentDescription="Karakter cloud biru"
-            android:src="@drawable/char_cloud_blue"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <ImageView
-            android:layout_width="88dp"
-            android:layout_height="88dp"
-            android:layout_marginBottom="86dp"
-            android:contentDescription="Karakter cucumber"
-            android:src="@drawable/char_cucumber"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <ImageView
-            android:layout_width="78dp"
-            android:layout_height="78dp"
-            android:layout_marginEnd="18dp"
-            android:layout_marginBottom="60dp"
-            android:contentDescription="Karakter moon ungu"
-            android:src="@drawable/char_moon_purple"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+</FrameLayout>

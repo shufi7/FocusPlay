@@ -2,8 +2,11 @@ package com.example.focusplay.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
@@ -27,10 +30,13 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
+    private lateinit var btnTogglePassword: ImageButton
 
     private lateinit var btnLogin: View
-    private lateinit var btnRegister: View
+    private lateinit var btnRegister: TextView
     private lateinit var btnLoginGoogle: View
+
+    private var passwordTerlihat = false
 
     private val launcher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -49,8 +55,7 @@ class LoginActivity : AppCompatActivity() {
                     firebaseAuthWithGoogle(idToken)
                 } else {
                     loadingDialog.dismiss()
-                    ErrorDialogHelper.showErrorDialog(
-                        activity = this,
+                    tampilkanError(
                         title = "Login Gagal",
                         message = "Token Google tidak ditemukan. Coba ulangi lagi ya."
                     )
@@ -58,8 +63,7 @@ class LoginActivity : AppCompatActivity() {
 
             } catch (e: ApiException) {
                 loadingDialog.dismiss()
-                ErrorDialogHelper.showErrorDialog(
-                    activity = this,
+                tampilkanError(
                     title = "Google Sign-In Gagal",
                     message = "Terjadi masalah saat memilih akun Google. Coba ulangi lagi ya."
                 )
@@ -67,8 +71,7 @@ class LoginActivity : AppCompatActivity() {
 
         } else {
             loadingDialog.dismiss()
-            ErrorDialogHelper.showErrorDialog(
-                activity = this,
+            tampilkanError(
                 title = "Login Dibatalkan",
                 message = "Kamu belum memilih akun Google untuk masuk."
             )
@@ -79,13 +82,14 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        supportActionBar?.hide()
+
         auth = FirebaseAuth.getInstance()
         session = SessionManager(this)
         loadingDialog = LoadingDialogHelper(this)
 
         if (auth.currentUser != null || session.isLogin()) {
-            startActivity(Intent(this, PilihPeranActivity::class.java))
-            finish()
+            bukaPilihPeran()
             return
         }
 
@@ -95,11 +99,12 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun hubungkanView() {
-        etEmail = findViewById(R.id.etEmail)
-        etPassword = findViewById(R.id.etPassword)
+        etEmail = findViewById(R.id.etEmailLogin)
+        etPassword = findViewById(R.id.etPasswordLogin)
+        btnTogglePassword = findViewById(R.id.btnTogglePasswordLogin)
 
-        btnLogin = findViewById(R.id.btnLogin)
-        btnRegister = findViewById(R.id.btnRegister)
+        btnLogin = findViewById(R.id.btnProsesLogin)
+        btnRegister = findViewById(R.id.tvDaftarSini)
         btnLoginGoogle = findViewById(R.id.btnLoginGoogle)
     }
 
@@ -123,9 +128,13 @@ class LoginActivity : AppCompatActivity() {
 
         btnLoginGoogle.setOnClickListener {
             googleSignInClient.signOut().addOnCompleteListener {
-                val signInIntent = googleSignInClient.signInIntent
-                launcher.launch(signInIntent)
+                launcher.launch(googleSignInClient.signInIntent)
             }
+        }
+
+        btnTogglePassword.setOnClickListener {
+            passwordTerlihat = !passwordTerlihat
+            aturTampilanPassword()
         }
     }
 
@@ -134,20 +143,14 @@ class LoginActivity : AppCompatActivity() {
         val password = etPassword.text.toString().trim()
 
         if (email.isEmpty()) {
-            ErrorDialogHelper.showErrorDialog(
-                activity = this,
-                title = "Email Kosong",
-                message = "Masukkan email terlebih dahulu."
-            )
+            etEmail.error = "Email wajib diisi"
+            etEmail.requestFocus()
             return
         }
 
         if (password.isEmpty()) {
-            ErrorDialogHelper.showErrorDialog(
-                activity = this,
-                title = "Password Kosong",
-                message = "Masukkan password terlebih dahulu."
-            )
+            etPassword.error = "Password wajib diisi"
+            etPassword.requestFocus()
             return
         }
 
@@ -159,11 +162,13 @@ class LoginActivity : AppCompatActivity() {
 
                 if (task.isSuccessful) {
                     val user = auth.currentUser
+                    val namaUser = user?.displayName ?: ambilNamaDariEmail(user?.email ?: email)
+                    val emailUser = user?.email ?: email
 
                     session.simpanSesiLogin(
                         0,
-                        user?.displayName ?: "Orang Tua",
-                        user?.email ?: email
+                        namaUser,
+                        emailUser
                     )
 
                     SuccessDialogHelper.showSuccessDialog(
@@ -171,13 +176,11 @@ class LoginActivity : AppCompatActivity() {
                         title = "Login Berhasil!",
                         message = "Selamat datang di FocusPlay!"
                     ) {
-                        startActivity(Intent(this, PilihPeranActivity::class.java))
-                        finish()
+                        bukaPilihPeran()
                     }
 
                 } else {
-                    ErrorDialogHelper.showErrorDialog(
-                        activity = this,
+                    tampilkanError(
                         title = "Login Gagal",
                         message = "Email atau password belum sesuai. Coba periksa kembali ya."
                     )
@@ -194,29 +197,73 @@ class LoginActivity : AppCompatActivity() {
 
                 if (task.isSuccessful) {
                     val user = auth.currentUser
+                    val namaUser = user?.displayName ?: "Pengguna"
+                    val emailUser = user?.email ?: ""
 
                     session.simpanSesiLogin(
                         0,
-                        user?.displayName ?: "Orang Tua",
-                        user?.email ?: ""
+                        namaUser,
+                        emailUser
                     )
 
                     SuccessDialogHelper.showSuccessDialog(
                         activity = this,
                         title = "Login Berhasil!",
-                        message = "Selamat datang, ${user?.displayName ?: "Orang Tua"}!"
+                        message = "Selamat datang, ${ambilNamaPanggilan(namaUser)}!"
                     ) {
-                        startActivity(Intent(this, PilihPeranActivity::class.java))
-                        finish()
+                        bukaPilihPeran()
                     }
 
                 } else {
-                    ErrorDialogHelper.showErrorDialog(
-                        activity = this,
+                    tampilkanError(
                         title = "Login Gagal",
                         message = "Akun belum berhasil masuk. Periksa koneksi internet atau coba lagi ya."
                     )
                 }
             }
+    }
+
+    private fun aturTampilanPassword() {
+        if (passwordTerlihat) {
+            etPassword.inputType =
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            btnTogglePassword.setImageResource(R.drawable.ic_eye_off)
+        } else {
+            etPassword.inputType =
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            btnTogglePassword.setImageResource(R.drawable.ic_eye)
+        }
+
+        etPassword.setSelection(etPassword.text.length)
+    }
+
+    private fun ambilNamaPanggilan(namaLengkap: String): String {
+        return namaLengkap
+            .trim()
+            .split(" ")
+            .firstOrNull()
+            ?: "Pengguna"
+    }
+
+    private fun ambilNamaDariEmail(email: String): String {
+        return email
+            .substringBefore("@")
+            .replace(".", " ")
+            .replace("_", " ")
+            .trim()
+            .replaceFirstChar { it.uppercase() }
+    }
+
+    private fun bukaPilihPeran() {
+        startActivity(Intent(this, PilihPeranActivity::class.java))
+        finish()
+    }
+
+    private fun tampilkanError(title: String, message: String) {
+        ErrorDialogHelper.showErrorDialog(
+            activity = this,
+            title = title,
+            message = message
+        )
     }
 }
