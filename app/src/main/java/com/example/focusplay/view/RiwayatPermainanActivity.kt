@@ -12,21 +12,25 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class RiwayatPermainanActivity : AppCompatActivity() {
 
     private lateinit var ivBack: ImageView
+
     private lateinit var tvTotalSesi: TextView
     private lateinit var tvRataAkurasiRiwayat: TextView
     private lateinit var tvTotalDurasi: TextView
     private lateinit var tvRiwayatKosong: TextView
     private lateinit var containerRiwayatPermainan: LinearLayout
 
-    private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+
+    private var idAnak: String = ""
+    private var namaAnak: String = "Anak"
 
     data class RiwayatPermainan(
         val namaGame: String,
@@ -34,23 +38,27 @@ class RiwayatPermainanActivity : AppCompatActivity() {
         val akurasi: Int,
         val skor: Int,
         val durasiMenit: Int,
-        val tanggal: String
+        val tanggal: String,
+        val timestampMillis: Long
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_riwayat_permainan)
 
-        auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
+
+        idAnak = intent.getStringExtra("ID_ANAK") ?: ""
+        namaAnak = intent.getStringExtra("NAMA_ANAK") ?: "Anak"
 
         hubungkanView()
         aturTombol()
-        ambilDataRiwayatFirebase()
+        muatRiwayatAnak()
     }
 
     private fun hubungkanView() {
         ivBack = findViewById(R.id.ivBackRiwayat)
+
         tvTotalSesi = findViewById(R.id.tvTotalSesi)
         tvRataAkurasiRiwayat = findViewById(R.id.tvRataAkurasiRiwayat)
         tvTotalDurasi = findViewById(R.id.tvTotalDurasi)
@@ -59,43 +67,54 @@ class RiwayatPermainanActivity : AppCompatActivity() {
     }
 
     private fun aturTombol() {
-        ivBack.setOnClickListener { finish() }
+        ivBack.setOnClickListener {
+            finish()
+        }
     }
 
-    private fun ambilDataRiwayatFirebase() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            tvRiwayatKosong.visibility = View.VISIBLE
-            tvRiwayatKosong.text = "Sesi login tidak ditemukan."
+    private fun muatRiwayatAnak() {
+        if (idAnak.isEmpty()) {
+            renderRiwayat(emptyList())
+            Toast.makeText(this, "Profil anak belum dipilih.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Ambil data riwayat dan urutkan dari yang paling baru (DESCENDING)
         db.collection("tb_riwayat")
-            .whereEqualTo("id_pendamping", currentUser.uid)
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .addSnapshotListener { snapshots, error ->
-                if (error != null) {
-                    Toast.makeText(this, "Gagal memuat riwayat: ${error.message}", Toast.LENGTH_SHORT).show()
-                    return@addSnapshotListener
-                }
+            .whereEqualTo("id_anak", idAnak)
+            .get()
+            .addOnSuccessListener { result ->
+                val daftarRiwayat = result.documents.map { doc ->
+                    docKeRiwayat(doc)
+                }.sortedByDescending { it.timestampMillis }
 
-                val listRiwayat = mutableListOf<RiwayatPermainan>()
-
-                if (snapshots != null) {
-                    for (doc in snapshots) {
-                        val namaGame = doc.getString("nama_game") ?: "Game"
-                        val namaAnak = doc.getString("nama_anak") ?: "Anak"
-                        val akurasi = doc.getLong("akurasi")?.toInt() ?: 0
-                        val skor = doc.getLong("skor")?.toInt() ?: 0
-                        val durasi = doc.getLong("durasi_menit")?.toInt() ?: 0
-                        val tanggal = doc.getString("tanggal") ?: ""
-
-                        listRiwayat.add(RiwayatPermainan(namaGame, namaAnak, akurasi, skor, durasi, tanggal))
-                    }
-                }
-                renderRiwayat(listRiwayat)
+                renderRiwayat(daftarRiwayat)
             }
+            .addOnFailureListener { e ->
+                renderRiwayat(emptyList())
+                Toast.makeText(this, "Gagal memuat riwayat: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+    }
+
+    private fun docKeRiwayat(doc: DocumentSnapshot): RiwayatPermainan {
+        val timestampMillis = doc.getTimestamp("timestamp")?.toDate()?.time
+            ?: doc.getLong("timestamp")
+            ?: 0L
+
+        val tanggalLabel = if (timestampMillis > 0) {
+            SimpleDateFormat("dd MMM yyyy", Locale("id", "ID")).format(timestampMillis)
+        } else {
+            doc.getString("tanggal") ?: "-"
+        }
+
+        return RiwayatPermainan(
+            namaGame = doc.getString("nama_game") ?: "Permainan",
+            namaAnak = doc.getString("nama_anak") ?: namaAnak,
+            akurasi = ambilAngka(doc, "akurasi"),
+            skor = ambilAngka(doc, "skor"),
+            durasiMenit = ambilAngka(doc, "durasi_menit", "durasi"),
+            tanggal = tanggalLabel,
+            timestampMillis = timestampMillis
+        )
     }
 
     private fun renderRiwayat(dataRiwayat: List<RiwayatPermainan>) {
@@ -103,6 +122,7 @@ class RiwayatPermainanActivity : AppCompatActivity() {
 
         if (dataRiwayat.isEmpty()) {
             tvRiwayatKosong.visibility = View.VISIBLE
+            tvRiwayatKosong.text = "Belum ada riwayat permainan untuk $namaAnak."
             tvTotalSesi.text = "0"
             tvRataAkurasiRiwayat.text = "0%"
             tvTotalDurasi.text = "0m"
@@ -138,7 +158,11 @@ class RiwayatPermainanActivity : AppCompatActivity() {
             setPadding(dp(16), dp(14), dp(16), dp(14))
             background = roundedDrawable("#FFFFFF", 22, "#E5EEF7")
             elevation = dp(2).toFloat()
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(96)).apply {
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                dp(104)
+            ).apply {
                 setMargins(0, 0, 0, dp(12))
             }
         }
@@ -153,7 +177,11 @@ class RiwayatPermainanActivity : AppCompatActivity() {
 
         val textBox = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+            ).apply {
                 setMargins(dp(14), 0, dp(10), 0)
             }
         }
@@ -163,6 +191,7 @@ class RiwayatPermainanActivity : AppCompatActivity() {
             textSize = 16f
             typeface = Typeface.DEFAULT_BOLD
             setTextColor(Color.parseColor("#1F2937"))
+            maxLines = 1
         }
 
         val tvDetail = TextView(this).apply {
@@ -188,6 +217,17 @@ class RiwayatPermainanActivity : AppCompatActivity() {
         card.addView(tvTanggal)
 
         containerRiwayatPermainan.addView(card)
+    }
+
+    private fun ambilAngka(doc: DocumentSnapshot, vararg fields: String): Int {
+        fields.forEach { field ->
+            when (val value = doc.get(field)) {
+                is Number -> return value.toInt()
+                is String -> value.toIntOrNull()?.let { return it }
+            }
+        }
+
+        return 0
     }
 
     private fun roundedDrawable(color: String, radius: Int, strokeColor: String): GradientDrawable {
