@@ -263,17 +263,17 @@ class GamePasangKartuActivity : AppCompatActivity() {
             akurasi = akurasiSimulasi,
             durasiMenit = 2,
             onSelesai = { hasilEvaluasi ->
-
-                // Melompat ke halaman Evaluasi dengan membawa hasil AI
+                // LOMPAT KE HALAMAN EVALUASI
                 val intentToEvaluasi = android.content.Intent(this, com.example.focusplay.view.EvaluasiActivity::class.java)
                 intentToEvaluasi.putExtra("ID_ANAK", idAnak)
                 intentToEvaluasi.putExtra("NAMA_ANAK", nama)
                 intentToEvaluasi.putExtra("EVALUASI_LANGSUNG", hasilEvaluasi)
                 startActivity(intentToEvaluasi)
 
-                // Menutup layar game setelah pindah
+                // Tutup game setelah melompat
                 finish()
             }
         )
+        // 🚨 SANGAT PENTING: JANGAN ADA TULISAN finish() SAMA SEKALI DI AREA SINI!
     }
 }
