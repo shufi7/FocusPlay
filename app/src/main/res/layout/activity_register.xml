@@ -126,6 +126,7 @@
                         android:src="@drawable/char_cucumber" />
                 </LinearLayout>
 
+                <!-- Nama -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -150,6 +151,7 @@
                     android:textColorHint="#A0AEC0"
                     android:textSize="15sp" />
 
+                <!-- Email -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -174,6 +176,7 @@
                     android:textColorHint="#A0AEC0"
                     android:textSize="15sp" />
 
+                <!-- Password -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -184,19 +187,78 @@
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/etPasswordRegister"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_input_login"
+                    android:layout_marginTop="8dp">
+
+                    <EditText
+                        android:id="@+id/etPasswordRegister"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_input_login"
+                        android:fontFamily="@font/quicksand"
+                        android:hint="Masukkan password"
+                        android:inputType="textPassword"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="52dp"
+                        android:textColor="#1F2937"
+                        android:textColorHint="#A0AEC0"
+                        android:textSize="15sp" />
+
+                    <ImageButton
+                        android:id="@+id/btnTogglePasswordRegister"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_marginEnd="8dp"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="Lihat password"
+                        android:padding="9dp"
+                        android:src="@drawable/ic_eye" />
+                </FrameLayout>
+
+                <!-- Konfirmasi Password -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:fontFamily="@font/quicksand"
-                    android:hint="Masukkan password"
-                    android:inputType="textPassword"
-                    android:paddingHorizontal="16dp"
-                    android:textColor="#1F2937"
-                    android:textColorHint="#A0AEC0"
-                    android:textSize="15sp" />
+                    android:text="Konfirmasi Password"
+                    android:textColor="#374151"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp">
+
+                    <EditText
+                        android:id="@+id/etKonfirmasiPasswordRegister"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_input_login"
+                        android:fontFamily="@font/quicksand"
+                        android:hint="Ulangi password"
+                        android:inputType="textPassword"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="52dp"
+                        android:textColor="#1F2937"
+                        android:textColorHint="#A0AEC0"
+                        android:textSize="15sp" />
+
+                    <ImageButton
+                        android:id="@+id/btnToggleKonfirmasiPasswordRegister"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_marginEnd="8dp"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="Lihat konfirmasi password"
+                        android:padding="9dp"
+                        android:src="@drawable/ic_eye" />
+                </FrameLayout>
 
                 <Button
                     android:id="@+id/btnProsesRegister"
