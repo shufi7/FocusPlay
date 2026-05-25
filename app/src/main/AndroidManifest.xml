@@ -14,7 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FocusPlay"
         android:usesCleartextTraffic="true">
-
+        <activity
+            android:name=".view.AuthChoiceActivity"
+            android:exported="false" />
         <activity
             android:name=".view.games.GameTangkapWarnaActivity"
             android:exported="false" />
@@ -54,11 +56,9 @@
         <activity
             android:name=".view.RiwayatPermainanActivity"
             android:exported="false" />
-
         <activity
             android:name=".view.PengaturanPermainanActivity"
             android:exported="false" />
-
         <activity
             android:name=".view.RegisterActivity"
             android:exported="false" />
@@ -75,6 +75,7 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
         <activity
             android:name=".view.EvaluasiActivity"
             android:exported="false" />

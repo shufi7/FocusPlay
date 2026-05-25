@@ -26,10 +26,11 @@ class SplashActivity : AppCompatActivity() {
             val tujuan = if (session.isLogin()) {
                 Intent(this, PilihPeranActivity::class.java)
             } else {
-                Intent(this, LoginActivity::class.java)
+                Intent(this, AuthChoiceActivity::class.java)
             }
 
             startActivity(tujuan)
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             finish()
         }, splashDelay)
     }

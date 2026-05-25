@@ -12,84 +12,11 @@
         android:layout_height="0dp"
         android:contentDescription="Background Splash"
         android:scaleType="centerCrop"
-        android:src="@drawable/background"
+        android:src="@drawable/bg_splash"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Lapisan gelap tipis agar tulisan lebih terbaca -->
-    <View
-        android:id="@+id/overlaySplash"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#22000000"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Konten utama -->
-
-    <!-- Loading bawah -->
-
-    <LinearLayout
-        android:id="@+id/splashContent"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginEnd="28dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@id/loadingContainer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.436">
-
-        <ImageView
-            android:id="@+id/imgLogoSplash"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:contentDescription="Logo FocusPlay"
-            android:src="@drawable/logo_focusplay" />
-
-        <TextView
-            android:id="@+id/tvTitleSplash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:fontFamily="@font/quicksand"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:shadowColor="#66000000"
-            android:shadowDx="0"
-            android:shadowDy="3"
-            android:shadowRadius="6"
-            android:text="FocusPlay"
-            android:textColor="#FFFFFF"
-            android:textSize="40sp" />
-
-        <TextView
-            android:id="@+id/tvSubtitleSplash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/quicksand"
-            android:gravity="center"
-            android:maxWidth="280dp"
-            android:paddingStart="14dp"
-            android:paddingTop="6dp"
-            android:paddingEnd="14dp"
-            android:paddingBottom="6dp"
-            android:text="Latihan fokus yang menyenangkan"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/loadingContainer"
