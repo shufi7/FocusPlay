@@ -430,7 +430,7 @@ class DashboardActivity : AppCompatActivity() {
                 tvAiRecapKosong.visibility = View.GONE
                 containerAiRecap.removeAllViews()
 
-                daftarAi.take(5).forEachIndexed { index, recap ->
+                daftarAi.forEachIndexed { index, recap ->
                     tambahCardRecapAi(recap, index)
                 }
             }
@@ -462,10 +462,10 @@ class DashboardActivity : AppCompatActivity() {
             elevation = dp(1).toFloat()
 
             layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
+                dp(280),
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(0, 0, 0, dp(12))
+                setMargins(0, 0, dp(12), 0)
             }
         }
 
@@ -548,7 +548,7 @@ class DashboardActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val intent = Intent(this, RiwayatPermainanActivity::class.java)
+            val intent = Intent(this, com.example.focusplay.view.RiwayatPermainanActivity::class.java)
             intent.putExtra("ID_ANAK", selectedAnakId)
             intent.putExtra("NAMA_ANAK", selectedNamaAnak)
             startActivity(intent)
@@ -570,9 +570,12 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun ambilTimestampMillis(doc: DocumentSnapshot): Long {
-        return doc.getTimestamp("timestamp")?.toDate()?.time
-            ?: doc.getLong("timestamp")
-            ?: 0L
+        return when (val value = doc.get("timestamp")) {
+            is com.google.firebase.Timestamp -> value.toDate().time
+            is Number -> value.toLong()
+            is String -> value.toLongOrNull() ?: 0L
+            else -> 0L
+        }
     }
 
     private fun formatTanggal(timestampMillis: Long, fallback: String?): String {

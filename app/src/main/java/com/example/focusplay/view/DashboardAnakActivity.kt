@@ -4,61 +4,105 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.example.focusplay.R
+import com.example.focusplay.view.games.GameAntarRumahActivity
+import com.example.focusplay.view.games.GamePasangKartuActivity
+import com.example.focusplay.view.games.GameTangkapWarnaActivity
+import com.example.focusplay.view.games.GameTapMerahActivity
+import com.example.focusplay.view.games.GameUrutkanAngkaActivity
 
 class DashboardAnakActivity : AppCompatActivity() {
+
+    private var idAnak: String = ""
+    private var namaAnak: String = "Anak Hebat"
+    private var usiaAnak: Int = 0
+
+    private lateinit var tvWelcomeAnak: TextView
+    private lateinit var btnKembaliKeOrtu: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard_anak)
 
-        val tvWelcomeAnak = findViewById<TextView>(R.id.tvWelcomeAnak)
-        val btnKembaliKeOrtu = findViewById<Button>(R.id.btnKembaliKeOrtu)
+        ambilDataAnakDariIntent()
+        hubungkanView()
+        tampilkanDataAnak()
+        aturTombol()
+    }
 
-        val idAnak = intent.getStringExtra("ID_ANAK") ?: ""
-        val namaAnak = intent.getStringExtra("NAMA_ANAK") ?: "Anak Hebat"
+    private fun ambilDataAnakDariIntent() {
+        idAnak = intent.getStringExtra("ID_ANAK")
+            ?: intent.getStringExtra("id_anak")
+                    ?: ""
+
+        namaAnak = intent.getStringExtra("NAMA_ANAK")
+            ?: intent.getStringExtra("nama_anak")
+                    ?: "Anak Hebat"
+
+        usiaAnak = intent.getIntExtra(
+            "USIA_ANAK",
+            intent.getIntExtra("usia_anak", 0)
+        )
+    }
+
+    private fun hubungkanView() {
+        tvWelcomeAnak = findViewById(R.id.tvWelcomeAnak)
+        btnKembaliKeOrtu = findViewById(R.id.btnKembaliKeOrtu)
+    }
+
+    private fun tampilkanDataAnak() {
         tvWelcomeAnak.text = "Halo, $namaAnak!"
+    }
 
+    private fun aturTombol() {
         btnKembaliKeOrtu.setOnClickListener {
             finish()
         }
 
-        // --- SISTEM TOMBOL PERMAINAN (MENGIRIM ID & NAMA ANAK) ---
         findViewById<CardView>(R.id.cardGame1).setOnClickListener {
-            val intent = Intent(this, com.example.focusplay.view.games.GameTapMerahActivity::class.java)
-            intent.putExtra("ID_ANAK", idAnak)
-            intent.putExtra("NAMA_ANAK", namaAnak)
-            startActivity(intent)
+            bukaGame(GameTapMerahActivity::class.java)
         }
 
         findViewById<CardView>(R.id.cardGame2).setOnClickListener {
-            val intent = Intent(this, com.example.focusplay.view.games.GameAntarRumahActivity::class.java)
-            intent.putExtra("ID_ANAK", idAnak)
-            intent.putExtra("NAMA_ANAK", namaAnak)
-            startActivity(intent)
+            bukaGame(GameAntarRumahActivity::class.java)
         }
 
         findViewById<CardView>(R.id.cardGame3).setOnClickListener {
-            val intent = Intent(this, com.example.focusplay.view.games.GamePasangKartuActivity::class.java)
-            intent.putExtra("ID_ANAK", idAnak)
-            intent.putExtra("NAMA_ANAK", namaAnak)
-            startActivity(intent)
+            bukaGame(GamePasangKartuActivity::class.java)
         }
 
         findViewById<CardView>(R.id.cardGame4).setOnClickListener {
-            val intent = Intent(this, com.example.focusplay.view.games.GameUrutkanAngkaActivity::class.java)
-            intent.putExtra("ID_ANAK", idAnak)
-            intent.putExtra("NAMA_ANAK", namaAnak)
-            startActivity(intent)
+            bukaGame(GameUrutkanAngkaActivity::class.java)
         }
 
         findViewById<CardView>(R.id.cardGame5).setOnClickListener {
-            val intent = Intent(this, com.example.focusplay.view.games.GameTangkapWarnaActivity::class.java)
-            intent.putExtra("ID_ANAK", idAnak)
-            intent.putExtra("NAMA_ANAK", namaAnak)
-            startActivity(intent)
+            bukaGame(GameTangkapWarnaActivity::class.java)
         }
+    }
+
+    private fun bukaGame(targetActivity: Class<*>) {
+        if (idAnak.isEmpty()) {
+            Toast.makeText(
+                this,
+                "Data profil anak belum terbaca. Silakan pilih profil anak ulang.",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        val intent = Intent(this, targetActivity)
+
+        intent.putExtra("ID_ANAK", idAnak)
+        intent.putExtra("NAMA_ANAK", namaAnak)
+        intent.putExtra("USIA_ANAK", usiaAnak)
+
+        intent.putExtra("id_anak", idAnak)
+        intent.putExtra("nama_anak", namaAnak)
+        intent.putExtra("usia_anak", usiaAnak)
+
+        startActivity(intent)
     }
 }

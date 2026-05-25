@@ -178,9 +178,15 @@ class PilihAnakActivity : AppCompatActivity() {
 
         card.setOnClickListener {
             val intent = Intent(this, DashboardAnakActivity::class.java)
+
+            intent.putExtra("ID_ANAK", anak.idDokumen)
+            intent.putExtra("NAMA_ANAK", anak.namaAnak)
+            intent.putExtra("USIA_ANAK", anak.usia)
+
             intent.putExtra("id_anak", anak.idDokumen)
             intent.putExtra("nama_anak", anak.namaAnak)
             intent.putExtra("usia_anak", anak.usia)
+
             startActivity(intent)
         }
 
