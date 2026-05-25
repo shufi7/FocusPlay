@@ -140,8 +140,8 @@
             android:layout_height="54dp"
             android:layout_marginTop="24dp"
             android:background="@drawable/bg_button_primary"
-            android:text="Daftar Sekarang"
-            android:textAllCaps="false"
+            android:gravity="center"
+            android:text="Masuk"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold" />

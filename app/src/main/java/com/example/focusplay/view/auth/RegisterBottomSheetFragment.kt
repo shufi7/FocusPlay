@@ -45,13 +45,23 @@ class RegisterBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_
             )
 
             bottomSheet?.let { sheet ->
-                sheet.layoutParams.height = (resources.displayMetrics.heightPixels * 0.65).toInt()
+                val screenHeight = resources.displayMetrics.heightPixels
+
+                // Tinggi asli tetap full agar bisa digeser ke atas penuh
+                sheet.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
                 sheet.requestLayout()
 
                 val behavior = BottomSheetBehavior.from(sheet)
 
                 behavior.isDraggable = true
-                behavior.skipCollapsed = true
+                behavior.isHideable = false
+                behavior.skipCollapsed = false
+
+                // Saat digeser ke bawah, tinggi minimalnya sekitar 80% layar
+                // Register form panjang, jadi jangan 65%
+                behavior.peekHeight = (screenHeight * 0.80).toInt()
+
+                // Saat pertama muncul langsung full
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
         }
