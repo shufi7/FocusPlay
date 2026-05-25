@@ -1,4 +1,4 @@
-package com.example.focusplay.view
+package com.example.focusplay.history
 
 import android.os.Bundle
 import android.view.View

@@ -1,5 +1,6 @@
-package com.example.focusplay.view.games
+package com.example.focusplay.games
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -14,6 +15,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.history.EvaluasiActivity
+import com.example.focusplay.utils.GameResultHelper
 
 class GamePasangKartuActivity : AppCompatActivity() {
 
@@ -254,7 +257,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         val idAnak = intent.getStringExtra("ID_ANAK") ?: ""
         val akurasiSimulasi = if (skor >= 100) 100 else 80
 
-        com.example.focusplay.utils.GameResultHelper.evaluasiDanSimpanRealtime(
+        GameResultHelper.evaluasiDanSimpanRealtime(
             activity = this,
             idAnak = idAnak,
             namaAnak = nama,
@@ -264,7 +267,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
             durasiMenit = 2,
             onSelesai = { hasilEvaluasi ->
                 // LOMPAT KE HALAMAN EVALUASI
-                val intentToEvaluasi = android.content.Intent(this, com.example.focusplay.view.EvaluasiActivity::class.java)
+                val intentToEvaluasi = Intent(this, EvaluasiActivity::class.java)
                 intentToEvaluasi.putExtra("ID_ANAK", idAnak)
                 intentToEvaluasi.putExtra("NAMA_ANAK", nama)
                 intentToEvaluasi.putExtra("EVALUASI_LANGSUNG", hasilEvaluasi)

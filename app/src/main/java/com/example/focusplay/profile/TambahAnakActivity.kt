@@ -1,4 +1,4 @@
-package com.example.focusplay.view
+package com.example.focusplay.profile
 
 import android.os.Bundle
 import android.widget.Button

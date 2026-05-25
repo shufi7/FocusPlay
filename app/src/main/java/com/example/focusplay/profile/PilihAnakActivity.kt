@@ -1,4 +1,4 @@
-package com.example.focusplay.view
+package com.example.focusplay.profile
 
 import android.content.Intent
 import android.graphics.Color
@@ -12,6 +12,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.dashboard.DashboardAnakActivity
+import com.example.focusplay.profile.TambahAnakActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 

@@ -231,7 +231,7 @@
                 app:cardCornerRadius="28dp"
                 app:cardElevation="5dp">
 
-                <com.example.focusplay.view.WeeklyLineChartView
+                <com.example.focusplay.customview.WeeklyLineChartView
                     android:id="@+id/chartWeekly"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

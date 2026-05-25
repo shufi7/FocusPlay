@@ -18,22 +18,22 @@
             android:name=".view.AuthChoiceActivity"
             android:exported="false" />
         <activity
-            android:name=".view.games.GameTangkapWarnaActivity"
+            android:name=".games.GameTangkapWarnaActivity"
             android:exported="false" />
         <activity
-            android:name=".view.games.GameUrutkanAngkaActivity"
+            android:name=".games.GameUrutkanAngkaActivity"
             android:exported="false" />
         <activity
-            android:name=".view.games.GamePasangKartuActivity"
+            android:name=".games.GamePasangKartuActivity"
             android:exported="false" />
         <activity
-            android:name=".view.games.GameAntarRumahActivity"
+            android:name=".games.GameAntarRumahActivity"
             android:exported="false" />
         <activity
-            android:name=".view.games.GameTapMerahActivity"
+            android:name=".games.GameTapMerahActivity"
             android:exported="false" />
         <activity
-            android:name=".view.DashboardAnakActivity"
+            android:name=".dashboard.DashboardAnakActivity"
             android:exported="false" />
         <activity
             android:name=".view.SplashActivity"
@@ -45,28 +45,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.PilihPeranActivity"
+            android:name=".profile.PilihPeranActivity"
             android:exported="false" />
         <activity
-            android:name=".view.PilihAnakActivity"
+            android:name=".profile.PilihAnakActivity"
             android:exported="false" />
         <activity
-            android:name=".view.TambahAnakActivity"
+            android:name=".profile.TambahAnakActivity"
             android:exported="false" />
         <activity
-            android:name=".view.RiwayatPermainanActivity"
+            android:name=".history.RiwayatPermainanActivity"
             android:exported="false" />
         <activity
-            android:name=".view.PengaturanPermainanActivity"
+            android:name=".settings.PengaturanPermainanActivity"
             android:exported="false" />
         <activity
-            android:name=".view.RegisterActivity"
+            android:name=".auth.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".view.DashboardActivity"
+            android:name=".dashboard.DashboardActivity"
             android:exported="false" />
         <activity
-            android:name=".view.LoginActivity"
+            android:name=".auth.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".view.MainActivity"
@@ -77,7 +77,7 @@
             android:resource="@array/preloaded_fonts" />
 
         <activity
-            android:name=".view.EvaluasiActivity"
+            android:name=".history.EvaluasiActivity"
             android:exported="false" />
     </application>
 

@@ -1,4 +1,4 @@
-package com.example.focusplay.view
+package com.example.focusplay.history
 
 import android.graphics.Color
 import android.graphics.Typeface

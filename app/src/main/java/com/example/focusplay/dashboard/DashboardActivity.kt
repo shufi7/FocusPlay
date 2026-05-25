@@ -1,4 +1,4 @@
-package com.example.focusplay.view
+package com.example.focusplay.dashboard
 
 import android.content.Intent
 import android.graphics.Color
@@ -13,7 +13,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.customview.DataGrafikHarian
+import com.example.focusplay.customview.WeeklyLineChartView
 import com.example.focusplay.utils.SessionManager
+import com.example.focusplay.view.AuthChoiceActivity
+import com.example.focusplay.settings.PengaturanPermainanActivity
+import com.example.focusplay.history.RiwayatPermainanActivity
+import com.example.focusplay.profile.TambahAnakActivity
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -548,7 +555,7 @@ class DashboardActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val intent = Intent(this, com.example.focusplay.view.RiwayatPermainanActivity::class.java)
+            val intent = Intent(this, RiwayatPermainanActivity::class.java)
             intent.putExtra("ID_ANAK", selectedAnakId)
             intent.putExtra("NAMA_ANAK", selectedNamaAnak)
             startActivity(intent)
@@ -571,7 +578,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun ambilTimestampMillis(doc: DocumentSnapshot): Long {
         return when (val value = doc.get("timestamp")) {
-            is com.google.firebase.Timestamp -> value.toDate().time
+            is Timestamp -> value.toDate().time
             is Number -> value.toLong()
             is String -> value.toLongOrNull() ?: 0L
             else -> 0L

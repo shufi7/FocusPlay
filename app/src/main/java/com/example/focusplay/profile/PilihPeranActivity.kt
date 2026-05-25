@@ -1,4 +1,4 @@
-package com.example.focusplay.view
+package com.example.focusplay.profile
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,7 +6,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.dashboard.DashboardActivity
 import com.example.focusplay.utils.SessionManager
+import com.example.focusplay.profile.PilihAnakActivity
 
 class PilihPeranActivity : AppCompatActivity() {
 

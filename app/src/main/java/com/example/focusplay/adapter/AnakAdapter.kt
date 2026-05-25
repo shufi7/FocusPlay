@@ -1,4 +1,4 @@
-package com.example.focusplay.view
+package com.example.focusplay.adapter
 
 import android.view.LayoutInflater
 import android.view.View

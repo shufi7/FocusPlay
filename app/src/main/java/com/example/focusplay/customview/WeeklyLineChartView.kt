@@ -1,4 +1,4 @@
-package com.example.focusplay.view
+package com.example.focusplay.customview
 
 import android.content.Context
 import android.graphics.Canvas

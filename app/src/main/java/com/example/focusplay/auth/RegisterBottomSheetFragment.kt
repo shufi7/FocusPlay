@@ -1,4 +1,4 @@
-package com.example.focusplay.view.auth
+package com.example.focusplay.auth
 
 import android.app.Dialog
 import android.os.Bundle

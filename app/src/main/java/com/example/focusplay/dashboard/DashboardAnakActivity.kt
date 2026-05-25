@@ -1,4 +1,4 @@
-package com.example.focusplay.view
+package com.example.focusplay.dashboard
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,11 +8,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.example.focusplay.R
-import com.example.focusplay.view.games.GameAntarRumahActivity
-import com.example.focusplay.view.games.GamePasangKartuActivity
-import com.example.focusplay.view.games.GameTangkapWarnaActivity
-import com.example.focusplay.view.games.GameTapMerahActivity
-import com.example.focusplay.view.games.GameUrutkanAngkaActivity
+import com.example.focusplay.games.GameAntarRumahActivity
+import com.example.focusplay.games.GamePasangKartuActivity
+import com.example.focusplay.games.GameTangkapWarnaActivity
+import com.example.focusplay.games.GameTapMerahActivity
+import com.example.focusplay.games.GameUrutkanAngkaActivity
 
 class DashboardAnakActivity : AppCompatActivity() {
 

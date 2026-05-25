@@ -4,8 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
-import com.example.focusplay.view.auth.LoginBottomSheetFragment
-import com.example.focusplay.view.auth.RegisterBottomSheetFragment
+import com.example.focusplay.profile.PilihPeranActivity
+import com.example.focusplay.auth.LoginBottomSheetFragment
+import com.example.focusplay.auth.RegisterBottomSheetFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.example.focusplay.utils.SessionManager
 

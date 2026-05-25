@@ -1,9 +1,10 @@
-package com.example.focusplay.view.games
+package com.example.focusplay.games
 
 import android.content.ClipData
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.DragEvent
@@ -18,7 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
 import com.example.focusplay.utils.AdaptiveGameManager
 import com.example.focusplay.utils.GameResultHelper
-import com.example.focusplay.view.EvaluasiActivity
+import com.example.focusplay.history.EvaluasiActivity
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -340,9 +341,9 @@ class GameAntarRumahActivity : AppCompatActivity() {
         countDownTimer?.cancel()
     }
 
-    private fun roundedDrawable(color: Int, radius: Int): android.graphics.drawable.GradientDrawable {
-        return android.graphics.drawable.GradientDrawable().apply {
-            shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+    private fun roundedDrawable(color: Int, radius: Int): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
             setColor(color)
             cornerRadius = dp(radius).toFloat()
         }

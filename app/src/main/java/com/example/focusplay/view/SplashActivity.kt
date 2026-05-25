@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.profile.PilihPeranActivity
 import com.example.focusplay.utils.SessionManager
 
 class SplashActivity : AppCompatActivity() {

@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         // Memberikan jeda waktu 3000 milidetik (3 detik)
         Handler(Looper.getMainLooper()).postDelayed({
             // Berpindah dari MainActivity (Splash) ke LoginActivity
-            val intent = Intent(this, LoginActivity::class.java)
+            val intent = Intent(this, AuthChoiceActivity::class.java)
             startActivity(intent)
 
             // Menutup MainActivity agar saat ditekan tombol "Back", tidak kembali ke Splash Screen

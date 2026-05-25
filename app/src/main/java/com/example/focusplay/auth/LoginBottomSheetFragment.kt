@@ -1,5 +1,7 @@
-package com.example.focusplay.view
+package com.example.focusplay.auth
 
+import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
@@ -7,21 +9,25 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
+import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
 import com.example.focusplay.utils.ErrorDialogHelper
 import com.example.focusplay.utils.LoadingDialogHelper
 import com.example.focusplay.utils.SessionManager
 import com.example.focusplay.utils.SuccessDialogHelper
+import com.example.focusplay.profile.PilihPeranActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
-class LoginActivity : AppCompatActivity() {
+class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_login_bottom_sheet) {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -42,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
 
-        if (result.resultCode == RESULT_OK) {
+        if (result.resultCode == Activity.RESULT_OK) {
             loadingDialog.show()
 
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
@@ -78,34 +84,54 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
 
-        supportActionBar?.hide()
+        dialog.setOnShowListener { dialogInterface ->
+            val bottomSheetDialog = dialogInterface as BottomSheetDialog
+            val bottomSheet = bottomSheetDialog.findViewById<View>(
+                com.google.android.material.R.id.design_bottom_sheet
+            )
 
-        auth = FirebaseAuth.getInstance()
-        session = SessionManager(this)
-        loadingDialog = LoadingDialogHelper(this)
+            bottomSheet?.let { sheet ->
+                val screenHeight = resources.displayMetrics.heightPixels
 
-        if (auth.currentUser != null || session.isLogin()) {
-            bukaPilihPeran()
-            return
+                sheet.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                sheet.requestLayout()
+
+                val behavior = BottomSheetBehavior.from(sheet)
+
+                behavior.isDraggable = true
+                behavior.isHideable = false
+                behavior.skipCollapsed = false
+                behavior.peekHeight = (screenHeight * 0.65).toInt()
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
         }
 
-        hubungkanView()
+        return dialog
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        auth = FirebaseAuth.getInstance()
+        session = SessionManager(requireContext())
+        loadingDialog = LoadingDialogHelper(requireActivity())
+
+        hubungkanView(view)
         setupGoogleLogin()
         aturAksiTombol()
     }
 
-    private fun hubungkanView() {
-        etEmail = findViewById(R.id.etEmailLogin)
-        etPassword = findViewById(R.id.etPasswordLogin)
-        btnTogglePassword = findViewById(R.id.btnTogglePasswordLogin)
+    private fun hubungkanView(view: View) {
+        etEmail = view.findViewById(R.id.etEmailLogin)
+        etPassword = view.findViewById(R.id.etPasswordLogin)
+        btnTogglePassword = view.findViewById(R.id.btnTogglePasswordLogin)
 
-        btnLogin = findViewById(R.id.btnProsesLogin)
-        btnRegister = findViewById(R.id.tvDaftarSini)
-        btnLoginGoogle = findViewById(R.id.btnLoginGoogle)
+        btnLogin = view.findViewById(R.id.btnProsesLogin)
+        btnRegister = view.findViewById(R.id.tvDaftarSini)
+        btnLoginGoogle = view.findViewById(R.id.btnLoginGoogle)
     }
 
     private fun setupGoogleLogin() {
@@ -114,7 +140,7 @@ class LoginActivity : AppCompatActivity() {
             .requestEmail()
             .build()
 
-        googleSignInClient = GoogleSignIn.getClient(this, gso)
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
     }
 
     private fun aturAksiTombol() {
@@ -123,7 +149,12 @@ class LoginActivity : AppCompatActivity() {
         }
 
         btnRegister.setOnClickListener {
-            startActivity(Intent(this, RegisterActivity::class.java))
+            dismiss()
+
+            RegisterBottomSheetFragment().show(
+                parentFragmentManager,
+                "RegisterBottomSheet"
+            )
         }
 
         btnLoginGoogle.setOnClickListener {
@@ -143,13 +174,19 @@ class LoginActivity : AppCompatActivity() {
         val password = etPassword.text.toString().trim()
 
         if (email.isEmpty()) {
-            etEmail.error = "Email wajib diisi"
+            tampilkanError(
+                title = "Email Kosong",
+                message = "Email wajib diisi terlebih dahulu."
+            )
             etEmail.requestFocus()
             return
         }
 
         if (password.isEmpty()) {
-            etPassword.error = "Password wajib diisi"
+            tampilkanError(
+                title = "Password Kosong",
+                message = "Password wajib diisi terlebih dahulu."
+            )
             etPassword.requestFocus()
             return
         }
@@ -157,7 +194,7 @@ class LoginActivity : AppCompatActivity() {
         loadingDialog.show()
 
         auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
+            .addOnCompleteListener(requireActivity()) { task ->
                 loadingDialog.dismiss()
 
                 if (task.isSuccessful) {
@@ -172,7 +209,7 @@ class LoginActivity : AppCompatActivity() {
                     )
 
                     SuccessDialogHelper.showSuccessDialog(
-                        activity = this,
+                        activity = requireActivity(),
                         title = "Login Berhasil!",
                         message = "Selamat datang di FocusPlay!"
                     ) {
@@ -192,7 +229,7 @@ class LoginActivity : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
 
         auth.signInWithCredential(credential)
-            .addOnCompleteListener(this) { task ->
+            .addOnCompleteListener(requireActivity()) { task ->
                 loadingDialog.dismiss()
 
                 if (task.isSuccessful) {
@@ -207,7 +244,7 @@ class LoginActivity : AppCompatActivity() {
                     )
 
                     SuccessDialogHelper.showSuccessDialog(
-                        activity = this,
+                        activity = requireActivity(),
                         title = "Login Berhasil!",
                         message = "Selamat datang, ${ambilNamaPanggilan(namaUser)}!"
                     ) {
@@ -255,16 +292,20 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun bukaPilihPeran() {
-        startActivity(Intent(this, PilihPeranActivity::class.java))
-
-        finish()
+        val intent = Intent(requireContext(), PilihPeranActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 
     private fun tampilkanError(title: String, message: String) {
         ErrorDialogHelper.showErrorDialog(
-            activity = this,
+            activity = requireActivity(),
             title = title,
             message = message
         )
+    }
+
+    override fun getTheme(): Int {
+        return R.style.FocusPlayBottomSheetDialog
     }
 }
