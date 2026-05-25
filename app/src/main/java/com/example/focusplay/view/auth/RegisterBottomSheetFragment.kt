@@ -35,6 +35,10 @@ class RegisterBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_
     private var passwordTerlihat = false
     private var konfirmasiPasswordTerlihat = false
 
+    override fun getTheme(): Int {
+        return R.style.FocusPlayBottomSheetDialog
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
 
@@ -47,7 +51,6 @@ class RegisterBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_
             bottomSheet?.let { sheet ->
                 val screenHeight = resources.displayMetrics.heightPixels
 
-                // Tinggi asli tetap full agar bisa digeser ke atas penuh
                 sheet.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
                 sheet.requestLayout()
 
@@ -57,11 +60,10 @@ class RegisterBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_
                 behavior.isHideable = false
                 behavior.skipCollapsed = false
 
-                // Saat digeser ke bawah, tinggi minimalnya sekitar 80% layar
-                // Register form panjang, jadi jangan 65%
+                // Register form lebih panjang, jadi peekHeight jangan terlalu kecil.
                 behavior.peekHeight = (screenHeight * 0.80).toInt()
 
-                // Saat pertama muncul langsung full
+                // Saat pertama muncul langsung dalam posisi penuh.
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
         }
@@ -101,15 +103,19 @@ class RegisterBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_
 
         btnTogglePassword.setOnClickListener {
             passwordTerlihat = !passwordTerlihat
-            aturTampilanPassword(etPassword, btnTogglePassword, passwordTerlihat)
+            aturTampilanPassword(
+                editText = etPassword,
+                button = btnTogglePassword,
+                terlihat = passwordTerlihat
+            )
         }
 
         btnToggleKonfirmasiPassword.setOnClickListener {
             konfirmasiPasswordTerlihat = !konfirmasiPasswordTerlihat
             aturTampilanPassword(
-                etKonfirmasiPassword,
-                btnToggleKonfirmasiPassword,
-                konfirmasiPasswordTerlihat
+                editText = etKonfirmasiPassword,
+                button = btnToggleKonfirmasiPassword,
+                terlihat = konfirmasiPasswordTerlihat
             )
         }
 
@@ -125,43 +131,64 @@ class RegisterBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_
         val konfirmasiPassword = etKonfirmasiPassword.text.toString().trim()
 
         if (nama.isEmpty()) {
-            etNama.error = "Nama wajib diisi"
+            tampilkanError(
+                title = "Nama Kosong",
+                message = "Nama wajib diisi terlebih dahulu."
+            )
             etNama.requestFocus()
             return
         }
 
         if (email.isEmpty()) {
-            etEmail.error = "Email wajib diisi"
+            tampilkanError(
+                title = "Email Kosong",
+                message = "Email wajib diisi terlebih dahulu."
+            )
             etEmail.requestFocus()
             return
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.error = "Format email tidak valid"
+            tampilkanError(
+                title = "Email Tidak Valid",
+                message = "Format email belum benar."
+            )
             etEmail.requestFocus()
             return
         }
 
         if (password.isEmpty()) {
-            etPassword.error = "Password wajib diisi"
+            tampilkanError(
+                title = "Password Kosong",
+                message = "Password wajib diisi terlebih dahulu."
+            )
             etPassword.requestFocus()
             return
         }
 
         if (password.length < 6) {
-            etPassword.error = "Password minimal 6 karakter"
+            tampilkanError(
+                title = "Password Terlalu Pendek",
+                message = "Password minimal 6 karakter."
+            )
             etPassword.requestFocus()
             return
         }
 
         if (konfirmasiPassword.isEmpty()) {
-            etKonfirmasiPassword.error = "Konfirmasi password wajib diisi"
+            tampilkanError(
+                title = "Konfirmasi Password Kosong",
+                message = "Konfirmasi password wajib diisi terlebih dahulu."
+            )
             etKonfirmasiPassword.requestFocus()
             return
         }
 
         if (password != konfirmasiPassword) {
-            etKonfirmasiPassword.error = "Konfirmasi password tidak sama"
+            tampilkanError(
+                title = "Password Tidak Sama",
+                message = "Konfirmasi password harus sama dengan password."
+            )
             etKonfirmasiPassword.requestFocus()
             return
         }
@@ -186,18 +213,25 @@ class RegisterBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_
                         .build()
 
                     user?.updateProfile(profileUpdates)
-                        ?.addOnCompleteListener {
-                            SuccessDialogHelper.showSuccessDialog(
-                                activity = requireActivity(),
-                                title = "Pendaftaran Berhasil!",
-                                message = "Akun berhasil dibuat. Silakan masuk menggunakan email dan password kamu."
-                            ) {
-                                auth.signOut()
-                                dismiss()
+                        ?.addOnCompleteListener { updateTask ->
+                            if (updateTask.isSuccessful) {
+                                SuccessDialogHelper.showSuccessDialog(
+                                    activity = requireActivity(),
+                                    title = "Pendaftaran Berhasil!",
+                                    message = "Akun berhasil dibuat. Silakan masuk menggunakan email dan password kamu."
+                                ) {
+                                    auth.signOut()
+                                    dismiss()
 
-                                LoginBottomSheetFragment().show(
-                                    parentFragmentManager,
-                                    "LoginBottomSheet"
+                                    LoginBottomSheetFragment().show(
+                                        parentFragmentManager,
+                                        "LoginBottomSheet"
+                                    )
+                                }
+                            } else {
+                                tampilkanError(
+                                    title = "Pendaftaran Gagal",
+                                    message = "Akun berhasil dibuat, tetapi nama pengguna belum berhasil disimpan."
                                 )
                             }
                         }
@@ -221,8 +255,7 @@ class RegisterBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_
                         }
                     }
 
-                    ErrorDialogHelper.showErrorDialog(
-                        activity = requireActivity(),
+                    tampilkanError(
                         title = "Pendaftaran Gagal",
                         message = pesanError
                     )
@@ -248,7 +281,11 @@ class RegisterBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_
         editText.setSelection(editText.text.length)
     }
 
-    override fun getTheme(): Int {
-        return R.style.FocusPlayBottomSheetDialog
+    private fun tampilkanError(title: String, message: String) {
+        ErrorDialogHelper.showErrorDialog(
+            activity = requireActivity(),
+            title = title,
+            message = message
+        )
     }
 }

@@ -173,13 +173,19 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
         val password = etPassword.text.toString().trim()
 
         if (email.isEmpty()) {
-            etEmail.error = "Email wajib diisi"
+            tampilkanError(
+                title = "Email Kosong",
+                message = "Email wajib diisi terlebih dahulu."
+            )
             etEmail.requestFocus()
             return
         }
 
         if (password.isEmpty()) {
-            etPassword.error = "Password wajib diisi"
+            tampilkanError(
+                title = "Password Kosong",
+                message = "Password wajib diisi terlebih dahulu."
+            )
             etPassword.requestFocus()
             return
         }
