@@ -3,160 +3,228 @@
     android:id="@+id/registerSheetScroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
     android:fillViewport="true"
-    android:overScrollMode="never"
-    android:background="@android:color/transparent">
+    android:overScrollMode="never">
 
-    <LinearLayout
-        android:id="@+id/registerSheetCard"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingStart="28dp"
-        android:paddingEnd="28dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="34dp"
-        android:background="@drawable/bg_bottom_auth_card">
-        <View
-            android:layout_width="54dp"
-            android:layout_height="5dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="22dp"
-            android:background="@drawable/bg_drag_handle" />
+        android:layout_height="wrap_content"
+        android:minHeight="520dp">
 
-        <TextView
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Daftar"
-            android:textAlignment="center"
-            android:textColor="#2D2D2D"
-            android:textSize="26sp"
-            android:textStyle="bold" />
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/bg_card" />
 
-        <TextView
+        <LinearLayout
+            android:id="@+id/registerSheetCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Buat akun baru untuk mulai menggunakan FocusPlay."
-            android:textAlignment="center"
-            android:textColor="#6B6B6B"
-            android:textSize="14sp" />
+            android:background="@android:color/transparent"
+            android:orientation="vertical"
+            android:paddingStart="28dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="28dp"
+            android:paddingBottom="120dp">
 
-        <EditText
-            android:id="@+id/etNamaRegister"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/bg_input_auth"
-            android:hint="Nama lengkap"
-            android:inputType="textPersonName"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:textColor="#2D2D2D"
-            android:textColorHint="#9A9A9A"
-            android:textSize="14sp" />
+            <View
+                android:layout_width="54dp"
+                android:layout_height="5dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/bg_drag_handle" />
 
-        <EditText
-            android:id="@+id/etEmailRegister"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_input_auth"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:paddingStart="18dp"
-            android:paddingEnd="18dp"
-            android:textColor="#2D2D2D"
-            android:textColorHint="#9A9A9A"
-            android:textSize="14sp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/quicksand_bold"
+                android:text="REGISTER"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="38sp"
+                android:textStyle="bold"
+                android:shadowColor="#E66A00"
+                android:shadowDx="2"
+                android:shadowDy="3"
+                android:shadowRadius="1" />
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_input_auth">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Buat akun baru untuk mulai menggunakan FocusPlay."
+                android:textAlignment="center"
+                android:textColor="#FFF8F0"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:shadowColor="#C45A00"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2" />
 
             <EditText
-                android:id="@+id/etPasswordRegister"
+                android:id="@+id/etNamaRegister"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:hint="Password"
-                android:inputType="textPassword"
+                android:layout_height="54dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_input_auth"
+                android:hint="Nama lengkap"
+                android:inputType="textPersonName"
                 android:paddingStart="18dp"
-                android:paddingEnd="54dp"
-                android:textColor="#2D2D2D"
-                android:textColorHint="#9A9A9A"
+                android:paddingEnd="18dp"
+                android:textColor="#5A350E"
+                android:textColorHint="#B08A5B"
                 android:textSize="14sp" />
-
-            <ImageButton
-                android:id="@+id/btnTogglePasswordRegister"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_gravity="end|center_vertical"
-                android:layout_marginEnd="6dp"
-                android:background="@android:color/transparent"
-                android:contentDescription="Tampilkan password"
-                android:padding="10dp"
-                android:src="@drawable/ic_eye" />
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_input_auth">
 
             <EditText
-                android:id="@+id/etKonfirmasiPasswordRegister"
+                android:id="@+id/etEmailRegister"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:hint="Konfirmasi password"
-                android:inputType="textPassword"
+                android:layout_height="54dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_input_auth"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
                 android:paddingStart="18dp"
-                android:paddingEnd="54dp"
-                android:textColor="#2D2D2D"
-                android:textColorHint="#9A9A9A"
+                android:paddingEnd="18dp"
+                android:textColor="#5A350E"
+                android:textColorHint="#B08A5B"
                 android:textSize="14sp" />
 
-            <ImageButton
-                android:id="@+id/btnToggleKonfirmasiPasswordRegister"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_gravity="end|center_vertical"
-                android:layout_marginEnd="6dp"
-                android:background="@android:color/transparent"
-                android:contentDescription="Tampilkan konfirmasi password"
-                android:padding="10dp"
-                android:src="@drawable/ic_eye" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_input_auth">
 
-        </FrameLayout>
+                <EditText
+                    android:id="@+id/etPasswordRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="54dp"
+                    android:textColor="#5A350E"
+                    android:textColorHint="#B08A5B"
+                    android:textSize="14sp" />
 
-        <Button
-            android:id="@+id/btnProsesRegister"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/bg_button_primary"
-            android:gravity="center"
-            android:text="Masuk"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+                <ImageButton
+                    android:id="@+id/btnTogglePasswordRegister"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="6dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Tampilkan password"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_eye" />
+            </FrameLayout>
 
-        <TextView
-            android:id="@+id/tvMasukSini"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:text="Sudah punya akun? Masuk di sini"
-            android:textAlignment="center"
-            android:textColor="#7C83FD"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_input_auth">
 
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/etKonfirmasiPasswordRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:hint="Konfirmasi password"
+                    android:inputType="textPassword"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="54dp"
+                    android:textColor="#5A350E"
+                    android:textColorHint="#B08A5B"
+                    android:textSize="14sp" />
+
+                <ImageButton
+                    android:id="@+id/btnToggleKonfirmasiPasswordRegister"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="6dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Tampilkan konfirmasi password"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_eye" />
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/btnProsesRegister"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="24dp"
+                android:adjustViewBounds="true"
+                android:clickable="true"
+                android:contentDescription="Daftar"
+                android:focusable="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/btn_register" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="atau"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:shadowColor="#C45A00"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2" />
+
+            <LinearLayout
+                android:id="@+id/btnRegisterGoogle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="14dp"
+                android:paddingBottom="10dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/google" />
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvMasukSini"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="Sudah punya akun? Masuk di sini"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:shadowColor="#C45A00"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </ScrollView>

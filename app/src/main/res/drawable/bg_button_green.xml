@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#4C7F17" />
-    <corners android:radius="18dp" />
-</shape>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Saat tombol tidak aktif -->
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <solid android:color="#9BA99C" />
+            <corners android:radius="40dp" />
+        </shape>
+    </item>
+
+    <!-- Saat ditekan -->
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#345F3A" />
+            <corners android:radius="40dp" />
+        </shape>
+    </item>
+
+    <!-- Warna normal seperti gambar -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#3E6F45" />
+            <corners android:radius="40dp" />
+        </shape>
+    </item>
+
+</selector>

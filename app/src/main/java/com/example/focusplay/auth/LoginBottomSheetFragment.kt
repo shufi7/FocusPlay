@@ -94,18 +94,16 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
             )
 
             bottomSheet?.let { sheet ->
-                val screenHeight = resources.displayMetrics.heightPixels
-
-                sheet.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                sheet.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
                 sheet.requestLayout()
 
-                val behavior = BottomSheetBehavior.from(sheet)
-
-                behavior.isDraggable = true
-                behavior.isHideable = false
-                behavior.skipCollapsed = false
-                behavior.peekHeight = (screenHeight * 0.65).toInt()
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                BottomSheetBehavior.from(sheet).apply {
+                    isDraggable = true
+                    isHideable = true
+                    skipCollapsed = true
+                    peekHeight = BottomSheetBehavior.PEEK_HEIGHT_AUTO
+                    state = BottomSheetBehavior.STATE_EXPANDED
+                }
             }
         }
 
