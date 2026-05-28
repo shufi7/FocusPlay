@@ -10,8 +10,6 @@ import androidx.cardview.widget.CardView
 import com.example.focusplay.R
 import com.example.focusplay.games.GameAntarRumahActivity
 import com.example.focusplay.games.GamePasangKartuActivity
-import com.example.focusplay.games.GameTangkapWarnaActivity
-import com.example.focusplay.games.GameTapMerahActivity
 import com.example.focusplay.games.GameUrutkanAngkaActivity
 
 class DashboardAnakActivity : AppCompatActivity() {
@@ -63,23 +61,15 @@ class DashboardAnakActivity : AppCompatActivity() {
         }
 
         findViewById<CardView>(R.id.cardGame1).setOnClickListener {
-            bukaGame(GameTapMerahActivity::class.java)
-        }
-
-        findViewById<CardView>(R.id.cardGame2).setOnClickListener {
             bukaGame(GameAntarRumahActivity::class.java)
         }
 
-        findViewById<CardView>(R.id.cardGame3).setOnClickListener {
+        findViewById<CardView>(R.id.cardGame2).setOnClickListener {
             bukaGame(GamePasangKartuActivity::class.java)
         }
 
-        findViewById<CardView>(R.id.cardGame4).setOnClickListener {
+        findViewById<CardView>(R.id.cardGame3).setOnClickListener {
             bukaGame(GameUrutkanAngkaActivity::class.java)
-        }
-
-        findViewById<CardView>(R.id.cardGame5).setOnClickListener {
-            bukaGame(GameTangkapWarnaActivity::class.java)
         }
     }
 

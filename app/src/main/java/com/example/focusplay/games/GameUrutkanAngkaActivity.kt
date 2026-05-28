@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
 import com.example.focusplay.history.EvaluasiActivity
+import com.example.focusplay.utils.AdaptiveGameManager
 import com.example.focusplay.utils.GameResultHelper
 import kotlin.random.Random
 
@@ -24,51 +25,121 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
     private lateinit var tvFase: TextView
     private lateinit var tvTimer: TextView
     private lateinit var tvTargetAngka: TextView
+    private lateinit var adaptiveManager: AdaptiveGameManager
 
     private var skor = 0
     private var faseSaatIni = 1
     private var idAnak = ""
+    private var namaAnak = "Anak"
 
     private var angkaSelanjutnya = 1
     private var targetMaksimal = 3
 
-    private var timerFase3: CountDownTimer? = null
-    private var waktuHabis = false
+    private var modeAdaptif = true
+    private var targetWaktuMenit = 1
+
+    private var totalBenar = 0
+    private var totalSalah = 0
+    private var waktuMulaiSesi = 0L
+    private var sesiSelesai = false
+
+    private var timerPermainan: CountDownTimer? = null
+
+    private val namaGame = "Urut Angka"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_urutkan_angka)
 
-        idAnak = intent.getStringExtra("ID_ANAK") ?: ""
+        ambilDataAnakDariIntent()
+        hubungkanView()
+        aturPapanTarget()
+        bacaPengaturan()
+        aturTombol()
 
-        arenaGame = findViewById(R.id.arenaGame)
-        tvSkor = findViewById(R.id.tvSkor)
-        tvFase = findViewById(R.id.tvFase)
-        tvTimer = findViewById(R.id.tvTimer)
-        tvTargetAngka = findViewById(R.id.tvTargetAngka)
+        waktuMulaiSesi = System.currentTimeMillis()
 
-        // Ubah warna latar belakang papan target secara dinamis
-        val papanTarget = tvTargetAngka.parent as View
-        val bgPapan = GradientDrawable()
-        bgPapan.shape = GradientDrawable.RECTANGLE
-        bgPapan.cornerRadius = dpToPx(12).toFloat()
-        bgPapan.setColor(Color.parseColor("#FF9800")) // Warna Oranye
-        papanTarget.background = bgPapan
-
-        findViewById<ImageView>(R.id.btnKembali).setOnClickListener {
-            finish()
-        }
+        mulaiTimerGlobal()
 
         arenaGame.post {
             mulaiRonde()
         }
     }
 
+    private fun ambilDataAnakDariIntent() {
+        idAnak = intent.getStringExtra("ID_ANAK")
+            ?: intent.getStringExtra("id_anak")
+                    ?: ""
+
+        namaAnak = intent.getStringExtra("NAMA_ANAK")
+            ?: intent.getStringExtra("nama_anak")
+                    ?: "Anak"
+    }
+
+    private fun hubungkanView() {
+        arenaGame = findViewById(R.id.arenaGame)
+        tvSkor = findViewById(R.id.tvSkor)
+        tvFase = findViewById(R.id.tvFase)
+        tvTimer = findViewById(R.id.tvTimer)
+        tvTargetAngka = findViewById(R.id.tvTargetAngka)
+    }
+
+    private fun aturPapanTarget() {
+        val papanTarget = tvTargetAngka.parent as View
+        val bgPapan = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dpToPx(12).toFloat()
+            setColor(Color.parseColor("#FF9800"))
+        }
+        papanTarget.background = bgPapan
+    }
+
+    private fun bacaPengaturan() {
+        val prefs = getSharedPreferences("pengaturan_permainan", MODE_PRIVATE)
+
+        modeAdaptif = prefs.getBoolean("mode_adaptif", true)
+        targetWaktuMenit = prefs.getString("target_waktu", "1")?.toIntOrNull() ?: 1
+
+        faseSaatIni = 1
+
+        adaptiveManager = AdaptiveGameManager(
+            faseSekarang = faseSaatIni,
+            modeAdaptifAktif = modeAdaptif
+        )
+    }
+
+    private fun aturTombol() {
+        findViewById<ImageView>(R.id.btnKembali).setOnClickListener {
+            timerPermainan?.cancel()
+            finish()
+        }
+    }
+
+    private fun mulaiTimerGlobal() {
+        val totalMillis = targetWaktuMenit * 60 * 1000L
+
+        tvTimer.visibility = View.VISIBLE
+
+        timerPermainan = object : CountDownTimer(totalMillis, 1000L) {
+            override fun onTick(millisUntilFinished: Long) {
+                val detik = millisUntilFinished / 1000
+                val menit = detik / 60
+                val sisaDetik = detik % 60
+                tvTimer.text = "${menit}:${sisaDetik.toString().padStart(2, '0')}"
+            }
+
+            override fun onFinish() {
+                tvTimer.text = "0:00"
+                simpanRiwayatAkhir()
+            }
+        }.start()
+    }
+
     private fun mulaiRonde() {
+        if (sesiSelesai) return
+
         arenaGame.removeAllViews()
         angkaSelanjutnya = 1
-        waktuHabis = false
-        timerFase3?.cancel()
         updatePapanTarget()
 
         val listAngkaTampil = mutableListOf<Int>()
@@ -76,37 +147,29 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
         when (faseSaatIni) {
             1 -> {
                 tvFase.text = "Fase 1: Berhitung Dasar"
-                tvTimer.visibility = View.GONE
-                targetMaksimal = 3 // Urutkan 1, 2, 3
+                targetMaksimal = 3
                 listAngkaTampil.addAll(listOf(1, 2, 3))
             }
+
             2 -> {
                 tvFase.text = "Fase 2: Urutan Panjang"
-                tvTimer.visibility = View.GONE
-                targetMaksimal = 5 // Urutkan 1, 2, 3, 4, 5
+                targetMaksimal = 5
                 listAngkaTampil.addAll(listOf(1, 2, 3, 4, 5))
             }
+
             else -> {
-                tvFase.text = "Fase 3: Awas Pengecoh!"
-                tvTimer.visibility = View.VISIBLE
+                tvFase.text = "Fase 3: Awas Pengecoh"
                 targetMaksimal = 5
-
-                // Tambahkan angka target
                 listAngkaTampil.addAll(listOf(1, 2, 3, 4, 5))
-                // Tambahkan angka pengecoh (distraktor)
                 listAngkaTampil.addAll(listOf(7, 9))
-
-                mulaiTimer(20000) // Waktu: 20 detik
             }
         }
 
-        // Acak urutan pembuatan agar posisinya random
         listAngkaTampil.shuffle()
 
         val maxX = arenaGame.width - dpToPx(70)
         val maxY = arenaGame.height - dpToPx(70)
 
-        // Sebarkan bola-bola angka di dalam arena
         for (angka in listAngkaTampil) {
             val isTarget = angka <= targetMaksimal
             buatBolaAngka(angka, maxX, maxY, isTarget)
@@ -124,86 +187,118 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
             gravity = Gravity.CENTER
             elevation = 4f
 
-            val bulatBg = GradientDrawable()
-            bulatBg.shape = GradientDrawable.OVAL
+            val bulatBg = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
 
-            // Warnanya beda-beda agar menarik untuk anak
-            val warnaBg = when (angka % 4) {
-                0 -> "#E91E63" // Pink
-                1 -> "#2196F3" // Biru
-                2 -> "#4CAF50" // Hijau
-                else -> "#9C27B0" // Ungu
+                val warnaBg = when (angka % 4) {
+                    0 -> "#E91E63"
+                    1 -> "#2196F3"
+                    2 -> "#4CAF50"
+                    else -> "#9C27B0"
+                }
+
+                setColor(Color.parseColor(warnaBg))
             }
-            bulatBg.setColor(Color.parseColor(warnaBg))
+
             background = bulatBg
 
-            // Posisi Acak
             if (maxX > 0 && maxY > 0) {
                 x = Random.nextInt(0, maxX).toFloat()
                 y = Random.nextInt(0, maxY).toFloat()
             }
 
             setOnClickListener {
-                if (waktuHabis) return@setOnClickListener
+                if (sesiSelesai) return@setOnClickListener
 
                 if (!isTarget) {
-                    Toast.makeText(this@GameUrutkanAngkaActivity, "Itu angka pengecoh!", Toast.LENGTH_SHORT).show()
+                    prosesJawabanSalah("Itu angka pengecoh!")
                 } else if (angka == angkaSelanjutnya) {
-                    // Ketukan Benar!
-                    this.visibility = View.GONE // Hilangkan bola
-                    angkaSelanjutnya++
-                    skor += 10
-                    tvSkor.text = "Skor: $skor"
-
-                    if (angkaSelanjutnya > targetMaksimal) {
-                        cekNaikFase()
-                    } else {
-                        updatePapanTarget()
-                    }
+                    prosesJawabanBenar(this)
                 } else {
-                    // Salah urutan
-                    Toast.makeText(this@GameUrutkanAngkaActivity, "Cari angka $angkaSelanjutnya dulu ya!", Toast.LENGTH_SHORT).show()
+                    prosesJawabanSalah("Cari angka $angkaSelanjutnya dulu ya!")
                 }
             }
         }
+
         arenaGame.addView(bola)
+    }
+
+    private fun prosesJawabanBenar(bola: TextView) {
+        bola.visibility = View.GONE
+
+        angkaSelanjutnya++
+        skor += 10
+        totalBenar++
+
+        tvSkor.text = "Skor: $skor"
+
+        if (angkaSelanjutnya > targetMaksimal) {
+            val faseBaru = adaptiveManager.prosesJawaban(true)
+
+            if (faseBaru != faseSaatIni) {
+                faseSaatIni = faseBaru
+                Toast.makeText(this, "Fase berubah ke Fase $faseSaatIni", Toast.LENGTH_SHORT).show()
+            }
+
+            mulaiRonde()
+        } else {
+            updatePapanTarget()
+        }
+    }
+
+    private fun prosesJawabanSalah(pesan: String) {
+        totalSalah++
+
+        Toast.makeText(this, pesan, Toast.LENGTH_SHORT).show()
+
+        val faseBaru = adaptiveManager.prosesJawaban(false)
+
+        if (faseBaru != faseSaatIni) {
+            faseSaatIni = faseBaru
+            Toast.makeText(this, "Fase berubah ke Fase $faseSaatIni", Toast.LENGTH_SHORT).show()
+            mulaiRonde()
+        }
     }
 
     private fun updatePapanTarget() {
         tvTargetAngka.text = angkaSelanjutnya.toString()
     }
 
-    private fun cekNaikFase() {
-        if (faseSaatIni == 1) {
-            faseSaatIni = 2
-            Toast.makeText(this, "Hebat! Lanjut ke Fase 2", Toast.LENGTH_SHORT).show()
-        } else if (faseSaatIni == 2) {
-            faseSaatIni = 3
-            Toast.makeText(this, "Luar biasa! Hati-hati jebakan di Fase 3", Toast.LENGTH_SHORT).show()
+    private fun simpanRiwayatAkhir() {
+        if (sesiSelesai) return
+        sesiSelesai = true
+
+        timerPermainan?.cancel()
+        arenaGame.removeAllViews()
+
+        val totalJawaban = totalBenar + totalSalah
+
+        val akurasi = if (totalJawaban > 0) {
+            ((totalBenar * 100f) / totalJawaban).toInt()
         } else {
-            Toast.makeText(this, "Sempurna! Kamu juara berhitung!", Toast.LENGTH_LONG).show()
-            timerFase3?.cancel()
-            simpanRiwayatAkhir("Urutkan Angka")
-            finish()
-            return
+            0
         }
-        mulaiRonde()
-    }
 
-    private fun mulaiTimer(durasiMillis: Long) {
-        timerFase3 = object : CountDownTimer(durasiMillis, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                val detik = millisUntilFinished / 1000
-                tvTimer.text = "⏳ ${detik}s"
-            }
+        val durasiMillis = System.currentTimeMillis() - waktuMulaiSesi
+        val durasiMenit = maxOf(1, (durasiMillis / 60000L).toInt())
 
-            override fun onFinish() {
-                waktuHabis = true
-                tvTimer.text = "Habis!"
-                Toast.makeText(this@GameUrutkanAngkaActivity, "Waktu Habis! Kita ulang ronde ini ya.", Toast.LENGTH_SHORT).show()
-                mulaiRonde()
+        GameResultHelper.evaluasiDanSimpanRealtime(
+            activity = this,
+            idAnak = idAnak,
+            namaAnak = namaAnak,
+            namaGame = namaGame,
+            skor = skor,
+            akurasi = akurasi,
+            durasiMenit = durasiMenit,
+            onSelesai = { hasilEvaluasi ->
+                val intentToEvaluasi = Intent(this, EvaluasiActivity::class.java)
+                intentToEvaluasi.putExtra("ID_ANAK", idAnak)
+                intentToEvaluasi.putExtra("NAMA_ANAK", namaAnak)
+                intentToEvaluasi.putExtra("EVALUASI_LANGSUNG", hasilEvaluasi)
+                startActivity(intentToEvaluasi)
+                finish()
             }
-        }.start()
+        )
     }
 
     private fun dpToPx(dp: Int): Int {
@@ -212,34 +307,6 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        timerFase3?.cancel()
-    }
-
-    private fun simpanRiwayatAkhir(namaGame: String) {
-        val nama = intent.getStringExtra("NAMA_ANAK") ?: "Anak"
-        val idAnak = intent.getStringExtra("ID_ANAK") ?: ""
-        val akurasiSimulasi = if (skor >= 100) 100 else 80
-
-        GameResultHelper.evaluasiDanSimpanRealtime(
-            activity = this,
-            idAnak = idAnak,
-            namaAnak = nama,
-            namaGame = namaGame,
-            skor = skor,
-            akurasi = akurasiSimulasi,
-            durasiMenit = 2,
-            onSelesai = { hasilEvaluasi ->
-                // LOMPAT KE HALAMAN EVALUASI
-                val intentToEvaluasi = Intent(this, EvaluasiActivity::class.java)
-                intentToEvaluasi.putExtra("ID_ANAK", idAnak)
-                intentToEvaluasi.putExtra("NAMA_ANAK", nama)
-                intentToEvaluasi.putExtra("EVALUASI_LANGSUNG", hasilEvaluasi)
-                startActivity(intentToEvaluasi)
-
-                // Tutup game setelah melompat
-                finish()
-            }
-        )
-        // 🚨 SANGAT PENTING: JANGAN ADA TULISAN finish() SAMA SEKALI DI AREA SINI!
+        timerPermainan?.cancel()
     }
 }

@@ -9,11 +9,11 @@
 
     <ImageView
         android:id="@+id/ivDialogCharacter"
-        android:layout_width="88dp"
-        android:layout_height="88dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginBottom="14dp"
         android:contentDescription="Karakter sukses"
-        android:src="@drawable/char_moon_purple" />
+        android:src="@drawable/karakter_berhasil" />
 
     <TextView
         android:id="@+id/tvDialogTitle"

@@ -9,11 +9,11 @@
 
     <ImageView
         android:id="@+id/ivDialogErrorCharacter"
-        android:layout_width="88dp"
-        android:layout_height="88dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginBottom="14dp"
         android:contentDescription="Karakter gagal"
-        android:src="@drawable/char_diamond_orange" />
+        android:src="@drawable/karakter_error" />
 
     <TextView
         android:id="@+id/tvDialogErrorTitle"

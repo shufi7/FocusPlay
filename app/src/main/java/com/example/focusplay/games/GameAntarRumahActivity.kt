@@ -2,13 +2,9 @@ package com.example.focusplay.games
 
 import android.content.ClipData
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.Typeface
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.DragEvent
-import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
@@ -17,12 +13,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.history.EvaluasiActivity
 import com.example.focusplay.utils.AdaptiveGameManager
 import com.example.focusplay.utils.GameResultHelper
-import com.example.focusplay.history.EvaluasiActivity
-import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.random.Random
 
 class GameAntarRumahActivity : AppCompatActivity() {
@@ -32,49 +25,40 @@ class GameAntarRumahActivity : AppCompatActivity() {
     private lateinit var tvTimer: TextView
     private lateinit var tvSkor: TextView
     private lateinit var arenaGame: FrameLayout
-
     private lateinit var adaptiveManager: AdaptiveGameManager
-    private lateinit var auth: FirebaseAuth
-    private lateinit var db: FirebaseFirestore
 
-    private var idAnak: String = ""
-    private var namaAnak: String = "Anak"
+    private var idAnak = ""
+    private var namaAnak = "Anak"
 
     private var faseSekarang = 1
     private var modeAdaptif = true
     private var skor = 0
     private var totalBenar = 0
     private var totalSalah = 0
-    private var targetWaktuMenit = 10
-    private var delayItemMuncul = 1200L
+    private var targetWaktuMenit = 1
 
     private var waktuMulaiSesi = 0L
-    private var waktuItemMuncul = 0L
-    private var totalResponseMillis = 0L
-
     private var sesiSelesai = false
     private var countDownTimer: CountDownTimer? = null
 
     private val namaGame = "Antar ke Rumah"
 
-    private val daftarWarna = listOf(
-        WarnaGame("Merah", Color.parseColor("#EF4444")),
-        WarnaGame("Biru", Color.parseColor("#3B82F6")),
-        WarnaGame("Hijau", Color.parseColor("#22C55E")),
-        WarnaGame("Kuning", Color.parseColor("#FACC15"))
+    data class DombaRumah(
+        val nama: String,
+        val gambarDomba: Int,
+        val gambarRumah: Int
     )
 
-    data class WarnaGame(
-        val nama: String,
-        val warna: Int
+    private val daftarDombaRumah = listOf(
+        DombaRumah("putih", R.drawable.domba_putih, R.drawable.rumah_putih),
+        DombaRumah("pink", R.drawable.domba_pink, R.drawable.rumah_pink),
+        DombaRumah("kuning", R.drawable.domba_kuning, R.drawable.rumah_kuning),
+        DombaRumah("biru", R.drawable.domba_biru, R.drawable.rumah_biru)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_antar_rumah)
-
-        auth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
 
         ambilDataAnakDariIntent()
         hubungkanView()
@@ -84,7 +68,7 @@ class GameAntarRumahActivity : AppCompatActivity() {
         waktuMulaiSesi = System.currentTimeMillis()
 
         mulaiTimer()
-        terapkanFase(faseSekarang)
+        mulaiRonde()
     }
 
     private fun ambilDataAnakDariIntent() {
@@ -109,17 +93,9 @@ class GameAntarRumahActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("pengaturan_permainan", MODE_PRIVATE)
 
         modeAdaptif = prefs.getBoolean("mode_adaptif", true)
-
-        val kecepatanItem = prefs.getInt("kecepatan_item", 1)
-        targetWaktuMenit = prefs.getString("target_waktu", "10")?.toIntOrNull() ?: 10
+        targetWaktuMenit = prefs.getString("target_waktu", "1")?.toIntOrNull() ?: 1
 
         faseSekarang = 1
-
-        delayItemMuncul = when (kecepatanItem) {
-            0 -> 2000L
-            1 -> 1200L
-            else -> 700L
-        }
 
         adaptiveManager = AdaptiveGameManager(
             faseSekarang = faseSekarang,
@@ -137,8 +113,6 @@ class GameAntarRumahActivity : AppCompatActivity() {
     private fun mulaiTimer() {
         val totalMillis = targetWaktuMenit * 60 * 1000L
 
-        tvTimer.visibility = View.VISIBLE
-
         countDownTimer = object : CountDownTimer(totalMillis, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
                 val detik = millisUntilFinished / 1000
@@ -154,58 +128,50 @@ class GameAntarRumahActivity : AppCompatActivity() {
         }.start()
     }
 
-    private fun terapkanFase(fase: Int) {
+    private fun mulaiRonde() {
         if (sesiSelesai) return
-
-        faseSekarang = fase
-
-        tvFase.text = when (faseSekarang) {
-            1 -> "Fase 1: Mudah"
-            2 -> "Fase 2: Sedang"
-            else -> "Fase 3: Sulit"
-        }
 
         arenaGame.removeAllViews()
 
-        val warnaAktif = getWarnaAktifBerdasarkanFase()
-        buatRumah(warnaAktif)
+        tvFase.text = "Fase $faseSekarang"
+        tvSkor.text = "Skor: $skor"
 
-        arenaGame.postDelayed({
-            if (!sesiSelesai) {
-                buatItem(warnaAktif)
-            }
-        }, delayItemMuncul)
-    }
+        val itemAktif = when (faseSekarang) {
+            1 -> daftarDombaRumah.take(2)
+            2 -> daftarDombaRumah.take(3)
+            else -> daftarDombaRumah.take(4)
+        }
 
-    private fun getWarnaAktifBerdasarkanFase(): List<WarnaGame> {
-        return when (faseSekarang) {
-            1 -> daftarWarna.take(2)
-            2 -> daftarWarna.take(3)
-            else -> daftarWarna.take(4)
+        arenaGame.post {
+            tampilkanRumah(itemAktif)
+            tampilkanDomba(itemAktif)
         }
     }
 
-    private fun buatRumah(warnaAktif: List<WarnaGame>) {
-        val jumlah = warnaAktif.size
-        val ukuranRumah = 82
-        val jarak = 18
+    private fun tampilkanRumah(itemAktif: List<DombaRumah>) {
+        val jumlah = itemAktif.size
+        val ukuranRumah = when (jumlah) {
+            2 -> 95
+            3 -> 85
+            else -> 75
+        }
 
-        warnaAktif.forEachIndexed { index, warnaGame ->
-            val rumah = TextView(this).apply {
-                text = "⌂"
-                textSize = 38f
-                gravity = Gravity.CENTER
-                tag = warnaGame.nama
-                setTextColor(Color.WHITE)
-                typeface = Typeface.DEFAULT_BOLD
-                background = roundedDrawable(warnaGame.warna, 18)
+        val jarak = 8
+        val totalLebar = (jumlah * ukuranRumah) + ((jumlah - 1) * jarak)
+        val startX = (arenaGame.width - dp(totalLebar)) / 2
+
+        itemAktif.forEachIndexed { index, data ->
+            val rumah = ImageView(this).apply {
+                setImageResource(data.gambarRumah)
+                scaleType = ImageView.ScaleType.FIT_CENTER
+                tag = data.nama
 
                 setOnDragListener { targetView, event ->
                     when (event.action) {
                         DragEvent.ACTION_DROP -> {
-                            val warnaItem = event.clipDescription.label.toString()
+                            val warnaDomba = event.clipDescription.label.toString()
                             val warnaRumah = targetView.tag.toString()
-                            cekJawaban(warnaItem, warnaRumah)
+                            cekJawaban(warnaDomba, warnaRumah)
                             true
                         }
                         else -> true
@@ -214,33 +180,24 @@ class GameAntarRumahActivity : AppCompatActivity() {
             }
 
             val params = FrameLayout.LayoutParams(dp(ukuranRumah), dp(ukuranRumah))
-            params.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-            val totalLebar = (jumlah * ukuranRumah) + ((jumlah - 1) * jarak)
-            val startX = -totalLebar / 2 + ukuranRumah / 2
-
-            params.leftMargin = dp(startX + index * (ukuranRumah + jarak))
-            params.bottomMargin = dp(24)
+            params.leftMargin = startX + dp(index * (ukuranRumah + jarak))
+            params.topMargin = (arenaGame.height * 0.41f).toInt()
 
             arenaGame.addView(rumah, params)
         }
     }
 
-    private fun buatItem(warnaAktif: List<WarnaGame>) {
-        val warnaGame = warnaAktif.random()
-        waktuItemMuncul = System.currentTimeMillis()
+    private fun tampilkanDomba(itemAktif: List<DombaRumah>) {
+        val data = itemAktif.random()
 
-        val item = TextView(this).apply {
-            text = "●"
-            textSize = 46f
-            gravity = Gravity.CENTER
-            setTextColor(warnaGame.warna)
-            tag = warnaGame.nama
-            typeface = Typeface.DEFAULT_BOLD
+        val domba = ImageView(this).apply {
+            setImageResource(data.gambarDomba)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            tag = data.nama
 
             setOnTouchListener { view, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) {
-                    val clipData = ClipData.newPlainText(warnaGame.nama, warnaGame.nama)
+                    val clipData = ClipData.newPlainText(data.nama, data.nama)
                     val shadow = View.DragShadowBuilder(view)
 
                     view.startDragAndDrop(
@@ -249,6 +206,7 @@ class GameAntarRumahActivity : AppCompatActivity() {
                         view,
                         0
                     )
+
                     true
                 } else {
                     false
@@ -256,22 +214,25 @@ class GameAntarRumahActivity : AppCompatActivity() {
             }
         }
 
-        val params = FrameLayout.LayoutParams(dp(82), dp(82))
+        val ukuranDomba = dp(72)
+        val params = FrameLayout.LayoutParams(ukuranDomba, ukuranDomba)
 
-        val batasKanan = maxOf(dp(100), arenaGame.width - dp(110))
-        params.leftMargin = Random.nextInt(dp(20), batasKanan)
-        params.topMargin = dp(30)
+        val minX = dp(24)
+        val maxX = maxOf(minX + 1, arenaGame.width - ukuranDomba - dp(24))
 
-        arenaGame.addView(item, params)
+        val minY = dp(470)
+        val maxY = maxOf(minY + 1, arenaGame.height - ukuranDomba - dp(80))
+
+        params.leftMargin = Random.nextInt(minX, maxX)
+        params.topMargin = Random.nextInt(minY, maxY)
+
+        arenaGame.addView(domba, params)
     }
 
-    private fun cekJawaban(warnaItem: String, warnaRumah: String) {
+    private fun cekJawaban(warnaDomba: String, warnaRumah: String) {
         if (sesiSelesai) return
 
-        val benar = warnaItem == warnaRumah
-
-        val responseMillis = System.currentTimeMillis() - waktuItemMuncul
-        totalResponseMillis += responseMillis
+        val benar = warnaDomba == warnaRumah
 
         if (benar) {
             skor += 10
@@ -285,18 +246,10 @@ class GameAntarRumahActivity : AppCompatActivity() {
         val faseBaru = adaptiveManager.prosesJawaban(benar)
 
         if (faseBaru != faseSekarang) {
-            terapkanFase(faseBaru)
-        } else {
-            arenaGame.removeAllViews()
-            val warnaAktif = getWarnaAktifBerdasarkanFase()
-            buatRumah(warnaAktif)
-
-            arenaGame.postDelayed({
-                if (!sesiSelesai) {
-                    buatItem(warnaAktif)
-                }
-            }, delayItemMuncul)
+            faseSekarang = faseBaru
         }
+
+        mulaiRonde()
     }
 
     private fun selesaikanSesiDanSimpan() {
@@ -326,11 +279,10 @@ class GameAntarRumahActivity : AppCompatActivity() {
             akurasi = akurasi,
             durasiMenit = durasiMenit
         ) { hasilAI ->
-
             val intent = Intent(this, EvaluasiActivity::class.java)
+            intent.putExtra("ID_ANAK", idAnak)
             intent.putExtra("NAMA_ANAK", namaAnak)
             intent.putExtra("EVALUASI_LANGSUNG", hasilAI)
-
             startActivity(intent)
             finish()
         }
@@ -339,14 +291,6 @@ class GameAntarRumahActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
-    }
-
-    private fun roundedDrawable(color: Int, radius: Int): GradientDrawable {
-        return GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            setColor(color)
-            cornerRadius = dp(radius).toFloat()
-        }
     }
 
     private fun dp(value: Int): Int {

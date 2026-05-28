@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_splash_playground"
+    android:background="@drawable/backgrounds"
     android:fillViewport="true">
 
     <LinearLayout
@@ -178,108 +178,6 @@
                         android:text="Isi dalam satuan menit"
                         android:textColor="#6B7280"
                         android:textSize="12sp" />
-
-                    <!-- KECEPATAN ITEM -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="22dp"
-                        android:fontFamily="@font/quicksand"
-                        android:text="Kecepatan Item Muncul"
-                        android:textColor="#374151"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        app:cardBackgroundColor="#F0FBEA"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="0dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:fontFamily="@font/quicksand"
-                                    android:text="Atur cepat lambatnya item muncul"
-                                    android:textColor="#6B7280"
-                                    android:textSize="13sp" />
-
-                                <TextView
-                                    android:id="@+id/tvKecepatanItem"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/bg_splash_ribbon"
-                                    android:fontFamily="@font/quicksand"
-                                    android:paddingHorizontal="12dp"
-                                    android:paddingVertical="5dp"
-                                    android:text="Normal"
-                                    android:textColor="#FFFFFF"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
-
-                            <SeekBar
-                                android:id="@+id/seekBarKecepatanItem"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
-                                android:max="2"
-                                android:progress="1"
-                                android:progressTint="#8DB52A"
-                                android:thumbTint="#406915" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:fontFamily="@font/quicksand"
-                                    android:text="Lambat"
-                                    android:textColor="#6B7280"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:fontFamily="@font/quicksand"
-                                    android:gravity="center"
-                                    android:text="Normal"
-                                    android:textColor="#6B7280"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:fontFamily="@font/quicksand"
-                                    android:gravity="end"
-                                    android:text="Cepat"
-                                    android:textColor="#6B7280"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
 
                     <!-- MODE ADAPTIF -->
                     <LinearLayout

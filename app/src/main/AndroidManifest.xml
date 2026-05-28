@@ -18,9 +18,6 @@
             android:name=".view.AuthChoiceActivity"
             android:exported="false" />
         <activity
-            android:name=".games.GameTangkapWarnaActivity"
-            android:exported="false" />
-        <activity
             android:name=".games.GameUrutkanAngkaActivity"
             android:exported="false" />
         <activity
@@ -28,9 +25,6 @@
             android:exported="false" />
         <activity
             android:name=".games.GameAntarRumahActivity"
-            android:exported="false" />
-        <activity
-            android:name=".games.GameTapMerahActivity"
             android:exported="false" />
         <activity
             android:name=".dashboard.DashboardAnakActivity"
