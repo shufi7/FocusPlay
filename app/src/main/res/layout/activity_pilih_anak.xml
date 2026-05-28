@@ -5,47 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@drawable/bg_splash_playground">
-
-    <!-- Dekorasi awan kanan -->
-    <View
-        android:id="@+id/cloudRight"
-        android:layout_width="135dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="58dp"
-        android:layout_marginEnd="-28dp"
-        android:alpha="0.88"
-        android:background="@drawable/bg_cloud"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Area hijau bawah -->
-    <View
-        android:id="@+id/groundBottomPilihAnak"
-        android:layout_width="0dp"
-        android:layout_height="155dp"
-        android:background="@drawable/bg_ground_soft"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <View
-        android:layout_width="235dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="-48dp"
-        android:layout_marginBottom="80dp"
-        android:background="@drawable/bg_hill"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <View
-        android:layout_width="250dp"
-        android:layout_height="106dp"
-        android:layout_marginEnd="-55dp"
-        android:layout_marginBottom="76dp"
-        android:background="@drawable/bg_hill"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    android:background="@drawable/backgrounds">
 
     <!-- Header -->
     <LinearLayout
@@ -65,11 +25,10 @@
             android:id="@+id/ivBackPilihAnak"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:background="@drawable/bg_back_circle"
+            android:background="@drawable/btn_back"
             android:contentDescription="Kembali"
             android:padding="11dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_arrow_back" />
+            android:scaleType="fitCenter" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -82,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:fontFamily="@font/quicksand"
+                android:fontFamily="@font/quicksand_bold"
                 android:maxLines="1"
                 android:text="Pilih Profil Anak"
                 android:textColor="#1F2937"
@@ -175,7 +134,7 @@
                         android:adjustViewBounds="true"
                         android:contentDescription="Karakter"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/char_moon_purple" />
+                        android:src="@drawable/karakter_anak" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

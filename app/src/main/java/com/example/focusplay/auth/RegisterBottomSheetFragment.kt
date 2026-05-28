@@ -50,7 +50,7 @@ class RegisterBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_
 
             bottomSheet?.let { sheet ->
                 val screenHeight = resources.displayMetrics.heightPixels
-                val sheetHeight = (screenHeight * 0.94).toInt()
+                val sheetHeight = (screenHeight * 0.80).toInt()
 
                 sheet.layoutParams.height = sheetHeight
                 sheet.requestLayout()

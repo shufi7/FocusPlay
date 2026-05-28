@@ -168,7 +168,5 @@
                 android:shadowRadius="2" />
 
         </LinearLayout>
-
     </FrameLayout>
-
 </ScrollView>

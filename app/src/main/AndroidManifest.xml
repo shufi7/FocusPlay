@@ -60,13 +60,7 @@
             android:name=".settings.PengaturanPermainanActivity"
             android:exported="false" />
         <activity
-            android:name=".auth.RegisterActivity"
-            android:exported="false" />
-        <activity
             android:name=".dashboard.DashboardActivity"
-            android:exported="false" />
-        <activity
-            android:name=".auth.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".view.MainActivity"

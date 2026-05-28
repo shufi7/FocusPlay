@@ -29,7 +29,7 @@
             android:paddingStart="28dp"
             android:paddingTop="16dp"
             android:paddingEnd="28dp"
-            android:paddingBottom="120dp">
+            android:paddingBottom="34dp">
 
             <View
                 android:layout_width="54dp"
@@ -204,8 +204,6 @@
                     android:layout_height="28dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/google" />
-
-
             </LinearLayout>
 
             <TextView
@@ -222,9 +220,6 @@
                 android:shadowDx="1"
                 android:shadowDy="1"
                 android:shadowRadius="2" />
-
         </LinearLayout>
-
     </FrameLayout>
-
 </ScrollView>

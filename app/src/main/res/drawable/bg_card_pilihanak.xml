@@ -4,22 +4,22 @@
     <!-- Saat ditekan -->
     <item android:state_pressed="true">
         <shape>
-            <solid android:color="#EAF9D8" />
+            <solid android:color="#fff" />
             <corners android:radius="26dp" />
             <stroke
                 android:width="2dp"
-                android:color="#B5E48C" />
+                android:color="#f0e9c4" />
         </shape>
     </item>
 
     <!-- Normal -->
     <item>
         <shape>
-            <solid android:color="#F7FDEB" />
+            <solid android:color="#fff" />
             <corners android:radius="26dp" />
             <stroke
-                android:width="1dp"
-                android:color="#D9F4B9" />
+                android:width="2dp"
+                android:color="#f0e9c4" />
         </shape>
     </item>
 
