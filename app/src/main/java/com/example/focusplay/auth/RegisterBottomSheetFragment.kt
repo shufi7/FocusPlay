@@ -5,13 +5,11 @@ import android.os.Bundle
 import android.text.InputType
 import android.util.Patterns
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import com.example.focusplay.R
 import com.example.focusplay.utils.ErrorDialogHelper
-import com.example.focusplay.utils.SuccessDialogHelper
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -187,18 +185,15 @@ class RegisterBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_
                     user?.updateProfile(profileUpdates)
                         ?.addOnCompleteListener { updateTask ->
                             if (updateTask.isSuccessful) {
-                                SuccessDialogHelper.showSuccessDialog(
-                                    activity = requireActivity(),
-                                    title = "Pendaftaran Berhasil!",
-                                    message = "Akun berhasil dibuat. Silakan masuk menggunakan email dan password kamu."
-                                ) {
-                                    auth.signOut()
-                                    dismiss()
-                                    LoginBottomSheetFragment().show(
-                                        parentFragmentManager,
-                                        "LoginBottomSheet"
-                                    )
-                                }
+
+                                auth.signOut()
+                                dismiss()
+
+                                LoginBottomSheetFragment().show(
+                                    parentFragmentManager,
+                                    "LoginBottomSheet"
+                                )
+
                             } else {
                                 tampilkanError(
                                     "Pendaftaran Gagal",
@@ -206,6 +201,7 @@ class RegisterBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_
                                 )
                             }
                         }
+
                 } else {
                     tampilkanError(
                         "Pendaftaran Gagal",

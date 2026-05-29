@@ -10,17 +10,22 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
 import com.example.focusplay.history.EvaluasiActivity
 import com.example.focusplay.utils.AdaptiveGameManager
 import com.example.focusplay.utils.GameResultHelper
 import kotlin.random.Random
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.Gravity
+import android.widget.Button
+import android.widget.LinearLayout
 
 class GameAntarRumahActivity : AppCompatActivity() {
 
-    private lateinit var btnKembali: ImageView
+    private lateinit var btnMenuGame: TextView
     private lateinit var tvFase: TextView
     private lateinit var tvTimer: TextView
     private lateinit var tvSkor: TextView
@@ -40,6 +45,8 @@ class GameAntarRumahActivity : AppCompatActivity() {
     private var waktuMulaiSesi = 0L
     private var sesiSelesai = false
     private var countDownTimer: CountDownTimer? = null
+    private var sisaWaktuMillis = 0L
+    private var gameSedangPause = false
 
     private val namaGame = "Antar ke Rumah"
 
@@ -82,7 +89,7 @@ class GameAntarRumahActivity : AppCompatActivity() {
     }
 
     private fun hubungkanView() {
-        btnKembali = findViewById(R.id.btnKembali)
+        btnMenuGame = findViewById(R.id.btnMenuGame)
         tvFase = findViewById(R.id.tvFase)
         tvTimer = findViewById(R.id.tvTimer)
         tvSkor = findViewById(R.id.tvSkor)
@@ -104,28 +111,141 @@ class GameAntarRumahActivity : AppCompatActivity() {
     }
 
     private fun aturTombol() {
-        btnKembali.setOnClickListener {
-            countDownTimer?.cancel()
-            finish()
+        btnMenuGame.setOnClickListener {
+            tampilkanMenuGame()
         }
     }
 
-    private fun mulaiTimer() {
-        val totalMillis = targetWaktuMenit * 60 * 1000L
+    private fun tampilkanMenuGame() {
+        pauseGame()
 
-        countDownTimer = object : CountDownTimer(totalMillis, 1000L) {
+        val dialog = Dialog(this)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCancelable(false)
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(dp(18), dp(18), dp(18), dp(18))
+            background = getDrawable(R.drawable.bg_menu_game_dialog)
+        }
+
+        val title = TextView(this).apply {
+            text = "MENU"
+            textSize = 28f
+            setTextColor(Color.WHITE)
+            gravity = Gravity.CENTER
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            background = getDrawable(R.drawable.bg_btn_menu_game)
+            setPadding(dp(24), dp(6), dp(24), dp(6))
+        }
+
+        val titleParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            dp(48)
+        )
+        titleParams.setMargins(0, 0, 0, dp(18))
+        container.addView(title, titleParams)
+
+        val btnResume = buatTombolMenu("RESUME")
+        val btnAbout = buatTombolMenu("ABOUT")
+        val btnQuit = buatTombolMenu("QUIT")
+
+        container.addView(btnResume)
+        container.addView(btnAbout)
+        container.addView(btnQuit)
+
+        btnResume.setOnClickListener {
+            dialog.dismiss()
+            resumeGame()
+        }
+
+        btnAbout.setOnClickListener {
+            tampilkanAboutGame()
+        }
+
+        btnQuit.setOnClickListener {
+            dialog.dismiss()
+            countDownTimer?.cancel()
+            finish()
+        }
+
+        dialog.setContentView(container)
+
+        val width = (resources.displayMetrics.widthPixels * 0.78).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+
+        dialog.show()
+    }
+
+    private fun buatTombolMenu(teks: String): TextView {
+        val tombol = TextView(this).apply {
+            text = teks
+            textSize = 17f
+            setTextColor(Color.WHITE)
+            gravity = Gravity.CENTER
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            background = getDrawable(R.drawable.bg_menu_game_button)
+        }
+
+        val params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            dp(48)
+        )
+        params.setMargins(0, 0, 0, dp(12))
+        tombol.layoutParams = params
+
+        return tombol
+    }
+
+    private fun tampilkanAboutGame() {
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Tentang Game")
+            .setMessage(
+                "Antar ke Rumah adalah permainan mencocokkan domba dengan rumah sesuai warna.\n\n" +
+                        "Game ini membantu anak melatih fokus, ketelitian, koordinasi tangan dan mata, serta kemampuan mengenali warna."
+            )
+            .setPositiveButton("Mengerti", null)
+            .show()
+    }
+
+    private fun mulaiTimer() {
+        sisaWaktuMillis = targetWaktuMenit * 60 * 1000L
+        jalankanTimer()
+    }
+
+    private fun jalankanTimer() {
+        countDownTimer?.cancel()
+
+        countDownTimer = object : CountDownTimer(sisaWaktuMillis, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
+                sisaWaktuMillis = millisUntilFinished
+
                 val detik = millisUntilFinished / 1000
                 val menit = detik / 60
                 val sisaDetik = detik % 60
+
                 tvTimer.text = "${menit}:${sisaDetik.toString().padStart(2, '0')}"
             }
 
             override fun onFinish() {
+                sisaWaktuMillis = 0L
                 tvTimer.text = "0:00"
                 selesaikanSesiDanSimpan()
             }
         }.start()
+    }
+
+    private fun pauseGame() {
+        gameSedangPause = true
+        countDownTimer?.cancel()
+    }
+
+    private fun resumeGame() {
+        if (sesiSelesai) return
+
+        gameSedangPause = false
+        jalankanTimer()
     }
 
     private fun mulaiRonde() {
@@ -196,6 +316,8 @@ class GameAntarRumahActivity : AppCompatActivity() {
             tag = data.nama
 
             setOnTouchListener { view, event ->
+                if (gameSedangPause) return@setOnTouchListener true
+
                 if (event.action == MotionEvent.ACTION_DOWN) {
                     val clipData = ClipData.newPlainText(data.nama, data.nama)
                     val shadow = View.DragShadowBuilder(view)
@@ -230,7 +352,7 @@ class GameAntarRumahActivity : AppCompatActivity() {
     }
 
     private fun cekJawaban(warnaDomba: String, warnaRumah: String) {
-        if (sesiSelesai) return
+        if (sesiSelesai || gameSedangPause) return
 
         val benar = warnaDomba == warnaRumah
 

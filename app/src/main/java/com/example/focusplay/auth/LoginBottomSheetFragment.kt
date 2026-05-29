@@ -15,7 +15,6 @@ import com.example.focusplay.R
 import com.example.focusplay.utils.ErrorDialogHelper
 import com.example.focusplay.utils.LoadingDialogHelper
 import com.example.focusplay.utils.SessionManager
-import com.example.focusplay.utils.SuccessDialogHelper
 import com.example.focusplay.profile.PilihPeranActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -26,6 +25,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import android.view.MotionEvent
 
 class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_login_bottom_sheet) {
 
@@ -43,6 +43,7 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
     private lateinit var btnLoginGoogle: View
 
     private var passwordTerlihat = false
+    private var tombolSedangDiproses = false
 
     private val launcher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -142,11 +143,11 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
     }
 
     private fun aturAksiTombol() {
-        btnLogin.setOnClickListener {
+        aturTombolCepat(btnLogin) {
             prosesLoginEmailPassword()
         }
 
-        btnRegister.setOnClickListener {
+        aturTombolCepat(btnRegister) {
             dismiss()
 
             RegisterBottomSheetFragment().show(
@@ -155,7 +156,7 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
             )
         }
 
-        btnLoginGoogle.setOnClickListener {
+        aturTombolCepat(btnLoginGoogle) {
             googleSignInClient.signOut().addOnCompleteListener {
                 launcher.launch(googleSignInClient.signInIntent)
             }
@@ -206,13 +207,7 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
                         emailUser
                     )
 
-                    SuccessDialogHelper.showSuccessDialog(
-                        activity = requireActivity(),
-                        title = "Login Berhasil!",
-                        message = "Selamat datang di FocusPlay!"
-                    ) {
-                        bukaPilihPeran()
-                    }
+                    bukaPilihPeran()
 
                 } else {
                     tampilkanError(
@@ -241,13 +236,7 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
                         emailUser
                     )
 
-                    SuccessDialogHelper.showSuccessDialog(
-                        activity = requireActivity(),
-                        title = "Login Berhasil!",
-                        message = "Selamat datang, ${ambilNamaPanggilan(namaUser)}!"
-                    ) {
-                        bukaPilihPeran()
-                    }
+                    bukaPilihPeran()
 
                 } else {
                     tampilkanError(
@@ -305,5 +294,55 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
 
     override fun getTheme(): Int {
         return R.style.FocusPlayBottomSheetDialog
+    }
+
+    private fun aturTombolCepat(view: View, aksi: () -> Unit) {
+        view.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.animate()
+                        .scaleX(0.96f)
+                        .scaleY(0.96f)
+                        .alpha(0.85f)
+                        .setDuration(50)
+                        .start()
+                    true
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    v.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .alpha(1f)
+                        .setDuration(50)
+                        .start()
+
+                    v.performClick()
+
+                    if (!tombolSedangDiproses) {
+                        tombolSedangDiproses = true
+                        aksi()
+
+                        v.postDelayed({
+                            tombolSedangDiproses = false
+                        }, 800)
+                    }
+
+                    true
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    v.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .alpha(1f)
+                        .setDuration(50)
+                        .start()
+                    true
+                }
+
+                else -> true
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.example.focusplay.R
+import com.example.focusplay.games.GameDescriptionActivity
 import com.example.focusplay.games.GameAntarRumahActivity
 import com.example.focusplay.games.GamePasangKartuActivity
 import com.example.focusplay.games.GameUrutkanAngkaActivity
@@ -61,19 +62,19 @@ class DashboardAnakActivity : AppCompatActivity() {
         }
 
         findViewById<CardView>(R.id.cardGame1).setOnClickListener {
-            bukaGame(GameAntarRumahActivity::class.java)
+            bukaDeskripsiGame("antar_rumah")
         }
 
         findViewById<CardView>(R.id.cardGame2).setOnClickListener {
-            bukaGame(GamePasangKartuActivity::class.java)
+            bukaDeskripsiGame("pasang_kartu")
         }
 
         findViewById<CardView>(R.id.cardGame3).setOnClickListener {
-            bukaGame(GameUrutkanAngkaActivity::class.java)
+            bukaDeskripsiGame("urut_angka")
         }
     }
 
-    private fun bukaGame(targetActivity: Class<*>) {
+    private fun bukaDeskripsiGame(gameKey: String) {
         if (idAnak.isEmpty()) {
             Toast.makeText(
                 this,
@@ -83,7 +84,7 @@ class DashboardAnakActivity : AppCompatActivity() {
             return
         }
 
-        val intent = Intent(this, targetActivity)
+        val intent = Intent(this, GameDescriptionActivity::class.java)
 
         intent.putExtra("ID_ANAK", idAnak)
         intent.putExtra("NAMA_ANAK", namaAnak)
@@ -93,6 +94,9 @@ class DashboardAnakActivity : AppCompatActivity() {
         intent.putExtra("nama_anak", namaAnak)
         intent.putExtra("usia_anak", usiaAnak)
 
+        intent.putExtra("GAME_KEY", gameKey)
+
         startActivity(intent)
     }
+
 }

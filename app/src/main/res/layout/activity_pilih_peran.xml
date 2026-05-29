@@ -6,7 +6,6 @@
 
     <!-- Background custom -->
     <ImageView
-        android:id="@+id/bgPilihPeran"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="Background"
@@ -71,7 +70,6 @@
 
             <!-- Card utama -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardContainerPeran"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="22dp"
@@ -102,7 +100,6 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/tvSubtitlePeran"
                         android:layout_width="324dp"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/quicksand"

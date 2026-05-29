@@ -8,7 +8,6 @@
 
     <!-- Awan dekorasi -->
     <View
-        android:id="@+id/cloudLeftTambah"
         android:layout_width="120dp"
         android:layout_height="36dp"
         android:layout_marginStart="-24dp"
@@ -19,7 +18,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
-        android:id="@+id/cloudRightTambah"
         android:layout_width="135dp"
         android:layout_height="40dp"
         android:layout_marginTop="58dp"
@@ -52,7 +50,6 @@
 
     <!-- Area hijau bawah -->
     <View
-        android:id="@+id/groundTambahAnak"
         android:layout_width="0dp"
         android:layout_height="165dp"
         android:background="@drawable/bg_ground_soft"
@@ -123,7 +120,6 @@
 
     <!-- Card utama -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardTambahAnak"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="22dp"

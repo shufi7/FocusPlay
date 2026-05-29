@@ -15,6 +15,9 @@
         android:theme="@style/Theme.FocusPlay"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".games.GameDescriptionActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.AuthChoiceActivity"
             android:exported="false" />
         <activity
