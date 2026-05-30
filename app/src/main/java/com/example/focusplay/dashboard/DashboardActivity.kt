@@ -14,8 +14,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
-import com.example.focusplay.customview.DataGrafikHarian
-import com.example.focusplay.customview.WeeklyLineChartView
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.example.focusplay.utils.SessionManager
 import com.example.focusplay.view.AuthChoiceActivity
 import com.example.focusplay.settings.PengaturanPermainanActivity
@@ -46,7 +51,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var btnPengaturanPermainan: View
     private lateinit var btnLogout: View
 
-    private lateinit var chartWeekly: WeeklyLineChartView
+    private lateinit var chartWeekly: LineChart
 
     private var selectedAnakId: String = ""
     private var selectedNamaAnak: String = ""
@@ -79,6 +84,7 @@ class DashboardActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
 
         hubungkanView()
+        konfigurasiGrafikPlugin()
         kosongkanGrafik()
         kosongkanRecapAi()
         aturAksiTombol()
@@ -159,8 +165,48 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
+    private fun konfigurasiGrafikPlugin() {
+        chartWeekly.description.isEnabled = false
+        chartWeekly.legend.isEnabled = false
+        chartWeekly.axisRight.isEnabled = false
+        chartWeekly.setNoDataText("Belum ada data sesi bermain")
+        chartWeekly.setTouchEnabled(true)
+        chartWeekly.setDragEnabled(false)
+        chartWeekly.setScaleEnabled(false)
+        chartWeekly.setPinchZoom(false)
+        chartWeekly.setExtraOffsets(dp(8).toFloat(), dp(8).toFloat(), dp(18).toFloat(), dp(10).toFloat())
+
+        chartWeekly.xAxis.apply {
+            position = XAxis.XAxisPosition.BOTTOM
+            granularity = 1f
+            setDrawGridLines(false)
+            setDrawAxisLine(false)
+            textColor = Color.parseColor("#6B7C8F")
+            textSize = 10f
+            yOffset = 8f
+            valueFormatter = IndexAxisValueFormatter(emptyList<String>())
+        }
+
+        chartWeekly.axisLeft.apply {
+            axisMinimum = 0f
+            axisMaximum = 100f
+            setLabelCount(6, true)
+            setDrawAxisLine(false)
+            gridColor = Color.parseColor("#D8E5F5")
+            textColor = Color.parseColor("#6B7C8F")
+            textSize = 10f
+            valueFormatter = object : ValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    return value.toInt().toString()
+                }
+            }
+        }
+    }
+
     private fun kosongkanGrafik() {
-        chartWeekly.setData(emptyList())
+        chartWeekly.clear()
+        chartWeekly.xAxis.valueFormatter = IndexAxisValueFormatter(emptyList<String>())
+        chartWeekly.invalidate()
     }
 
     private fun kosongkanRecapAi() {
@@ -201,7 +247,7 @@ class DashboardActivity : AppCompatActivity() {
                         idDokumen = doc.id,
                         namaAnak = nama,
                         usia = usia,
-                        avatar = doc.getString("avatar") ?: "char_red"
+                        avatar = doc.getString("avatar") ?: "char_moon_purple"
                     )
                 }
 
@@ -316,7 +362,7 @@ class DashboardActivity : AppCompatActivity() {
             "char_purple" -> R.drawable.char_purple
             "char_star" -> R.drawable.char_star
 
-            // Cadangan untuk data lama yang mungkin masih memakai nama avatar lama
+            // Cadangan untuk data lama yang masih memakai nama avatar lama
             "char_moon_purple" -> R.drawable.char_moon_purple
             "char_cucumber" -> R.drawable.char_cucumber
             "char_cloud_blue" -> R.drawable.char_cloud_blue
@@ -543,7 +589,6 @@ class DashboardActivity : AppCompatActivity() {
                     if (daftarAnakDashboard.isNotEmpty()) {
                         selectedAnakId = daftarAnakDashboard.first().idDokumen
                         selectedNamaAnak = daftarAnakDashboard.first().namaAnak
-                        tvProfilAnakKosong.visibility = View.GONE
 
                         muatGrafikAnak(selectedAnakId)
                         muatRecapAiAnak(selectedAnakId)
@@ -561,7 +606,7 @@ class DashboardActivity : AppCompatActivity() {
                 }
 
                 renderCardProfilAnak()
-                tampilkanToastProfil("Profil ${anak.namaAnak} berhasil dihapus")
+                tampilkanToastProfil("Profil ${anak.namaAnak} dihapus")
             }
             .addOnFailureListener { e ->
                 dialog.dismiss()
@@ -587,7 +632,10 @@ class DashboardActivity : AppCompatActivity() {
                 val daftarSesi = result.documents.mapNotNull { doc ->
                     val akurasi = ambilFloat(doc, "akurasi") ?: return@mapNotNull null
                     val timestamp = ambilTimestampMillis(doc)
-                    Pair(timestamp, akurasi)
+
+                    if (timestamp <= 0L) return@mapNotNull null
+
+                    Pair(timestamp, akurasi.coerceIn(0f, 100f))
                 }.sortedBy { it.first }
 
                 if (daftarSesi.isEmpty()) {
@@ -604,19 +652,51 @@ class DashboardActivity : AppCompatActivity() {
                     }
                     .toList()
                     .takeLast(7)
-                    .map { item ->
-                        DataGrafikHarian(
-                            labelHari = item.first,
-                            nilaiAkurasi = item.second
-                        )
-                    }
 
-                chartWeekly.setData(dataGrafik)
+                tampilkanGrafikPlugin(dataGrafik)
             }
             .addOnFailureListener {
                 kosongkanGrafik()
                 Toast.makeText(this, "Gagal memuat grafik anak.", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun tampilkanGrafikPlugin(dataGrafik: List<Pair<String, Float>>) {
+        if (dataGrafik.isEmpty()) {
+            kosongkanGrafik()
+            return
+        }
+
+        val labels = dataGrafik.map { it.first }
+        val entries = dataGrafik.mapIndexed { index, item ->
+            Entry(index.toFloat(), item.second.coerceIn(0f, 100f))
+        }
+
+        val dataSet = LineDataSet(entries, "Akurasi").apply {
+            color = Color.parseColor("#5E7FE0")
+            setCircleColor(Color.parseColor("#5E7FE0"))
+            lineWidth = 3f
+            circleRadius = 4.5f
+            circleHoleRadius = 2.2f
+            setDrawCircleHole(true)
+            setDrawValues(false)
+            mode = LineDataSet.Mode.CUBIC_BEZIER
+            setDrawFilled(true)
+            fillColor = Color.parseColor("#DDEBFF")
+            setFillAlpha(120)
+            highLightColor = Color.parseColor("#456ECF")
+        }
+
+        chartWeekly.xAxis.apply {
+            valueFormatter = IndexAxisValueFormatter(labels)
+            setLabelCount(labels.size, false)
+            axisMinimum = -0.15f
+            axisMaximum = (labels.size - 1).coerceAtLeast(0).toFloat() + 0.15f
+        }
+
+        chartWeekly.data = LineData(dataSet)
+        chartWeekly.animateX(500)
+        chartWeekly.invalidate()
     }
 
     private fun muatRecapAiAnak(idAnak: String) {
@@ -676,10 +756,6 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun tambahCardRecapAi(recap: RecapAi, index: Int) {
-        /*
-         * Card recap AI dibuat satu tone biru soft agar sesuai dengan dashboard pendamping.
-         * Warna tidak lagi random ungu/hijau/orange, sehingga tampilan lebih rapi dan fokus.
-         */
         val warnaBorder = if (index % 2 == 0) "#CFE0FF" else "#D8EAFE"
         val warnaIcon = if (index % 2 == 0) "#5E7FE0" else "#4DA3D9"
         val warnaChip = if (index % 2 == 0) "#EEF4FF" else "#EAF7FF"
@@ -807,7 +883,7 @@ class DashboardActivity : AppCompatActivity() {
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(18), dp(12), dp(18), dp(12))
+            setPadding(dp(16), dp(12), dp(16), dp(12))
             background = roundedDrawable("#F2FAFF", 18, "#D8E5F5")
             elevation = dp(4).toFloat()
         }
@@ -821,17 +897,18 @@ class DashboardActivity : AppCompatActivity() {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            )
+            ).apply {
+                setMargins(dp(0), 0, 0, 0)
+            }
         }
 
         layout.addView(text)
 
-        Toast(this).apply {
-            duration = Toast.LENGTH_SHORT
-            view = layout
-            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, dp(90))
-            show()
-        }
+        val toast = Toast(this)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = layout
+        toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, dp(90))
+        toast.show()
     }
 
     private fun aturAksiTombol() {
