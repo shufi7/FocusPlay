@@ -19,7 +19,6 @@ class PilihAnakActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
 
     private lateinit var containerProfilAnak: LinearLayout
-    private lateinit var btnTambahProfilAnak: LinearLayout
     private lateinit var tvEmptyState: TextView
     private lateinit var ivBack: ImageView
 
@@ -41,17 +40,11 @@ class PilihAnakActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
 
         containerProfilAnak = findViewById(R.id.containerProfilAnak)
-        btnTambahProfilAnak = findViewById(R.id.btnTambahProfilAnak)
         tvEmptyState = findViewById(R.id.tvEmptyState)
         ivBack = findViewById(R.id.ivBackPilihAnak)
 
         ivBack.setOnClickListener {
             finish()
-        }
-
-        btnTambahProfilAnak.setOnClickListener {
-            perluRefreshData = true
-            startActivity(Intent(this, TambahAnakActivity::class.java))
         }
     }
 

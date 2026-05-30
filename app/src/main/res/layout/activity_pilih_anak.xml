@@ -7,7 +7,6 @@
     android:fitsSystemWindows="true"
     android:background="@drawable/backgrounds">
 
-    <!-- Header -->
     <LinearLayout
         android:id="@+id/headerPilihAnak"
         android:layout_width="0dp"
@@ -51,7 +50,6 @@
 
     </LinearLayout>
 
-    <!-- Card utama -->
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -73,17 +71,16 @@
             android:orientation="vertical"
             android:padding="18dp">
 
-            <!-- Hero Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="118dp"
+                android:layout_height="wrap_content"
                 app:cardBackgroundColor="#FFF1E6"
                 app:cardCornerRadius="26dp"
                 app:cardElevation="0dp">
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
                     <View
                         android:layout_width="150dp"
@@ -102,9 +99,12 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="118dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
                         android:paddingStart="18dp"
                         android:paddingEnd="14dp">
 
@@ -136,11 +136,13 @@
 
                             <TextView
                                 android:layout_width="wrap_content"
-                                android:layout_height="28dp"
+                                android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
                                 android:background="@drawable/bg_badge_orange_soft"
                                 android:fontFamily="@font/quicksand_bold"
                                 android:gravity="center"
+                                android:paddingTop="6dp"
+                                android:paddingBottom="6dp"
                                 android:paddingStart="12dp"
                                 android:paddingEnd="12dp"
                                 android:text="Latihan fokus anak"
@@ -163,85 +165,10 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Tombol tambah profil -->
-            <LinearLayout
-                android:id="@+id/btnTambahProfilAnak"
-                android:layout_width="match_parent"
-                android:layout_height="78dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_add_child_orange"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp">
-
-                <TextView
-                    android:layout_width="46dp"
-                    android:layout_height="46dp"
-                    android:background="@drawable/bg_add_icon_orange"
-                    android:fontFamily="@font/quicksand_bold"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:text="+"
-                    android:textColor="#FFFFFF"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/quicksand_bold"
-                        android:text="Tambah Profil Anak"
-                        android:textColor="#2F2F2F"
-                        android:textSize="15.5sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:fontFamily="@font/quicksand"
-                        android:maxLines="1"
-                        android:text="Buat profil baru untuk anak"
-                        android:textColor="#7A6B5D"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-                <FrameLayout
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="@drawable/bg_arrow_circle_orange">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:includeFontPadding="false"
-                        android:text="›"
-                        android:textColor="#F59E0B"
-                        android:textSize="26sp"
-                        android:textStyle="bold"
-                        android:translationY="-3dp" />
-
-                </FrameLayout>
-
-            </LinearLayout>
-
-            <!-- Judul daftar profil -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="24dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -273,7 +200,6 @@
 
             </LinearLayout>
 
-            <!-- List profil anak -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -310,7 +236,7 @@
                             android:paddingTop="18dp"
                             android:paddingEnd="16dp"
                             android:paddingBottom="18dp"
-                            android:text="Belum ada profil anak.\nTambahkan profil terlebih dahulu untuk mulai bermain."
+                            android:text="Belum ada profil anak.\nTambahkan profil melalui Dashboard Orang Tua terlebih dahulu."
                             android:textColor="#7A6B5D"
                             android:textSize="13sp" />
 
