@@ -1,134 +1,229 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/backgrounds"
-    android:fitsSystemWindows="true">
+    android:background="@drawable/backgrounds">
 
-    <!-- HEADER ATAS -->
-    <LinearLayout
-        android:id="@+id/headerDashboard"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="26dp"
-        android:layout_marginEnd="22dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/ivBackDashboard"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:background="@drawable/bg_back_button_blue"
-            android:contentDescription="Kembali"
-            android:padding="12dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_arrow_back"
-            app:tint="#456ECF" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/quicksand_bold"
-                android:text="Dashboard Pendamping"
-                android:textColor="#263342"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvWelcomeName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/quicksand"
-                android:text="Pantau perkembangan anak hari ini"
-                android:textColor="#6B7C8F"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <!-- PANEL UTAMA -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/panelDashboard"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="18dp"
-        android:layout_marginEnd="18dp"
-        android:layout_marginBottom="18dp"
-        app:cardBackgroundColor="#F7FCFF"
-        app:cardCornerRadius="32dp"
-        app:cardElevation="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/headerDashboard">
-
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scrollDashboard"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:overScrollMode="never"
-            android:scrollbars="none">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="18dp"
+            android:paddingTop="18dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="28dp">
 
             <LinearLayout
+                android:id="@+id/headerPilihAnak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="22dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="22dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/ivBackDashboard"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:background="@drawable/bg_button_back_blue"
+                    android:contentDescription="Kembali"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_arrow_back" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand_bold"
+                        android:text="Dashboard Pendamping"
+                        android:textColor="#2F2F2F"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- CARD UTAMA -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="18dp">
+                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="#FFFDF8"
+                app:cardCornerRadius="30dp"
+                app:cardElevation="6dp">
 
-                <!-- HERO DASHBOARD -->
-                <androidx.cardview.widget.CardView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardBackgroundColor="#EAF7FF"
-                    app:cardCornerRadius="26dp"
-                    app:cardElevation="0dp">
+                    android:orientation="vertical"
+                    android:padding="18dp">
 
-                    <FrameLayout
+                    <!-- HERO -->
+                    <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="#EDF6FF"
+                        app:cardCornerRadius="24dp"
+                        app:cardElevation="0dp">
 
-                        <View
-                            android:layout_width="150dp"
-                            android:layout_height="150dp"
-                            android:layout_gravity="end|center_vertical"
-                            android:layout_marginEnd="-48dp"
-                            android:background="@drawable/bg_chip_blue_soft" />
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="18dp">
 
-                        <View
-                            android:layout_width="92dp"
-                            android:layout_height="92dp"
-                            android:layout_gravity="end|bottom"
-                            android:layout_marginEnd="42dp"
-                            android:layout_marginBottom="-28dp"
-                            android:background="@drawable/bg_empty_state_blue" />
+                            <View
+                                android:layout_width="150dp"
+                                android:layout_height="150dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="-59dp"
+                                android:background="@drawable/bg_circle_blue_soft" />
+
+                            <View
+                                android:layout_width="88dp"
+                                android:layout_height="88dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginEnd="48dp"
+                                android:layout_marginBottom="-28dp"
+                                android:background="@drawable/bg_circle_sky_soft" />
+
+                            <TextView
+                                android:id="@+id/tvHeroTitle"
+                                android:layout_width="220dp"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/quicksand_bold"
+                                android:text="Halo, Pendamping!"
+                                android:textColor="#243447"
+                                android:textSize="17sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvHeroDesc"
+                                android:layout_width="220dp"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/tvHeroTitle"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/quicksand"
+                                android:lineSpacingExtra="2dp"
+                                android:text="Pilih profil anak untuk melihat grafik, riwayat, dan evaluasi AI."
+                                android:textColor="#6F7D8B"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/tvHeroDesc"
+                                android:layout_marginTop="14dp"
+                                android:background="@drawable/bg_chip_blue_soft"
+                                android:fontFamily="@font/quicksand_bold"
+                                android:paddingStart="14dp"
+                                android:paddingTop="8dp"
+                                android:paddingEnd="14dp"
+                                android:paddingBottom="8dp"
+                                android:text="Pantau perkembangan"
+                                android:textColor="#5E7FE0"
+                                android:textSize="12sp" />
+
+                            <ImageView
+                                android:layout_width="92dp"
+                                android:layout_height="92dp"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="8dp"
+                                android:adjustViewBounds="true"
+                                android:scaleType="fitCenter"
+                                android:src="@drawable/karakter_ortu" />
+                        </RelativeLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- PROFIL ANAK -->
+                    <LinearLayout
+                        android:id="@+id/cardProfilAnak"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/quicksand_bold"
+                            android:text="Profil Anak"
+                            android:textColor="#243447"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/quicksand"
+                            android:text="Pilih anak yang ingin dipantau"
+                            android:textColor="#7B8895"
+                            android:textSize="12sp" />
+
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:overScrollMode="never"
+                            android:scrollbars="none">
+
+                            <LinearLayout
+                                android:id="@+id/containerProfilAnakDashboard"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" />
+                        </HorizontalScrollView>
+
+                        <TextView
+                            android:id="@+id/tvProfilAnakKosong"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_empty_state_blue"
+                            android:fontFamily="@font/quicksand"
+                            android:gravity="center"
+                            android:padding="16dp"
+                            android:text="Belum ada profil anak.\nTambahkan profil anak terlebih dahulu."
+                            android:textColor="#7B8895"
+                            android:textSize="12sp"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <!-- GRAFIK -->
+                    <LinearLayout
+                        android:id="@+id/cardGrafikDashboard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="26dp"
+                        android:orientation="vertical">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
-                            android:minHeight="122dp"
-                            android:orientation="horizontal"
-                            android:paddingStart="18dp"
-                            android:paddingTop="16dp"
-                            android:paddingEnd="14dp"
-                            android:paddingBottom="16dp">
+                            android:orientation="horizontal">
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -140,445 +235,297 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/quicksand_bold"
-                                    android:text="Halo, Pendamping!"
-                                    android:textColor="#263342"
+                                    android:text="Grafik Perkembangan"
+                                    android:textColor="#243447"
                                     android:textSize="18sp"
                                     android:textStyle="bold" />
 
                                 <TextView
-                                    android:layout_width="match_parent"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="6dp"
+                                    android:layout_marginTop="4dp"
                                     android:fontFamily="@font/quicksand"
-                                    android:lineSpacingExtra="2dp"
-                                    android:text="Pilih profil anak untuk melihat grafik, riwayat, dan evaluasi AI."
-                                    android:textColor="#6B7C8F"
-                                    android:textSize="12.5sp" />
+                                    android:text="Rata-rata akurasi dari sesi bermain"
+                                    android:textColor="#7B8895"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvChipDataAnak"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_chip_blue_soft"
+                                android:fontFamily="@font/quicksand_bold"
+                                android:paddingStart="14dp"
+                                android:paddingTop="8dp"
+                                android:paddingEnd="14dp"
+                                android:paddingBottom="8dp"
+                                android:text="Data Anak"
+                                android:textColor="#5E7FE0"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            app:cardBackgroundColor="#F5FAFF"
+                            app:cardCornerRadius="22dp"
+                            app:cardElevation="0dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
 
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="12dp"
-                                    android:background="@drawable/bg_chip_blue_soft"
                                     android:fontFamily="@font/quicksand_bold"
-                                    android:gravity="center"
-                                    android:paddingStart="12dp"
-                                    android:paddingTop="6dp"
-                                    android:paddingEnd="12dp"
-                                    android:paddingBottom="6dp"
-                                    android:text="Pantau perkembangan"
-                                    android:textColor="#456ECF"
-                                    android:textSize="11sp" />
+                                    android:text="Visualisasi Data Sesi"
+                                    android:textColor="#243447"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
 
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:fontFamily="@font/quicksand"
+                                    android:text="Rata-rata akurasi per hari"
+                                    android:textColor="#7B8895"
+                                    android:textSize="12sp" />
+
+                                <com.example.focusplay.customview.WeeklyLineChartView
+                                    android:id="@+id/chartWeekly"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="260dp"
+                                    android:layout_marginTop="12dp" />
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
+                    </LinearLayout>
+
+                    <!-- RECAP AI -->
+                    <LinearLayout
+                        android:id="@+id/cardRecapAi"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="26dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/quicksand_bold"
+                                    android:text="Recap Evaluasi AI"
+                                    android:textColor="#243447"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:fontFamily="@font/quicksand"
+                                    android:text="Feedback permainan untuk pendamping"
+                                    android:textColor="#7B8895"
+                                    android:textSize="12sp" />
                             </LinearLayout>
 
                             <ImageView
-                                android:layout_width="84dp"
-                                android:layout_height="84dp"
-                                android:contentDescription="Karakter dashboard"
-                                android:scaleType="fitCenter"
-                                android:src="@drawable/karakter_ortu" />
-
-                        </LinearLayout>
-
-                    </FrameLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- PROFIL ANAK -->
-                <LinearLayout
-                    android:id="@+id/cardProfilAnak"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/quicksand_bold"
-                        android:text="Profil Anak"
-                        android:textColor="#263342"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:fontFamily="@font/quicksand"
-                        android:text="Pilih anak yang ingin dipantau"
-                        android:textColor="#6B7C8F"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/tvProfilAnakKosong"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:background="@drawable/bg_empty_state_blue"
-                        android:fontFamily="@font/quicksand"
-                        android:gravity="center"
-                        android:padding="14dp"
-                        android:text="Memuat profil anak..."
-                        android:textColor="#6B7C8F"
-                        android:textSize="13sp" />
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        app:cardBackgroundColor="#F2FAFF"
-                        app:cardCornerRadius="24dp"
-                        app:cardElevation="0dp">
-
-                        <HorizontalScrollView
-                            android:id="@+id/horizontalProfilAnak"
-                            android:layout_width="match_parent"
-                            android:layout_height="148dp"
-                            android:overScrollMode="never"
-                            android:padding="12dp"
-                            android:scrollbars="none">
-
-                            <LinearLayout
-                                android:id="@+id/containerProfilAnakDashboard"
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:orientation="horizontal" />
-                        </HorizontalScrollView>
-
-                    </androidx.cardview.widget.CardView>
-
-                </LinearLayout>
-
-                <!-- GRAFIK -->
-                <LinearLayout
-                    android:id="@+id/cardGrafikDashboard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="22dp"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/quicksand_bold"
-                                android:text="Grafik Perkembangan"
-                                android:textColor="#263342"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:fontFamily="@font/quicksand"
-                                android:text="Rata-rata akurasi dari sesi bermain"
-                                android:textColor="#6B7C8F"
-                                android:textSize="12sp" />
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:background="@drawable/bg_icon_circle_blue"
+                                android:contentDescription="Geser"
+                                android:padding="10dp"
+                                android:src="@drawable/ic_arrow_right"
+                                app:tint="#FFFFFF" />
                         </LinearLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
                             android:background="@drawable/bg_chip_blue_soft"
-                            android:fontFamily="@font/quicksand_bold"
-                            android:gravity="center"
-                            android:paddingStart="12dp"
-                            android:paddingTop="6dp"
-                            android:paddingEnd="12dp"
-                            android:paddingBottom="6dp"
-                            android:text="Data Anak"
-                            android:textColor="#456ECF"
+                            android:fontFamily="@font/quicksand"
+                            android:paddingStart="14dp"
+                            android:paddingTop="7dp"
+                            android:paddingEnd="14dp"
+                            android:paddingBottom="7dp"
+                            android:text="Geser ke samping untuk melihat semua evaluasi"
+                            android:textColor="#5E7FE0"
                             android:textSize="11sp" />
 
-                    </LinearLayout>
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="270dp"
-                        android:layout_marginTop="12dp"
-                        app:cardBackgroundColor="#F2FAFF"
-                        app:cardCornerRadius="24dp"
-                        app:cardElevation="0dp">
-
-                        <com.example.focusplay.customview.WeeklyLineChartView
-                            android:id="@+id/chartWeekly"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="#F2FAFF"
-                            android:padding="12dp" />
-
-                    </androidx.cardview.widget.CardView>
-
-                </LinearLayout>
-
-                <!-- RECAP AI -->
-                <LinearLayout
-                    android:id="@+id/cardRecapAi"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="22dp"
-                    android:orientation="vertical">
-
-                    <!-- Header Recap -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/tvJudulRecapAi"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/quicksand_bold"
-                                android:text="Recap Evaluasi AI"
-                                android:textColor="#263342"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvSubjudulRecapAi"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:fontFamily="@font/quicksand"
-                                android:text="Ringkasan analisis setelah anak bermain"
-                                android:textColor="#6B7C8F"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-
-                        <ImageView
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:background="@drawable/bg_icon_circle_blue"
-                            android:contentDescription="Geser"
-                            android:padding="9dp"
-                            app:tint="#FFFFFF" />
-                    </LinearLayout>
-
-                    <!-- Hint Geser -->
-                    <TextView
-                        android:id="@+id/tvHintSwipeAi"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/bg_chip_blue_soft"
-                        android:fontFamily="@font/quicksand_bold"
-                        android:gravity="center"
-                        android:paddingStart="13dp"
-                        android:paddingTop="7dp"
-                        android:paddingEnd="13dp"
-                        android:paddingBottom="7dp"
-                        android:text="Geser ke samping untuk melihat semua evaluasi"
-                        android:textColor="#456ECF"
-                        android:textSize="11sp" />
-
-                    <!-- Box Recap -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        app:cardBackgroundColor="#F2FAFF"
-                        app:cardCornerRadius="22dp"
-                        app:cardElevation="0dp">
-
-                        <LinearLayout
+                        <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="12dp">
+                            android:layout_marginTop="14dp"
+                            app:cardBackgroundColor="#F5FAFF"
+                            app:cardCornerRadius="22dp"
+                            app:cardElevation="0dp">
 
-                            <TextView
-                                android:id="@+id/tvAiRecapKosong"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@drawable/bg_empty_state_blue"
-                                android:fontFamily="@font/quicksand"
-                                android:gravity="center"
-                                android:lineSpacingExtra="3dp"
-                                android:paddingStart="18dp"
-                                android:paddingTop="16dp"
-                                android:paddingEnd="18dp"
-                                android:paddingBottom="16dp"
-                                android:text="Belum ada evaluasi AI.\nEvaluasi akan muncul setelah anak menyelesaikan permainan."
-                                android:textColor="#6B7C8F"
-                                android:textSize="12.5sp" />
+                                android:orientation="vertical"
+                                android:padding="14dp">
 
-                            <HorizontalScrollView
-                                android:id="@+id/scrollAiRecap"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:overScrollMode="never"
-                                android:scrollbars="none">
-
-                                <LinearLayout
-                                    android:id="@+id/containerAiRecap"
-                                    android:layout_width="wrap_content"
+                                <TextView
+                                    android:id="@+id/tvAiRecapKosong"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:orientation="horizontal" />
+                                    android:background="@drawable/bg_empty_state_blue"
+                                    android:fontFamily="@font/quicksand"
+                                    android:gravity="center"
+                                    android:padding="16dp"
+                                    android:text="Belum ada evaluasi AI.\nEvaluasi akan muncul setelah anak menyelesaikan permainan."
+                                    android:textColor="#7B8895"
+                                    android:textSize="12sp" />
 
-                            </HorizontalScrollView>
+                                <HorizontalScrollView
+                                    android:id="@+id/scrollAiRecap"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:overScrollMode="never"
+                                    android:scrollbars="none">
 
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
+                                    <LinearLayout
+                                        android:id="@+id/containerAiRecap"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal" />
+                                </HorizontalScrollView>
 
-                </LinearLayout>
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
+                    </LinearLayout>
 
-                <!-- MENU -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:fontFamily="@font/quicksand_bold"
-                    android:text="Menu Pendamping"
-                    android:textColor="#263342"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
-
-                    <!-- RIWAYAT -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="0dp"
-                        android:layout_height="98dp"
-                        android:layout_marginEnd="6dp"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="#F2FAFF"
-                        app:cardCornerRadius="24dp"
-                        app:cardElevation="0dp">
-
-                        <LinearLayout
-                            android:id="@+id/btnRiwayatPermainan"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="38dp"
-                                android:layout_height="38dp"
-                                android:background="@drawable/bg_chip_blue_soft"
-                                android:gravity="center"
-                                android:text="↗"
-                                android:textColor="#456ECF"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:fontFamily="@font/quicksand_bold"
-                                android:text="Riwayat"
-                                android:textColor="#263342"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                    <!-- PENGATURAN -->
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="0dp"
-                        android:layout_height="98dp"
-                        android:layout_marginStart="6dp"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="#F2FAFF"
-                        app:cardCornerRadius="24dp"
-                        app:cardElevation="0dp">
-
-                        <LinearLayout
-                            android:id="@+id/btnPengaturanPermainan"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <TextView
-                                android:layout_width="38dp"
-                                android:layout_height="38dp"
-                                android:background="@drawable/bg_chip_blue_soft"
-                                android:gravity="center"
-                                android:text="⚙"
-                                android:textColor="#456ECF"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:fontFamily="@font/quicksand_bold"
-                                android:text="Pengaturan"
-                                android:textColor="#263342"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                </LinearLayout>
-
-                <!-- LOGOUT -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="14dp"
-                    android:layout_marginBottom="4dp"
-                    app:cardBackgroundColor="#FFECEF"
-                    app:cardCornerRadius="22dp"
-                    app:cardElevation="0dp">
-
+                    <!-- MENU -->
                     <LinearLayout
-                        android:id="@+id/btnLogout"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center">
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="26dp"
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/quicksand_bold"
-                            android:text="Logout"
-                            android:textColor="#E95A6A"
-                            android:textSize="14sp"
+                            android:text="Menu Pendamping"
+                            android:textColor="#243447"
+                            android:textSize="18sp"
                             android:textStyle="bold" />
 
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:orientation="horizontal">
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/btnRiwayatPermainan"
+                                android:layout_width="0dp"
+                                android:layout_height="118dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="#F6FAFF"
+                                app:cardCornerRadius="22dp"
+                                app:cardElevation="0dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <ImageView
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:background="@drawable/bg_circle_menu_blue"
+                                        android:padding="12dp"
+                                        android:src="@drawable/ic_arrow_up_right"
+                                        app:tint="#5E7FE0" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="10dp"
+                                        android:fontFamily="@font/quicksand_bold"
+                                        android:text="Riwayat"
+                                        android:textColor="#243447"
+                                        android:textSize="14sp" />
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/btnPengaturanPermainan"
+                                android:layout_width="0dp"
+                                android:layout_height="118dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_weight="1"
+                                app:cardBackgroundColor="#F6FAFF"
+                                app:cardCornerRadius="22dp"
+                                app:cardElevation="0dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <ImageView
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:background="@drawable/bg_circle_menu_blue"
+                                        android:padding="12dp"
+                                        android:src="@drawable/ic_settings"
+                                        app:tint="#5E7FE0" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="10dp"
+                                        android:fontFamily="@font/quicksand_bold"
+                                        android:text="Pengaturan"
+                                        android:textColor="#243447"
+                                        android:textSize="14sp" />
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnLogout"
+                            android:layout_width="match_parent"
+                            android:layout_height="56dp"
+                            android:layout_marginTop="18dp"
+                            android:backgroundTint="#FCEBED"
+                            android:fontFamily="@font/quicksand_bold"
+                            android:text="Logout"
+                            android:textAllCaps="false"
+                            android:textColor="#E26A82"
+                            android:textSize="16sp"
+                            app:cornerRadius="18dp"
+                            app:elevation="0dp" />
                     </LinearLayout>
 
-                </androidx.cardview.widget.CardView>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-    </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

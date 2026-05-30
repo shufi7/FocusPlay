@@ -36,24 +36,25 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
 
     private lateinit var ivBackDashboard: ImageView
-    private lateinit var tvWelcomeName: TextView
     private lateinit var tvProfilAnakKosong: TextView
     private lateinit var containerProfilAnakDashboard: LinearLayout
 
     private lateinit var tvAiRecapKosong: TextView
     private lateinit var containerAiRecap: LinearLayout
 
-    private lateinit var btnRiwayatPermainan: LinearLayout
-    private lateinit var btnPengaturanPermainan: LinearLayout
-    private lateinit var btnLogout: LinearLayout
+    private lateinit var btnRiwayatPermainan: View
+    private lateinit var btnPengaturanPermainan: View
+    private lateinit var btnLogout: View
 
     private lateinit var chartWeekly: WeeklyLineChartView
 
     private var selectedAnakId: String = ""
     private var selectedNamaAnak: String = ""
+    private val daftarAnakDashboard = mutableListOf<AnakDashboard>()
     private lateinit var cardProfilAnak: View
     private lateinit var cardGrafikDashboard: View
     private lateinit var cardRecapAi: View
+
 
     data class AnakDashboard(
         val idDokumen: String,
@@ -77,7 +78,6 @@ class DashboardActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
 
         hubungkanView()
-        tampilkanNamaUser()
         kosongkanGrafik()
         kosongkanRecapAi()
         aturAksiTombol()
@@ -93,7 +93,6 @@ class DashboardActivity : AppCompatActivity() {
     private fun hubungkanView() {
         ivBackDashboard = findViewById(R.id.ivBackDashboard)
 
-        tvWelcomeName = findViewById(R.id.tvWelcomeName)
         tvProfilAnakKosong = findViewById(R.id.tvProfilAnakKosong)
         containerProfilAnakDashboard = findViewById(R.id.containerProfilAnakDashboard)
 
@@ -159,16 +158,6 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    private fun tampilkanNamaUser() {
-        val namaUser = session.getNamaUser()
-
-        tvWelcomeName.text = if (namaUser.isNotEmpty()) {
-            "Halo, $namaUser!"
-        } else {
-            "Halo, Orang Tua!"
-        }
-    }
-
     private fun kosongkanGrafik() {
         chartWeekly.setData(emptyList())
     }
@@ -214,6 +203,9 @@ class DashboardActivity : AppCompatActivity() {
                     )
                 }
 
+                daftarAnakDashboard.clear()
+                daftarAnakDashboard.addAll(daftarAnak)
+
                 if (daftarAnak.isEmpty()) {
                     selectedAnakId = ""
                     selectedNamaAnak = ""
@@ -236,9 +228,7 @@ class DashboardActivity : AppCompatActivity() {
                     selectedNamaAnak = daftarAnak.first().namaAnak
                 }
 
-                daftarAnak.forEachIndexed { index, anak ->
-                    tambahCardProfilAnak(anak, index)
-                }
+                renderCardProfilAnak()
 
                 muatGrafikAnak(selectedAnakId)
                 muatRecapAiAnak(selectedAnakId)
@@ -255,6 +245,15 @@ class DashboardActivity : AppCompatActivity() {
 
                 Toast.makeText(this, "Gagal memuat anak: ${e.message}", Toast.LENGTH_LONG).show()
             }
+    }
+
+    private fun renderCardProfilAnak() {
+        containerProfilAnakDashboard.removeAllViews()
+        tambahCardTambahAnakMini()
+
+        daftarAnakDashboard.forEachIndexed { index, anak ->
+            tambahCardProfilAnak(anak, index)
+        }
     }
 
     private fun tambahCardTambahAnakMini() {
@@ -311,16 +310,7 @@ class DashboardActivity : AppCompatActivity() {
     private fun tambahCardProfilAnak(anak: AnakDashboard, index: Int) {
         val sedangDipilih = anak.idDokumen == selectedAnakId
 
-        val warnaBg = if (sedangDipilih) {
-            "#F0FBEA"
-        } else {
-            when (index % 4) {
-                0 -> "#F4EEFF"
-                1 -> "#F0FBEA"
-                2 -> "#EAF7FF"
-                else -> "#FFF3EA"
-            }
-        }
+        val warnaBg = "#F2FAFF"
 
         val karakter = when (index % 5) {
             0 -> R.drawable.char_moon_purple
@@ -337,27 +327,24 @@ class DashboardActivity : AppCompatActivity() {
             background = roundedDrawable(
                 warnaBg,
                 22,
-                if (sedangDipilih) "#8DB52A" else "#E5EEF7"
+                if (sedangDipilih) "#5E7FE0" else "#D8E5F5"
             )
             isClickable = true
             isFocusable = true
             elevation = dp(2).toFloat()
 
-            layoutParams = LinearLayout.LayoutParams(dp(128), dp(132)).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(136), dp(140)).apply {
                 setMargins(0, 0, dp(12), 0)
             }
-
             setOnClickListener {
+                if (selectedAnakId == anak.idDokumen) return@setOnClickListener
+
                 selectedAnakId = anak.idDokumen
                 selectedNamaAnak = anak.namaAnak
 
-                Toast.makeText(
-                    this@DashboardActivity,
-                    "Menampilkan data ${anak.namaAnak}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                tampilkanToastProfil(anak.namaAnak)
 
-                refreshCardProfil()
+                renderCardProfilAnak()
                 muatGrafikAnak(anak.idDokumen)
                 muatRecapAiAnak(anak.idDokumen)
             }
@@ -408,9 +395,6 @@ class DashboardActivity : AppCompatActivity() {
         containerProfilAnakDashboard.addView(card)
     }
 
-    private fun refreshCardProfil() {
-        ambilProfilAnak()
-    }
 
     private fun muatGrafikAnak(idAnak: String) {
         if (idAnak.isEmpty()) {
@@ -603,6 +587,38 @@ class DashboardActivity : AppCompatActivity() {
         card.addView(tvEvaluasi)
 
         containerAiRecap.addView(card)
+    }
+
+    private fun tampilkanToastProfil(namaAnak: String) {
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(16), dp(12), dp(16), dp(12))
+            background = roundedDrawable("#F2FAFF", 18, "#D8E5F5")
+            elevation = dp(4).toFloat()
+        }
+
+        val text = TextView(this).apply {
+            this.text = "Menampilkan data $namaAnak"
+            textSize = 13f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor("#263342"))
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(dp(0), 0, 0, 0)
+            }
+        }
+
+        layout.addView(text)
+
+        val toast = Toast(this)
+        toast.duration = Toast.LENGTH_SHORT
+        toast.view = layout
+        toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, dp(90))
+        toast.show()
     }
 
     private fun aturAksiTombol() {

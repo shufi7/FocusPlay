@@ -80,8 +80,6 @@ class WeeklyLineChartView @JvmOverloads constructor(
         val chartWidth = width - paddingLeft - paddingRight
         val chartHeight = height - paddingTop - paddingBottom
 
-        canvas.drawText("Visualisasi Data Sesi", paddingLeft, 38f, titlePaint)
-        canvas.drawText("Rata-rata akurasi per hari", paddingLeft, 72f, subTitlePaint)
 
         gambarGrid(canvas, paddingLeft, paddingRight, paddingTop, chartHeight)
 
