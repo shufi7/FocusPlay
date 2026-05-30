@@ -1,7 +1,12 @@
 package com.example.focusplay.profile
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.Gravity
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -193,6 +198,219 @@ class PilihAnakActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        itemView.setOnLongClickListener {
+            tampilkanDialogHapusAnak(anak)
+            true
+        }
+
         containerProfilAnak.addView(itemView)
+    }
+
+    private fun tampilkanDialogHapusAnak(anak: Anak) {
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(22), dp(20), dp(22), dp(18))
+            background = roundedDrawable("#FFFFFF", 26, "#E7D9C8")
+        }
+
+        val icon = TextView(this).apply {
+            text = "!"
+            gravity = Gravity.CENTER
+            textSize = 22f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.WHITE)
+            background = circleDrawable("#E95A6A")
+            includeFontPadding = false
+
+            layoutParams = LinearLayout.LayoutParams(dp(52), dp(52)).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+            }
+        }
+
+        val title = TextView(this).apply {
+            text = "Hapus Profil Anak?"
+            gravity = Gravity.CENTER
+            textSize = 19f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor("#2F2F2F"))
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, dp(14), 0, 0)
+            }
+        }
+
+        val message = TextView(this).apply {
+            text = "Profil ${anak.namaAnak} akan dihapus dari daftar anak. Tekan Hapus jika sudah yakin."
+            gravity = Gravity.CENTER
+            textSize = 13.5f
+            setTextColor(Color.parseColor("#7A6B5D"))
+            setLineSpacing(4f, 1f)
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, dp(8), 0, 0)
+            }
+        }
+
+        val buttonRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, dp(20), 0, 0)
+            }
+        }
+
+        val btnBatal = TextView(this).apply {
+            text = "Batal"
+            gravity = Gravity.CENTER
+            textSize = 14f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor("#7A6B5D"))
+            background = roundedDrawable("#FFF8F1", 18, "#E7D9C8")
+
+            layoutParams = LinearLayout.LayoutParams(0, dp(48), 1f).apply {
+                setMargins(0, 0, dp(8), 0)
+            }
+        }
+
+        val btnHapus = TextView(this).apply {
+            text = "Hapus"
+            gravity = Gravity.CENTER
+            textSize = 14f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.WHITE)
+            background = roundedDrawable("#E95A6A", 18, "#E95A6A")
+
+            layoutParams = LinearLayout.LayoutParams(0, dp(48), 1f).apply {
+                setMargins(dp(8), 0, 0, 0)
+            }
+        }
+
+        buttonRow.addView(btnBatal)
+        buttonRow.addView(btnHapus)
+
+        container.addView(icon)
+        container.addView(title)
+        container.addView(message)
+        container.addView(buttonRow)
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setView(container)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        btnBatal.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnHapus.setOnClickListener {
+            btnHapus.text = "Menghapus..."
+            btnHapus.isEnabled = false
+            hapusProfilAnakTanpaReload(anak, dialog)
+        }
+
+        dialog.show()
+    }
+
+    private fun hapusProfilAnakTanpaReload(
+        anak: Anak,
+        dialog: androidx.appcompat.app.AlertDialog
+    ) {
+        db.collection("tb_anak")
+            .document(anak.idDokumen)
+            .delete()
+            .addOnSuccessListener {
+                dialog.dismiss()
+
+                daftarAnakCache.removeAll { it.idDokumen == anak.idDokumen }
+                perluRefreshData = false
+
+                tampilkanDaftarAnak(daftarAnakCache)
+                tampilkanToastCustom("Profil ${anak.namaAnak} berhasil dihapus")
+            }
+            .addOnFailureListener { e ->
+                dialog.dismiss()
+                Toast.makeText(
+                    this,
+                    "Gagal menghapus profil: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+    }
+
+    private fun tampilkanToastCustom(pesan: String) {
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(16), dp(12), dp(16), dp(12))
+            background = roundedDrawable("#FFF8F1", 18, "#E7D9C8")
+            elevation = dp(4).toFloat()
+        }
+
+        val icon = TextView(this).apply {
+            text = "✓"
+            gravity = Gravity.CENTER
+            textSize = 14f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.WHITE)
+            background = circleDrawable("#8DB52A")
+            includeFontPadding = false
+
+            layoutParams = LinearLayout.LayoutParams(dp(28), dp(28))
+        }
+
+        val text = TextView(this).apply {
+            this.text = pesan
+            textSize = 13f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor("#2F2F2F"))
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(dp(10), 0, 0, 0)
+            }
+        }
+
+        layout.addView(icon)
+        layout.addView(text)
+
+        Toast(this).apply {
+            duration = Toast.LENGTH_SHORT
+            view = layout
+            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, dp(90))
+            show()
+        }
+    }
+
+    private fun roundedDrawable(color: String, radius: Int, strokeColor: String): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            setColor(Color.parseColor(color))
+            cornerRadius = dp(radius).toFloat()
+            setStroke(dp(1), Color.parseColor(strokeColor))
+        }
+    }
+
+    private fun circleDrawable(color: String): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(Color.parseColor(color))
+        }
+    }
+
+    private fun dp(value: Int): Int {
+        return (value * resources.displayMetrics.density).toInt()
     }
 }

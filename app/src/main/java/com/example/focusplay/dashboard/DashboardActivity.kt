@@ -59,7 +59,8 @@ class DashboardActivity : AppCompatActivity() {
     data class AnakDashboard(
         val idDokumen: String,
         val namaAnak: String,
-        val usia: Int
+        val usia: Int,
+        val avatar: String
     )
 
     data class RecapAi(
@@ -199,7 +200,8 @@ class DashboardActivity : AppCompatActivity() {
                     AnakDashboard(
                         idDokumen = doc.id,
                         namaAnak = nama,
-                        usia = usia
+                        usia = usia,
+                        avatar = doc.getString("avatar") ?: "char_red"
                     )
                 }
 
@@ -307,18 +309,29 @@ class DashboardActivity : AppCompatActivity() {
         containerProfilAnakDashboard.addView(card)
     }
 
+    private fun getAvatarResource(avatar: String): Int {
+        return when (avatar) {
+            "char_red" -> R.drawable.char_red
+            "char_blue" -> R.drawable.char_blue
+            "char_purple" -> R.drawable.char_purple
+            "char_star" -> R.drawable.char_star
+
+            // Cadangan untuk data lama yang mungkin masih memakai nama avatar lama
+            "char_moon_purple" -> R.drawable.char_moon_purple
+            "char_cucumber" -> R.drawable.char_cucumber
+            "char_cloud_blue" -> R.drawable.char_cloud_blue
+            "char_heart" -> R.drawable.char_heart
+            "char_diamond_orange" -> R.drawable.char_diamond_orange
+
+            else -> R.drawable.char_red
+        }
+    }
     private fun tambahCardProfilAnak(anak: AnakDashboard, index: Int) {
         val sedangDipilih = anak.idDokumen == selectedAnakId
 
         val warnaBg = "#F2FAFF"
 
-        val karakter = when (index % 5) {
-            0 -> R.drawable.char_moon_purple
-            1 -> R.drawable.char_cucumber
-            2 -> R.drawable.char_cloud_blue
-            3 -> R.drawable.char_heart
-            else -> R.drawable.char_diamond_orange
-        }
+        val karakter = getAvatarResource(anak.avatar)
 
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -342,11 +355,15 @@ class DashboardActivity : AppCompatActivity() {
                 selectedAnakId = anak.idDokumen
                 selectedNamaAnak = anak.namaAnak
 
-                tampilkanToastProfil(anak.namaAnak)
+                tampilkanToastProfil("Menampilkan data ${anak.namaAnak}")
 
                 renderCardProfilAnak()
                 muatGrafikAnak(anak.idDokumen)
                 muatRecapAiAnak(anak.idDokumen)
+            }
+            setOnLongClickListener {
+                tampilkanDialogHapusAnak(anak)
+                true
             }
         }
 
@@ -393,6 +410,167 @@ class DashboardActivity : AppCompatActivity() {
         card.addView(usia)
 
         containerProfilAnakDashboard.addView(card)
+    }
+
+    private fun tampilkanDialogHapusAnak(anak: AnakDashboard) {
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(22), dp(20), dp(22), dp(18))
+            background = roundedDrawable("#FFFFFF", 26, "#D8E5F5")
+        }
+
+        val icon = TextView(this).apply {
+            text = "!"
+            gravity = Gravity.CENTER
+            textSize = 22f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.WHITE)
+            background = circleDrawable("#E95A6A")
+
+            layoutParams = LinearLayout.LayoutParams(dp(52), dp(52)).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+            }
+        }
+
+        val title = TextView(this).apply {
+            text = "Hapus Profil Anak?"
+            gravity = Gravity.CENTER
+            textSize = 19f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor("#263342"))
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, dp(14), 0, 0)
+            }
+        }
+
+        val message = TextView(this).apply {
+            text = "Profil ${anak.namaAnak} akan dihapus dari daftar anak. Data profil ini tidak akan tampil lagi di dashboard."
+            gravity = Gravity.CENTER
+            textSize = 13.5f
+            setTextColor(Color.parseColor("#6B7C8F"))
+            setLineSpacing(4f, 1f)
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, dp(8), 0, 0)
+            }
+        }
+
+        val buttonRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, dp(20), 0, 0)
+            }
+        }
+
+        val btnBatal = TextView(this).apply {
+            text = "Batal"
+            gravity = Gravity.CENTER
+            textSize = 14f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor("#6B7C8F"))
+            background = roundedDrawable("#F2FAFF", 18, "#D8E5F5")
+
+            layoutParams = LinearLayout.LayoutParams(0, dp(48), 1f).apply {
+                setMargins(0, 0, dp(8), 0)
+            }
+        }
+
+        val btnHapus = TextView(this).apply {
+            text = "Hapus"
+            gravity = Gravity.CENTER
+            textSize = 14f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.WHITE)
+            background = roundedDrawable("#E95A6A", 18, "#E95A6A")
+
+            layoutParams = LinearLayout.LayoutParams(0, dp(48), 1f).apply {
+                setMargins(dp(8), 0, 0, 0)
+            }
+        }
+
+        buttonRow.addView(btnBatal)
+        buttonRow.addView(btnHapus)
+
+        container.addView(icon)
+        container.addView(title)
+        container.addView(message)
+        container.addView(buttonRow)
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setView(container)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        btnBatal.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnHapus.setOnClickListener {
+            btnHapus.text = "Menghapus..."
+            btnHapus.isEnabled = false
+            hapusProfilAnakTanpaReload(anak, dialog)
+        }
+
+        dialog.show()
+    }
+
+    private fun hapusProfilAnakTanpaReload(
+        anak: AnakDashboard,
+        dialog: androidx.appcompat.app.AlertDialog
+    ) {
+        db.collection("tb_anak")
+            .document(anak.idDokumen)
+            .delete()
+            .addOnSuccessListener {
+                dialog.dismiss()
+
+                daftarAnakDashboard.removeAll { it.idDokumen == anak.idDokumen }
+
+                if (selectedAnakId == anak.idDokumen) {
+                    if (daftarAnakDashboard.isNotEmpty()) {
+                        selectedAnakId = daftarAnakDashboard.first().idDokumen
+                        selectedNamaAnak = daftarAnakDashboard.first().namaAnak
+                        tvProfilAnakKosong.visibility = View.GONE
+
+                        muatGrafikAnak(selectedAnakId)
+                        muatRecapAiAnak(selectedAnakId)
+                    } else {
+                        selectedAnakId = ""
+                        selectedNamaAnak = ""
+
+                        tvProfilAnakKosong.visibility = View.VISIBLE
+                        tvProfilAnakKosong.text =
+                            "Belum ada profil anak. Tambahkan profil anak terlebih dahulu."
+
+                        kosongkanGrafik()
+                        kosongkanRecapAi()
+                    }
+                }
+
+                renderCardProfilAnak()
+                tampilkanToastProfil("Profil ${anak.namaAnak} berhasil dihapus")
+            }
+            .addOnFailureListener { e ->
+                dialog.dismiss()
+                Toast.makeText(
+                    this,
+                    "Gagal menghapus profil: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
     }
 
 
@@ -498,21 +676,22 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun tambahCardRecapAi(recap: RecapAi, index: Int) {
-        val warnaBg = when (index % 4) {
-            0 -> "#F4EEFF"
-            1 -> "#F0FBEA"
-            2 -> "#EAF7FF"
-            else -> "#FFF8E8"
-        }
+        /*
+         * Card recap AI dibuat satu tone biru soft agar sesuai dengan dashboard pendamping.
+         * Warna tidak lagi random ungu/hijau/orange, sehingga tampilan lebih rapi dan fokus.
+         */
+        val warnaBorder = if (index % 2 == 0) "#CFE0FF" else "#D8EAFE"
+        val warnaIcon = if (index % 2 == 0) "#5E7FE0" else "#4DA3D9"
+        val warnaChip = if (index % 2 == 0) "#EEF4FF" else "#EAF7FF"
 
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(14), dp(16), dp(14))
-            background = roundedDrawable(warnaBg, 20, "#E5EEF7")
-            elevation = dp(1).toFloat()
+            setPadding(dp(16), dp(15), dp(16), dp(15))
+            background = roundedDrawable("#FFFFFF", 22, warnaBorder)
+            elevation = dp(2).toFloat()
 
             layoutParams = LinearLayout.LayoutParams(
-                dp(260),
+                dp(280),
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
                 setMargins(0, 0, dp(12), 0)
@@ -530,7 +709,8 @@ class DashboardActivity : AppCompatActivity() {
             textSize = 13f
             typeface = Typeface.DEFAULT_BOLD
             setTextColor(Color.WHITE)
-            background = circleDrawable("#8DB52A")
+            background = circleDrawable(warnaIcon)
+            includeFontPadding = false
 
             layoutParams = LinearLayout.LayoutParams(dp(42), dp(42))
         }
@@ -551,14 +731,18 @@ class DashboardActivity : AppCompatActivity() {
             text = recap.namaGame
             textSize = 15f
             typeface = Typeface.DEFAULT_BOLD
-            setTextColor(Color.parseColor("#1F2937"))
+            setTextColor(Color.parseColor("#263342"))
+            maxLines = 1
+            ellipsize = TextUtils.TruncateAt.END
         }
 
         val tvTanggal = TextView(this).apply {
             text = recap.tanggal
-            textSize = 12f
-            setTextColor(Color.parseColor("#6B7280"))
+            textSize = 11.5f
+            setTextColor(Color.parseColor("#6B7C8F"))
             setPadding(0, dp(3), 0, 0)
+            maxLines = 1
+            ellipsize = TextUtils.TruncateAt.END
         }
 
         titleBox.addView(tvGame)
@@ -567,13 +751,26 @@ class DashboardActivity : AppCompatActivity() {
         header.addView(icon)
         header.addView(titleBox)
 
-        val tvEvaluasi = TextView(this).apply {
-            text = recap.evaluasiAi
-            textSize = 12.5f
-            setTextColor(Color.parseColor("#374151"))
-            setLineSpacing(4f, 1f)
-            maxLines = 6
-            ellipsize = TextUtils.TruncateAt.END
+        val labelFeedback = TextView(this).apply {
+            text = "Feedback permainan"
+            textSize = 11.5f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor("#5E7FE0"))
+            background = roundedDrawable(warnaChip, 16, "#D8E5F5")
+            setPadding(dp(10), dp(5), dp(10), dp(5))
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, dp(13), 0, 0)
+            }
+        }
+
+        val boxEvaluasi = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(13), dp(12), dp(13), dp(12))
+            background = roundedDrawable("#F6FAFF", 18, "#E1ECFA")
 
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -583,23 +780,40 @@ class DashboardActivity : AppCompatActivity() {
             }
         }
 
+        val tvEvaluasi = TextView(this).apply {
+            text = recap.evaluasiAi
+            textSize = 12.5f
+            setTextColor(Color.parseColor("#374151"))
+            setLineSpacing(4f, 1f)
+            maxLines = 7
+            ellipsize = TextUtils.TruncateAt.END
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        boxEvaluasi.addView(tvEvaluasi)
+
         card.addView(header)
-        card.addView(tvEvaluasi)
+        card.addView(labelFeedback)
+        card.addView(boxEvaluasi)
 
         containerAiRecap.addView(card)
     }
 
-    private fun tampilkanToastProfil(namaAnak: String) {
+    private fun tampilkanToastProfil(pesan: String) {
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(16), dp(12), dp(16), dp(12))
+            setPadding(dp(18), dp(12), dp(18), dp(12))
             background = roundedDrawable("#F2FAFF", 18, "#D8E5F5")
             elevation = dp(4).toFloat()
         }
 
         val text = TextView(this).apply {
-            this.text = "Menampilkan data $namaAnak"
+            this.text = pesan
             textSize = 13f
             typeface = Typeface.DEFAULT_BOLD
             setTextColor(Color.parseColor("#263342"))
@@ -607,18 +821,17 @@ class DashboardActivity : AppCompatActivity() {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(dp(0), 0, 0, 0)
-            }
+            )
         }
 
         layout.addView(text)
 
-        val toast = Toast(this)
-        toast.duration = Toast.LENGTH_SHORT
-        toast.view = layout
-        toast.setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, dp(90))
-        toast.show()
+        Toast(this).apply {
+            duration = Toast.LENGTH_SHORT
+            view = layout
+            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, dp(90))
+            show()
+        }
     }
 
     private fun aturAksiTombol() {

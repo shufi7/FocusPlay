@@ -24,6 +24,7 @@ class TambahAnakActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
+    // Cukup pakai satu variabel ini saja
     private var selectedAvatar = "char_red"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +44,12 @@ class TambahAnakActivity : AppCompatActivity() {
         avatarStar = findViewById(R.id.avatarStar)
 
         val ivBack = findViewById<ImageView>(R.id.ivBack)
-        ivBack.setOnClickListener { finish() }
+        ivBack.setOnClickListener {
+            finish()
+        }
+
+        // Set default avatar yang terpilih saat halaman pertama dibuka
+        pilihAvatar("char_red")
 
         avatarRed.setOnClickListener {
             pilihAvatar("char_red")
@@ -100,7 +106,11 @@ class TambahAnakActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
 
         if (currentUser == null) {
-            Toast.makeText(this, "Sesi login tidak ditemukan. Silakan login ulang.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "Sesi login tidak ditemukan. Silakan login ulang.",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
@@ -114,11 +124,19 @@ class TambahAnakActivity : AppCompatActivity() {
         db.collection("tb_anak")
             .add(anakData)
             .addOnSuccessListener {
-                Toast.makeText(this, "Profil $nama berhasil disimpan!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Profil $nama berhasil disimpan!",
+                    Toast.LENGTH_SHORT
+                ).show()
                 finish()
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this, "Gagal menyimpan: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "Gagal menyimpan: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
     }
 }
