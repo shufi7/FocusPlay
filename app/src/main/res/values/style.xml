@@ -7,4 +7,17 @@
     <style name="FocusPlayBottomSheet" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
     </style>
+
+    <style name="BottomRoundedHeroImage">
+        <item name="cornerFamily">rounded</item>
+
+        <!-- atas tetap siku -->
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+
+        <!-- bawah dibuat rounded -->
+        <item name="cornerSizeBottomLeft">32dp</item>
+        <item name="cornerSizeBottomRight">32dp</item>
+    </style>
 </resources>
+

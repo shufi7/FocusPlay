@@ -16,6 +16,7 @@ class GameDescriptionActivity : AppCompatActivity() {
     private var gameKey: String = "antar_rumah"
 
     private lateinit var btnBack: ImageView
+    private lateinit var imgGame: ImageView
     private lateinit var tvNamaGame: TextView
     private lateinit var tvTujuanGame: TextView
     private lateinit var tvCaraBermain: TextView
@@ -50,6 +51,7 @@ class GameDescriptionActivity : AppCompatActivity() {
 
     private fun hubungkanView() {
         btnBack = findViewById(R.id.btnBack)
+        imgGame = findViewById(R.id.imgGame)
         tvNamaGame = findViewById(R.id.tvNamaGame)
         tvTujuanGame = findViewById(R.id.tvTujuanGame)
         tvCaraBermain = findViewById(R.id.tvCaraBermain)
@@ -59,7 +61,10 @@ class GameDescriptionActivity : AppCompatActivity() {
     private fun tampilkanDeskripsiGame() {
         when (gameKey) {
             "antar_rumah" -> {
+                imgGame.setImageResource(R.drawable.bg_antar_si_domba)
+
                 tvNamaGame.text = "Antar ke Rumah"
+
                 tvTujuanGame.text =
                     "Melatih fokus, ketelitian, koordinasi tangan dan mata, serta kemampuan mencocokkan warna."
 
@@ -71,7 +76,10 @@ class GameDescriptionActivity : AppCompatActivity() {
             }
 
             "pasang_kartu" -> {
+                imgGame.setImageResource(R.drawable.bg_antar_si_domba)
+
                 tvNamaGame.text = "Pasang Kartu"
+
                 tvTujuanGame.text =
                     "Melatih daya ingat, konsentrasi, dan kemampuan mencocokkan pasangan gambar."
 
@@ -83,7 +91,10 @@ class GameDescriptionActivity : AppCompatActivity() {
             }
 
             "urut_angka" -> {
+                imgGame.setImageResource(R.drawable.bg_antar_si_domba)
+
                 tvNamaGame.text = "Urutkan Angka"
+
                 tvTujuanGame.text =
                     "Melatih fokus, logika berpikir, dan kemampuan mengenali urutan angka."
 
@@ -92,6 +103,21 @@ class GameDescriptionActivity : AppCompatActivity() {
                             "2. Susun angka dari urutan yang benar.\n" +
                             "3. Pilih dengan hati-hati agar skor bertambah.\n" +
                             "4. Selesaikan permainan sebelum waktu habis."
+            }
+
+            else -> {
+                imgGame.setImageResource(R.drawable.bg_antar_si_domba)
+
+                tvNamaGame.text = "Antar ke Rumah"
+
+                tvTujuanGame.text =
+                    "Melatih fokus, ketelitian, koordinasi tangan dan mata, serta kemampuan mencocokkan warna."
+
+                tvCaraBermain.text =
+                    "1. Perhatikan domba yang muncul di area permainan.\n" +
+                            "2. Seret domba ke rumah yang memiliki warna yang sama.\n" +
+                            "3. Jika jawaban benar, skor akan bertambah.\n" +
+                            "4. Jika mode adaptif aktif, fase permainan akan naik atau turun sesuai hasil jawaban."
             }
         }
     }

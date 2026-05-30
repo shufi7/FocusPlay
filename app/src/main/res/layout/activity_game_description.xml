@@ -1,121 +1,271 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#fff">
 
     <ImageView
+        android:id="@+id/bgDeskripsiGame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/backgrounds" />
+        android:scaleType="centerCrop" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp">
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:padding="10dp"
-                android:src="@drawable/ic_arrow_back"
-                android:background="@drawable/bg_circle_white" />
+            <!-- HERO FULL ATAS -->
+            <FrameLayout
+                android:id="@+id/heroContainer"
+                android:layout_width="match_parent"
+                android:layout_height="360dp">
 
+                <!-- Gambar game diisi dari file KT -->
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imgGame"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:background="#fff"
+                    tools:src="@drawable/bg_antardomba"
+                    app:shapeAppearanceOverlay="@style/BottomRoundedHeroImage" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                   />
+
+                <!-- Header: Back Button & Title (Cloud Style) -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginTop="28dp"
+                    android:elevation="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="6dp"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="24dp">
+
+                    <ImageView
+                        android:id="@+id/btnBack"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_button_back_orange"
+                        android:padding="14dp"
+                        android:src="@drawable/ic_arrow_back" />
+
+                    <TextView
+                        android:id="@+id/tvHeaderTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="14dp"
+                        android:fontFamily="@font/quicksand_bold"
+                        android:text="Deskripsi Game"
+                        android:textColor="#3F2A1D"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <!-- CARD ISI DESKRIPSI -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardDeskripsiGame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginStart="22dp"
+                android:layout_marginTop="-34dp"
+                android:layout_marginEnd="22dp"
+                android:layout_marginBottom="30dp"
+                app:cardBackgroundColor="#FFFDF2"
                 app:cardCornerRadius="32dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#FFF7D6">
+                app:cardElevation="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:paddingStart="24dp"
+                    android:paddingTop="24dp"
+                    android:paddingEnd="24dp"
+                    android:paddingBottom="26dp">
 
+                    <!-- Nama game diisi dari KT -->
                     <TextView
                         android:id="@+id/tvNamaGame"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand_bold"
                         android:gravity="center"
-                        android:text="Antar ke Rumah"
-                        android:textColor="#8B3A3A"
-                        android:textSize="28sp"
+                        android:textColor="#7A3E18"
+                        android:textSize="20sp"
                         android:textStyle="bold"
-                        android:fontFamily="@font/quicksand_bold" />
+                        tools:text="Antar Domba ke Rumah" />
 
-                    <ImageView
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
+                    <View
+                        android:layout_width="80dp"
+                        android:layout_height="5dp"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="18dp"
-                        android:src="@drawable/domba_putih"
-                        android:scaleType="fitCenter" />
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_line_orange" />
 
-                    <TextView
+                    <!-- Tujuan Permainan -->
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="18dp"
-                        android:text="Tujuan Permainan"
-                        android:textColor="#B24B4B"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/quicksand_bold" />
+                        android:layout_marginTop="22dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/tvTujuanGame"
+                        <FrameLayout
+                            android:layout_width="58dp"
+                            android:layout_height="58dp"
+                            android:background="@drawable/bg_circle_soft_green">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="🎯"
+                                android:textSize="28sp" />
+
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_label_soft_green"
+                                android:fontFamily="@font/quicksand_bold"
+                                android:paddingStart="18dp"
+                                android:paddingTop="5dp"
+                                android:paddingEnd="18dp"
+                                android:paddingBottom="5dp"
+                                android:text="Tujuan Permainan"
+                                android:textColor="#2E7D32"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <!-- Isi tujuan dari KT -->
+                            <TextView
+                                android:id="@+id/tvTujuanGame"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="9dp"
+                                android:fontFamily="@font/quicksand"
+                                android:lineSpacingExtra="4dp"
+                                android:textColor="#3F2A1D"
+                                android:textSize="15sp"
+                                tools:text="Melatih fokus, perhatian, dan ketepatan memilih tujuan." />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="22dp"
+                        android:background="#FFE0B2" />
+
+                    <!-- Cara Bermain -->
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textColor="#4B5563"
-                        android:textSize="15sp"
-                        android:lineSpacingExtra="4dp" />
+                        android:layout_marginTop="20dp"
+                        android:gravity="top"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="18dp"
-                        android:text="Cara Bermain"
-                        android:textColor="#B24B4B"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:fontFamily="@font/quicksand_bold" />
+                        <FrameLayout
+                            android:layout_width="58dp"
+                            android:layout_height="58dp"
+                            android:background="@drawable/bg_circle_soft_blue">
 
-                    <TextView
-                        android:id="@+id/tvCaraBermain"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textColor="#4B5563"
-                        android:textSize="15sp"
-                        android:lineSpacingExtra="5dp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="📖"
+                                android:textSize="28sp" />
 
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_label_soft_blue"
+                                android:fontFamily="@font/quicksand_bold"
+                                android:paddingStart="18dp"
+                                android:paddingTop="5dp"
+                                android:paddingEnd="18dp"
+                                android:paddingBottom="5dp"
+                                android:text="Cara Bermain"
+                                android:textColor="#1565C0"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <!-- Isi cara bermain dari KT -->
+                            <TextView
+                                android:id="@+id/tvCaraBermain"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/quicksand"
+                                android:lineSpacingExtra="6dp"
+                                android:textColor="#3F2A1D"
+                                android:textSize="15sp"
+                                tools:text="1. Perhatikan rumah tujuan.\n2. Arahkan domba ke rumah yang benar.\n3. Kumpulkan skor sebanyak mungkin." />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Tombol tetap Button supaya aman kalau di KT pakai Button -->
                     <Button
                         android:id="@+id/btnMulaiGame"
                         android:layout_width="match_parent"
-                        android:layout_height="58dp"
+                        android:layout_height="62dp"
                         android:layout_marginTop="28dp"
+                        android:background="@drawable/bg_button_orange"
+                        android:fontFamily="@font/quicksand_bold"
                         android:text="Mulai Bermain"
+                        android:textAllCaps="false"
                         android:textColor="#FFFFFF"
-                        android:textSize="17sp"
-                        android:textStyle="bold"
-                        android:backgroundTint="#F59E0B"
-                        app:cornerRadius="28dp" />
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
+
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
+
     </ScrollView>
 
 </FrameLayout>
