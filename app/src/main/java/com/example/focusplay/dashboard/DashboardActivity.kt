@@ -26,6 +26,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Locale
+import com.example.focusplay.utils.DashboardTutorialOverlay
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -49,6 +50,9 @@ class DashboardActivity : AppCompatActivity() {
 
     private var selectedAnakId: String = ""
     private var selectedNamaAnak: String = ""
+    private lateinit var cardProfilAnak: View
+    private lateinit var cardGrafikDashboard: View
+    private lateinit var cardRecapAi: View
 
     data class AnakDashboard(
         val idDokumen: String,
@@ -76,6 +80,8 @@ class DashboardActivity : AppCompatActivity() {
         kosongkanGrafik()
         kosongkanRecapAi()
         aturAksiTombol()
+
+        tampilkanTutorialDashboardJikaPertama()
     }
 
     override fun onResume() {
@@ -90,6 +96,10 @@ class DashboardActivity : AppCompatActivity() {
         tvProfilAnakKosong = findViewById(R.id.tvProfilAnakKosong)
         containerProfilAnakDashboard = findViewById(R.id.containerProfilAnakDashboard)
 
+        cardProfilAnak = findViewById(R.id.cardProfilAnak)
+        cardGrafikDashboard = findViewById(R.id.cardGrafikDashboard)
+        cardRecapAi = findViewById(R.id.cardRecapAi)
+
         tvAiRecapKosong = findViewById(R.id.tvAiRecapKosong)
         containerAiRecap = findViewById(R.id.containerAiRecap)
 
@@ -98,6 +108,54 @@ class DashboardActivity : AppCompatActivity() {
         btnLogout = findViewById(R.id.btnLogout)
 
         chartWeekly = findViewById(R.id.chartWeekly)
+    }
+
+    private fun tampilkanTutorialDashboardJikaPertama() {
+        val prefs = getSharedPreferences("tutorial_dashboard", MODE_PRIVATE)
+        val sudahTampil = prefs.getBoolean("sudah_tampil_spotlight", false)
+
+        if (sudahTampil) return
+
+        window.decorView.post {
+            val overlay = DashboardTutorialOverlay(this)
+
+            overlay.setSteps(
+                listOf(
+                    DashboardTutorialOverlay.TutorialStep(
+                        target = cardProfilAnak,
+                        title = "Profil Anak",
+                        message = "Pilih profil anak yang ingin dipantau. Grafik, riwayat, dan evaluasi AI akan berubah sesuai anak yang dipilih."
+                    ),
+                    DashboardTutorialOverlay.TutorialStep(
+                        target = cardGrafikDashboard,
+                        title = "Grafik Perkembangan",
+                        message = "Bagian ini menampilkan perkembangan akurasi anak dari hasil sesi bermain yang sudah tersimpan."
+                    ),
+                    DashboardTutorialOverlay.TutorialStep(
+                        target = cardRecapAi,
+                        title = "Recap Evaluasi AI",
+                        message = "Di sini orang tua bisa melihat ringkasan analisis AI dari setiap sesi bermain. Geser ke samping untuk melihat semua evaluasi."
+                    ),
+                    DashboardTutorialOverlay.TutorialStep(
+                        target = btnRiwayatPermainan,
+                        title = "Riwayat Permainan",
+                        message = "Menu ini menampilkan daftar sesi bermain anak, seperti nama game, skor, akurasi, durasi, dan tanggal bermain."
+                    ),
+                    DashboardTutorialOverlay.TutorialStep(
+                        target = btnPengaturanPermainan,
+                        title = "Pengaturan Permainan",
+                        message = "Menu ini digunakan untuk mengatur target waktu bermain dan mode adaptif."
+                    ),
+                    DashboardTutorialOverlay.TutorialStep(
+                        target = btnLogout,
+                        title = "Logout",
+                        message = "Gunakan tombol ini untuk keluar dari akun orang tua dan kembali ke halaman login."
+                    )
+                )
+            )
+
+            overlay.start()
+        }
     }
 
     private fun tampilkanNamaUser() {

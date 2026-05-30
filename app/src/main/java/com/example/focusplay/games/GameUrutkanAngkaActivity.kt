@@ -43,6 +43,9 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
     private var waktuMulaiSesi = 0L
     private var sesiSelesai = false
 
+    // Penting: ini untuk mode adaptif per ronde, bukan per tap.
+    private var rondeAdaSalah = false
+
     private var timerPermainan: CountDownTimer? = null
 
     private val namaGame = "Urut Angka"
@@ -69,11 +72,11 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
     private fun ambilDataAnakDariIntent() {
         idAnak = intent.getStringExtra("ID_ANAK")
             ?: intent.getStringExtra("id_anak")
-                    ?: ""
+            ?: ""
 
         namaAnak = intent.getStringExtra("NAMA_ANAK")
             ?: intent.getStringExtra("nama_anak")
-                    ?: "Anak"
+            ?: "Anak"
     }
 
     private fun hubungkanView() {
@@ -100,6 +103,7 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
         modeAdaptif = prefs.getBoolean("mode_adaptif", true)
         targetWaktuMenit = prefs.getString("target_waktu", "1")?.toIntOrNull() ?: 1
 
+        // Semua game selalu mulai dari fase 1.
         faseSaatIni = 1
 
         adaptiveManager = AdaptiveGameManager(
@@ -137,9 +141,14 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
 
     private fun mulaiRonde() {
         if (sesiSelesai) return
+        if (arenaGame.width <= 0 || arenaGame.height <= 0) {
+            arenaGame.post { mulaiRonde() }
+            return
+        }
 
         arenaGame.removeAllViews()
         angkaSelanjutnya = 1
+        rondeAdaSalah = false
         updatePapanTarget()
 
         val listAngkaTampil = mutableListOf<Int>()
@@ -167,8 +176,8 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
 
         listAngkaTampil.shuffle()
 
-        val maxX = arenaGame.width - dpToPx(70)
-        val maxY = arenaGame.height - dpToPx(70)
+        val maxX = maxOf(1, arenaGame.width - dpToPx(70))
+        val maxY = maxOf(1, arenaGame.height - dpToPx(70))
 
         for (angka in listAngkaTampil) {
             val isTarget = angka <= targetMaksimal
@@ -202,17 +211,15 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
 
             background = bulatBg
 
-            if (maxX > 0 && maxY > 0) {
-                x = Random.nextInt(0, maxX).toFloat()
-                y = Random.nextInt(0, maxY).toFloat()
-            }
-
             setOnClickListener {
                 if (sesiSelesai) return@setOnClickListener
 
                 if (!isTarget) {
-                    prosesJawabanSalah("Itu angka pengecoh!")
-                } else if (angka == angkaSelanjutnya) {
+                    prosesJawabanSalah("Itu angka pengecoh, cari angka $angkaSelanjutnya dulu ya!")
+                    return@setOnClickListener
+                }
+
+                if (angka == angkaSelanjutnya) {
                     prosesJawabanBenar(this)
                 } else {
                     prosesJawabanSalah("Cari angka $angkaSelanjutnya dulu ya!")
@@ -220,10 +227,17 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
             }
         }
 
+        val params = bola.layoutParams as FrameLayout.LayoutParams
+        params.leftMargin = Random.nextInt(0, maxX)
+        params.topMargin = Random.nextInt(0, maxY)
+        bola.layoutParams = params
+
         arenaGame.addView(bola)
     }
 
     private fun prosesJawabanBenar(bola: TextView) {
+        if (sesiSelesai) return
+
         bola.visibility = View.GONE
 
         angkaSelanjutnya++
@@ -232,36 +246,47 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
 
         tvSkor.text = "Skor: $skor"
 
+        // Catatan penting:
+        // AdaptiveGameManager TIDAK dipanggil di sini.
+        // Benar 1 tap hanya untuk skor dan progress angka.
+        // Mode adaptif baru dihitung setelah satu ronde selesai.
         if (angkaSelanjutnya > targetMaksimal) {
-            val faseBaru = adaptiveManager.prosesJawaban(true)
-
-            if (faseBaru != faseSaatIni) {
-                faseSaatIni = faseBaru
-                Toast.makeText(this, "Fase berubah ke Fase $faseSaatIni", Toast.LENGTH_SHORT).show()
-            }
-
-            mulaiRonde()
+            prosesAdaptifSetelahRondeSelesai()
         } else {
             updatePapanTarget()
         }
     }
 
     private fun prosesJawabanSalah(pesan: String) {
+        if (sesiSelesai) return
+
         totalSalah++
+        rondeAdaSalah = true
 
         Toast.makeText(this, pesan, Toast.LENGTH_SHORT).show()
 
-        val faseBaru = adaptiveManager.prosesJawaban(false)
+        // Catatan penting:
+        // AdaptiveGameManager TIDAK dipanggil di sini.
+        // Salah 1 tap hanya menandai ronde ini pernah salah.
+        // Fase baru boleh turun kalau ronde selesai dan sudah 3 ronde salah berturut-turut.
+    }
+
+    private fun prosesAdaptifSetelahRondeSelesai() {
+        if (sesiSelesai) return
+
+        val rondeSempurna = !rondeAdaSalah
+        val faseBaru = adaptiveManager.prosesJawaban(rondeSempurna)
 
         if (faseBaru != faseSaatIni) {
             faseSaatIni = faseBaru
             Toast.makeText(this, "Fase berubah ke Fase $faseSaatIni", Toast.LENGTH_SHORT).show()
-            mulaiRonde()
         }
+
+        mulaiRonde()
     }
 
     private fun updatePapanTarget() {
-        tvTargetAngka.text = angkaSelanjutnya.toString()
+        tvTargetAngka.text = "Ketuk angka $angkaSelanjutnya"
     }
 
     private fun simpanRiwayatAkhir() {

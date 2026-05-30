@@ -134,6 +134,7 @@
 
                 <!-- Profil Anak -->
                 <LinearLayout
+                    android:id="@+id/cardProfilAnak"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
@@ -190,6 +191,7 @@
 
                 <!-- Grafik -->
                 <LinearLayout
+                    android:id="@+id/cardGrafikDashboard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
@@ -254,6 +256,7 @@
 
                 <!-- Evaluasi AI -->
                 <LinearLayout
+                    android:id="@+id/cardRecapAi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"

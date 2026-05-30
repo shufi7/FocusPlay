@@ -10,8 +10,6 @@ import androidx.cardview.widget.CardView
 import com.example.focusplay.R
 import com.example.focusplay.games.GameDescriptionActivity
 import com.example.focusplay.games.GameAntarRumahActivity
-import com.example.focusplay.games.GamePasangKartuActivity
-import com.example.focusplay.games.GameUrutkanAngkaActivity
 
 class DashboardAnakActivity : AppCompatActivity() {
 
