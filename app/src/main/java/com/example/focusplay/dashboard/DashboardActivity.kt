@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
@@ -527,7 +528,7 @@ class DashboardActivity : AppCompatActivity() {
             elevation = dp(1).toFloat()
 
             layoutParams = LinearLayout.LayoutParams(
-                dp(280),
+                dp(260),
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
                 setMargins(0, 0, dp(12), 0)
@@ -584,15 +585,17 @@ class DashboardActivity : AppCompatActivity() {
 
         val tvEvaluasi = TextView(this).apply {
             text = recap.evaluasiAi
-            textSize = 13f
+            textSize = 12.5f
             setTextColor(Color.parseColor("#374151"))
             setLineSpacing(4f, 1f)
+            maxLines = 6
+            ellipsize = TextUtils.TruncateAt.END
 
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(0, dp(12), 0, 0)
+                setMargins(0, dp(10), 0, 0)
             }
         }
 
