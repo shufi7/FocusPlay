@@ -1,27 +1,27 @@
 package com.example.focusplay.games
 
+import android.app.Dialog
 import android.content.ClipData
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.DragEvent
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
 import com.example.focusplay.history.EvaluasiActivity
 import com.example.focusplay.utils.AdaptiveGameManager
 import com.example.focusplay.utils.GameResultHelper
 import kotlin.random.Random
-import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.view.Gravity
-import android.widget.Button
-import android.widget.LinearLayout
 
 class GameAntarRumahActivity : AppCompatActivity() {
 
@@ -111,6 +111,8 @@ class GameAntarRumahActivity : AppCompatActivity() {
     }
 
     private fun aturTombol() {
+        pasangAnimasiTekan(btnMenuGame)
+
         btnMenuGame.setOnClickListener {
             tampilkanMenuGame()
         }
@@ -123,37 +125,34 @@ class GameAntarRumahActivity : AppCompatActivity() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.setCancelable(false)
 
-        val container = LinearLayout(this).apply {
+        val root = FrameLayout(this).apply {
+            background = getDrawable(R.drawable.latar_menu)
+        }
+
+        val menuContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            setPadding(dp(18), dp(18), dp(18), dp(18))
-            background = getDrawable(R.drawable.bg_menu_game_dialog)
+            setPadding(dp(28), dp(20), dp(28), dp(20))
         }
 
-        val title = TextView(this).apply {
-            text = "MENU"
-            textSize = 28f
-            setTextColor(Color.WHITE)
+        val btnResume = buatTombolMenu(R.drawable.btn_lanjutkan)
+        val btnAbout = buatTombolMenu(R.drawable.btn_tentang)
+        val btnQuit = buatTombolMenu(R.drawable.btn_keluar)
+
+        menuContainer.addView(btnResume)
+        menuContainer.addView(btnAbout)
+        menuContainer.addView(btnQuit)
+
+        val menuParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
             gravity = Gravity.CENTER
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
-            background = getDrawable(R.drawable.bg_btn_menu_game)
-            setPadding(dp(24), dp(6), dp(24), dp(6))
+            leftMargin = dp(34)
+            rightMargin = dp(34)
         }
 
-        val titleParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            dp(48)
-        )
-        titleParams.setMargins(0, 0, 0, dp(18))
-        container.addView(title, titleParams)
-
-        val btnResume = buatTombolMenu("RESUME")
-        val btnAbout = buatTombolMenu("ABOUT")
-        val btnQuit = buatTombolMenu("QUIT")
-
-        container.addView(btnResume)
-        container.addView(btnAbout)
-        container.addView(btnQuit)
+        root.addView(menuContainer, menuParams)
 
         btnResume.setOnClickListener {
             dialog.dismiss()
@@ -170,36 +169,70 @@ class GameAntarRumahActivity : AppCompatActivity() {
             finish()
         }
 
-        dialog.setContentView(container)
+        dialog.setContentView(root)
 
-        val width = (resources.displayMetrics.widthPixels * 0.78).toInt()
-        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+        dialog.setOnShowListener {
+            val width = (resources.displayMetrics.widthPixels * 0.80).toInt()
+            val height = dp(340)
+
+            dialog.window?.setLayout(width, height)
+        }
 
         dialog.show()
     }
 
-    private fun buatTombolMenu(teks: String): TextView {
-        val tombol = TextView(this).apply {
-            text = teks
-            textSize = 17f
-            setTextColor(Color.WHITE)
-            gravity = Gravity.CENTER
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
-            background = getDrawable(R.drawable.bg_menu_game_button)
+    private fun buatTombolMenu(backgroundRes: Int): ImageView {
+        val tombol = ImageView(this).apply {
+            setImageResource(backgroundRes)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            adjustViewBounds = true
+            isClickable = true
+            isFocusable = true
         }
+
+        pasangAnimasiTekan(tombol)
 
         val params = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
-            dp(48)
-        )
-        params.setMargins(0, 0, 0, dp(12))
+            dp(62)
+        ).apply {
+            setMargins(0, dp(8), 0, dp(8))
+        }
+
         tombol.layoutParams = params
 
         return tombol
     }
+    private fun pasangAnimasiTekan(view: View) {
+        view.isClickable = true
+        view.isFocusable = true
+
+        view.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.animate()
+                        .scaleX(0.94f)
+                        .scaleY(0.94f)
+                        .setDuration(45)
+                        .start()
+                }
+
+                MotionEvent.ACTION_UP,
+                MotionEvent.ACTION_CANCEL -> {
+                    v.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(60)
+                        .start()
+                }
+            }
+
+            false
+        }
+    }
 
     private fun tampilkanAboutGame() {
-        android.app.AlertDialog.Builder(this)
+        AlertDialog.Builder(this)
             .setTitle("Tentang Game")
             .setMessage(
                 "Antar ke Rumah adalah permainan mencocokkan domba dengan rumah sesuai warna.\n\n" +
@@ -254,7 +287,7 @@ class GameAntarRumahActivity : AppCompatActivity() {
         arenaGame.removeAllViews()
 
         tvFase.text = "Fase $faseSekarang"
-        tvSkor.text = "Skor: $skor"
+        tvSkor.text = "$skor"
 
         val itemAktif = when (faseSekarang) {
             1 -> daftarDombaRumah.take(2)
@@ -294,6 +327,7 @@ class GameAntarRumahActivity : AppCompatActivity() {
                             cekJawaban(warnaDomba, warnaRumah)
                             true
                         }
+
                         else -> true
                     }
                 }

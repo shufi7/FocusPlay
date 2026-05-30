@@ -3,79 +3,125 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Background game -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:src="@drawable/bg_antardomba" />
 
+    <!-- Arena game -->
     <FrameLayout
         android:id="@+id/arenaGame"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!-- HUD atas -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="14dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="18dp"
         android:layout_marginEnd="14dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
+        <!-- Button menu pakai asset btn_menu -->
         <TextView
             android:id="@+id/btnMenuGame"
-            android:layout_width="70dp"
-            android:layout_height="40dp"
-            android:background="@drawable/bg_btn_menu_game"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/btn_menu"
+            android:clickable="true"
+            android:focusable="true"
             android:gravity="center"
-            android:text="MENU"
+            android:text=""
             android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold"
             android:fontFamily="@font/quicksand_bold" />
 
-        <TextView
-            android:id="@+id/tvFase"
+        <!-- Latar Fase -->
+        <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="38dp"
+            android:layout_height="42dp"
             android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_hud_game"
-            android:gravity="center"
-            android:text="Fase 1"
-            android:textColor="#7A3E3E"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/quicksand_bold" />
+            android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/tvTimer"
-            android:layout_width="0dp"
-            android:layout_height="38dp"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_hud_game"
-            android:gravity="center"
-            android:text="1:00"
-            android:textColor="#7A3E3E"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/quicksand_bold" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/latar_fase" />
 
-        <TextView
-            android:id="@+id/tvSkor"
+            <TextView
+                android:id="@+id/tvFase"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingStart="26dp"
+                android:paddingEnd="8dp"
+                android:text="Fase 1"
+                android:textColor="#538004"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/quicksand_bold" />
+
+        </FrameLayout>
+
+        <!-- Latar Waktu -->
+        <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="38dp"
+            android:layout_height="42dp"
             android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_hud_game"
-            android:gravity="center"
-            android:text="Skor: 0"
-            android:textColor="#7A3E3E"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/quicksand_bold" />
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/latar_waktu" />
+
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingStart="24dp"
+                android:paddingEnd="8dp"
+                android:text="1:00"
+                android:textColor="#8B4A16"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/quicksand_bold" />
+
+        </FrameLayout>
+
+        <!-- Latar Skor -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/latar_skor" />
+
+            <TextView
+                android:id="@+id/tvSkor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingStart="26dp"
+                android:paddingEnd="8dp"
+                android:text="0"
+                android:textColor="#2378d7"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/quicksand_bold" />
+
+        </FrameLayout>
 
     </LinearLayout>
 

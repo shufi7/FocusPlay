@@ -247,18 +247,18 @@
                     </LinearLayout>
 
                     <!-- Tombol tetap Button supaya aman kalau di KT pakai Button -->
-                    <Button
+                    <ImageView
                         android:id="@+id/btnMulaiGame"
                         android:layout_width="match_parent"
-                        android:layout_height="62dp"
-                        android:layout_marginTop="28dp"
-                        android:background="@drawable/bg_button_orange"
-                        android:fontFamily="@font/quicksand_bold"
-                        android:text="Mulai Bermain"
-                        android:textAllCaps="false"
-                        android:textColor="#FFFFFF"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
+                        android:layout_height="80dp"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="26dp"
+                        android:layout_marginEnd="32dp"
+                        android:adjustViewBounds="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/btn_bermain" />
 
                 </LinearLayout>
 

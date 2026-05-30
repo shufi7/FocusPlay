@@ -2,7 +2,8 @@ package com.example.focusplay.games
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.view.MotionEvent
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +21,7 @@ class GameDescriptionActivity : AppCompatActivity() {
     private lateinit var tvNamaGame: TextView
     private lateinit var tvTujuanGame: TextView
     private lateinit var tvCaraBermain: TextView
-    private lateinit var btnMulaiGame: Button
+    private lateinit var btnMulaiGame: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,28 +124,73 @@ class GameDescriptionActivity : AppCompatActivity() {
     }
 
     private fun aturTombol() {
-        btnBack.setOnClickListener {
+        btnBack.jadiTombolCepat {
             finish()
         }
 
-        btnMulaiGame.setOnClickListener {
-            val targetActivity = when (gameKey) {
-                "pasang_kartu" -> GamePasangKartuActivity::class.java
-                "urut_angka" -> GameUrutkanAngkaActivity::class.java
-                else -> GameAntarRumahActivity::class.java
+        btnMulaiGame.jadiTombolCepat {
+            bukaGame()
+        }
+    }
+
+    private fun bukaGame() {
+        val targetActivity = when (gameKey) {
+            "pasang_kartu" -> GamePasangKartuActivity::class.java
+            "urut_angka" -> GameUrutkanAngkaActivity::class.java
+            else -> GameAntarRumahActivity::class.java
+        }
+
+        val intent = Intent(this, targetActivity)
+
+        intent.putExtra("ID_ANAK", idAnak)
+        intent.putExtra("NAMA_ANAK", namaAnak)
+        intent.putExtra("USIA_ANAK", usiaAnak)
+
+        intent.putExtra("id_anak", idAnak)
+        intent.putExtra("nama_anak", namaAnak)
+        intent.putExtra("usia_anak", usiaAnak)
+
+        startActivity(intent)
+    }
+
+    private fun View.jadiTombolCepat(onClick: () -> Unit) {
+        isClickable = true
+        isFocusable = true
+
+        setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.animate()
+                        .scaleX(0.94f)
+                        .scaleY(0.94f)
+                        .setDuration(35)
+                        .start()
+                    true
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    v.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(45)
+                        .withEndAction {
+                            onClick()
+                        }
+                        .start()
+                    true
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    v.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(45)
+                        .start()
+                    true
+                }
+
+                else -> true
             }
-
-            val intent = Intent(this, targetActivity)
-
-            intent.putExtra("ID_ANAK", idAnak)
-            intent.putExtra("NAMA_ANAK", namaAnak)
-            intent.putExtra("USIA_ANAK", usiaAnak)
-
-            intent.putExtra("id_anak", idAnak)
-            intent.putExtra("nama_anak", namaAnak)
-            intent.putExtra("usia_anak", usiaAnak)
-
-            startActivity(intent)
         }
     }
 }
