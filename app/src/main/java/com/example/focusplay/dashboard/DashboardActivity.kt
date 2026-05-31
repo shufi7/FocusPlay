@@ -6,8 +6,11 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.TypedValue
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -49,7 +52,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private lateinit var btnRiwayatPermainan: View
     private lateinit var btnPengaturanPermainan: View
-    private lateinit var btnLogout: View
+    private lateinit var btnLogout: ImageView
 
     private lateinit var chartWeekly: LineChart
 
@@ -305,17 +308,14 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun tambahCardTambahAnakMini() {
-        val card = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-            setPadding(dp(14), dp(12), dp(14), dp(12))
-            background = roundedDrawable("#FFF8E8", 22, "#FFE2A8")
+        val outerCard = FrameLayout(this).apply {
             isClickable = true
             isFocusable = true
-            elevation = dp(2).toFloat()
+            elevation = dp(3).toFloat()
+            background = roundedDrawable("#FFFFFF", 28, "#DDEBFF", 1.5f)
 
-            layoutParams = LinearLayout.LayoutParams(dp(116), dp(132)).apply {
-                setMargins(0, 0, dp(12), 0)
+            layoutParams = LinearLayout.LayoutParams(dp(132), dp(132)).apply {
+                setMargins(dp(12), dp(8), dp(12), dp(8))
             }
 
             setOnClickListener {
@@ -323,22 +323,49 @@ class DashboardActivity : AppCompatActivity() {
             }
         }
 
+        // Dekorasi Bulat Organik (Blue for consistence)
+        val circle1 = View(this).apply {
+            background = circleDrawable("#E3F2FD")
+            alpha = 0.3f
+            layoutParams = FrameLayout.LayoutParams(dp(80), dp(80)).apply {
+                gravity = Gravity.END or Gravity.TOP
+                setMargins(0, dp(-35), dp(-35), 0)
+            }
+        }
+        val circle2 = View(this).apply {
+            background = circleDrawable("#EAF7FF")
+            alpha = 0.2f
+            layoutParams = FrameLayout.LayoutParams(dp(60), dp(60)).apply {
+                gravity = Gravity.START or Gravity.BOTTOM
+                setMargins(dp(-25), 0, 0, dp(-25))
+            }
+        }
+
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        }
+
         val plus = TextView(this).apply {
             text = "+"
             gravity = Gravity.CENTER
             textSize = 28f
-            setTextColor(Color.WHITE)
+            setTextColor(Color.parseColor("#5E7FE0"))
             typeface = Typeface.DEFAULT_BOLD
-            background = circleDrawable("#8DB52A")
+            background = roundedDrawable("#F2FAFF", 18, "#E3F2FD")
             includeFontPadding = false
 
-            layoutParams = LinearLayout.LayoutParams(dp(48), dp(48))
+            layoutParams = LinearLayout.LayoutParams(dp(52), dp(52))
         }
 
         val label = TextView(this).apply {
             text = "Tambah\nAnak"
             gravity = Gravity.CENTER
-            textSize = 13f
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             typeface = Typeface.DEFAULT_BOLD
             setTextColor(Color.parseColor("#1F2937"))
 
@@ -346,13 +373,22 @@ class DashboardActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(0, dp(10), 0, 0)
+                setMargins(0, dp(12), 0, 0)
             }
         }
 
-        card.addView(plus)
-        card.addView(label)
-        containerProfilAnakDashboard.addView(card)
+        content.addView(plus)
+        content.addView(label)
+        
+        outerCard.addView(circle1)
+        outerCard.addView(circle2)
+        outerCard.addView(content)
+        
+        containerProfilAnakDashboard.addView(outerCard)
+    }
+
+    private fun spToPx(sp: Float): Float {
+        return sp * resources.displayMetrics.scaledDensity
     }
 
     private fun getAvatarResource(avatar: String): Int {
@@ -374,34 +410,28 @@ class DashboardActivity : AppCompatActivity() {
     }
     private fun tambahCardProfilAnak(anak: AnakDashboard, index: Int) {
         val sedangDipilih = anak.idDokumen == selectedAnakId
-
-        val warnaBg = "#F2FAFF"
-
         val karakter = getAvatarResource(anak.avatar)
 
-        val card = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-            setPadding(dp(12), dp(12), dp(12), dp(12))
-            background = roundedDrawable(
-                warnaBg,
-                22,
-                if (sedangDipilih) "#5E7FE0" else "#D8E5F5"
-            )
+        val outerCard = FrameLayout(this).apply {
             isClickable = true
             isFocusable = true
-            elevation = dp(2).toFloat()
+            elevation = dp(3).toFloat()
+            background = roundedDrawable(
+                "#FFFFFF",
+                28,
+                if (sedangDipilih) "#5E7FE0" else "#DDEBFF",
+                if (sedangDipilih) 2f else 1.5f
+            )
 
-            layoutParams = LinearLayout.LayoutParams(dp(136), dp(140)).apply {
-                setMargins(0, 0, dp(12), 0)
+            layoutParams = LinearLayout.LayoutParams(dp(132), dp(132)).apply {
+                setMargins(0, dp(8), dp(12), dp(8))
             }
+
             setOnClickListener {
                 if (selectedAnakId == anak.idDokumen) return@setOnClickListener
 
                 selectedAnakId = anak.idDokumen
                 selectedNamaAnak = anak.namaAnak
-
-                tampilkanToastProfil("Menampilkan data ${anak.namaAnak}")
 
                 renderCardProfilAnak()
                 muatGrafikAnak(anak.idDokumen)
@@ -413,16 +443,45 @@ class DashboardActivity : AppCompatActivity() {
             }
         }
 
+        // Dekorasi Bulat Organik (Blue for Profile Cards)
+        val circle1 = View(this).apply {
+            background = circleDrawable("#E3F2FD")
+            alpha = 0.3f
+            layoutParams = FrameLayout.LayoutParams(dp(80), dp(80)).apply {
+                gravity = Gravity.END or Gravity.TOP
+                setMargins(0, dp(-35), dp(-35), 0)
+            }
+        }
+        val circle2 = View(this).apply {
+            background = circleDrawable("#EAF7FF")
+            alpha = 0.2f
+            layoutParams = FrameLayout.LayoutParams(dp(60), dp(60)).apply {
+                gravity = Gravity.START or Gravity.BOTTOM
+                setMargins(dp(-25), 0, 0, dp(-25))
+            }
+        }
+
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        }
+
         val avatar = ImageView(this).apply {
             setImageResource(karakter)
             contentDescription = "Profil ${anak.namaAnak}"
-            layoutParams = LinearLayout.LayoutParams(dp(58), dp(58))
+            background = roundedDrawable("#F2FAFF", 18, "#E3F2FD")
+            setPadding(dp(8), dp(8), dp(8), dp(8))
+            layoutParams = LinearLayout.LayoutParams(dp(62), dp(62))
         }
 
         val nama = TextView(this).apply {
             text = anak.namaAnak
             gravity = Gravity.CENTER
-            textSize = 15f
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
             typeface = Typeface.DEFAULT_BOLD
             setTextColor(Color.parseColor("#1F2937"))
             maxLines = 1
@@ -436,26 +495,30 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         val usia = TextView(this).apply {
-            text = if (sedangDipilih) {
-                "${anak.usia} tahun • dipilih"
-            } else {
-                "${anak.usia} tahun"
-            }
+            text = if (sedangDipilih) "${anak.usia} tahun • dipilih" else "${anak.usia} tahun"
             gravity = Gravity.CENTER
-            textSize = 12f
-            setTextColor(Color.parseColor("#6B7280"))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            setTextColor(if (sedangDipilih) Color.parseColor("#5E7FE0") else Color.parseColor("#6B7280"))
+            background = roundedDrawable(if (sedangDipilih) "#EEF4FF" else "#F3F4F6", 16, if (sedangDipilih) "#DDEBFF" else "#E5E7EB")
+            setPadding(dp(10), dp(4), dp(10), dp(4))
 
             layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            )
+            ).apply {
+                setMargins(0, dp(6), 0, 0)
+            }
         }
 
-        card.addView(avatar)
-        card.addView(nama)
-        card.addView(usia)
+        content.addView(avatar)
+        content.addView(nama)
+        content.addView(usia)
 
-        containerProfilAnakDashboard.addView(card)
+        outerCard.addView(circle1)
+        outerCard.addView(circle2)
+        outerCard.addView(content)
+
+        containerProfilAnakDashboard.addView(outerCard)
     }
 
     private fun tampilkanDialogHapusAnak(anak: AnakDashboard) {
@@ -916,10 +979,10 @@ class DashboardActivity : AppCompatActivity() {
             finish()
         }
 
-        btnRiwayatPermainan.setOnClickListener {
+        btnRiwayatPermainan.jadiTombolCepat {
             if (selectedAnakId.isEmpty()) {
                 Toast.makeText(this, "Pilih profil anak terlebih dahulu.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+                return@jadiTombolCepat
             }
 
             val intent = Intent(this, RiwayatPermainanActivity::class.java)
@@ -928,11 +991,11 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        btnPengaturanPermainan.setOnClickListener {
+        btnPengaturanPermainan.jadiTombolCepat {
             startActivity(Intent(this, PengaturanPermainanActivity::class.java))
         }
 
-        btnLogout.setOnClickListener {
+        btnLogout.jadiTombolCepat {
             auth.signOut()
             session.logout()
 
@@ -968,12 +1031,12 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    private fun roundedDrawable(color: String, radius: Int, strokeColor: String): GradientDrawable {
+    private fun roundedDrawable(color: String, radius: Int, strokeColor: String, strokeWidth: Float = 1f): GradientDrawable {
         return GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             setColor(Color.parseColor(color))
             cornerRadius = dp(radius).toFloat()
-            setStroke(dp(1), Color.parseColor(strokeColor))
+            setStroke(dp(strokeWidth.toInt()), Color.parseColor(strokeColor))
         }
     }
 
@@ -986,5 +1049,49 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun dp(value: Int): Int {
         return (value * resources.displayMetrics.density).toInt()
+    }
+
+    private fun View.jadiTombolCepat(onClick: () -> Unit) {
+        isClickable = true
+        isFocusable = true
+
+        setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.animate()
+                        .scaleX(0.96f)
+                        .scaleY(0.96f)
+                        .alpha(0.85f)
+                        .setDuration(40)
+                        .start()
+                    true
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    v.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .alpha(1f)
+                        .setDuration(50)
+                        .withEndAction {
+                            onClick()
+                        }
+                        .start()
+                    true
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    v.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .alpha(1f)
+                        .setDuration(50)
+                        .start()
+                    true
+                }
+
+                else -> false
+            }
+        }
     }
 }

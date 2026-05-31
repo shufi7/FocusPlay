@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
 import com.example.focusplay.profile.PilihPeranActivity
@@ -23,6 +25,9 @@ class SplashActivity : AppCompatActivity() {
 
         session = SessionManager(this)
 
+        val ivLogoSplash = findViewById<ImageView>(R.id.ivLogoSplash)
+        mulaiAnimasiLogo(ivLogoSplash)
+
         handler.postDelayed({
             val tujuan = if (session.isLogin()) {
                 Intent(this, PilihPeranActivity::class.java)
@@ -34,6 +39,42 @@ class SplashActivity : AppCompatActivity() {
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             finish()
         }, splashDelay)
+    }
+
+    private fun mulaiAnimasiLogo(view: ImageView) {
+        // Animasi Muncul (Fade In)
+        view.alpha = 0f
+        view.animate()
+            .alpha(1f)
+            .setDuration(800)
+            .start()
+
+        // Animasi Naik Turun (Bobbing)
+        val movingDistance = 30f // Jarak gerak 30px
+        
+        view.animate()
+            .translationY(movingDistance)
+            .setDuration(1200)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .withEndAction(object : Runnable {
+                override fun run() {
+                    animasiKebalikan(view, movingDistance)
+                }
+            })
+            .start()
+    }
+
+    private fun animasiKebalikan(view: ImageView, distance: Float) {
+        val target = if (view.translationY > 0) -distance else distance
+        
+        view.animate()
+            .translationY(target)
+            .setDuration(1200)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .withEndAction {
+                animasiKebalikan(view, distance)
+            }
+            .start()
     }
 
     override fun onDestroy() {

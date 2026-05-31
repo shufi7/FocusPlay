@@ -4,84 +4,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_splash_playground">
+    android:fitsSystemWindows="true"
+    android:background="@drawable/backgrounds">
 
-    <!-- Awan dekorasi -->
-    <View
-        android:layout_width="120dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="-24dp"
-        android:layout_marginTop="78dp"
-        android:alpha="0.85"
-        android:background="@drawable/bg_cloud"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:layout_width="135dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="58dp"
-        android:layout_marginEnd="-28dp"
-        android:alpha="0.88"
-        android:background="@drawable/bg_cloud"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Bubble kecil -->
-    <View
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="34dp"
-        android:layout_marginTop="54dp"
-        android:alpha="0.75"
-        android:background="@drawable/bg_bubble"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="46dp"
-        android:layout_marginEnd="36dp"
-        android:alpha="0.75"
-        android:background="@drawable/bg_bubble"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Area hijau bawah -->
-    <View
-        android:layout_width="0dp"
-        android:layout_height="165dp"
-        android:background="@drawable/bg_ground_soft"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <View
-        android:layout_width="235dp"
-        android:layout_height="105dp"
-        android:layout_marginStart="-48dp"
-        android:layout_marginBottom="84dp"
-        android:background="@drawable/bg_hill"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <View
-        android:layout_width="250dp"
-        android:layout_height="110dp"
-        android:layout_marginEnd="-55dp"
-        android:layout_marginBottom="78dp"
-        android:background="@drawable/bg_hill"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Header -->
+    <!-- Header (Synced with Dashboard) -->
     <LinearLayout
         android:id="@+id/headerTambahAnak"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="22dp"
-        android:layout_marginTop="34dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="22dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -91,13 +23,13 @@
 
         <ImageView
             android:id="@+id/ivBack"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="@drawable/bg_back_circle"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_button_back_blue"
             android:contentDescription="Kembali"
-            android:padding="11dp"
-            android:src="@android:drawable/ic_menu_revert"
-            app:tint="#406915" />
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_arrow_back" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -109,196 +41,211 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/quicksand"
+                android:fontFamily="@font/quicksand_bold"
                 android:text="Tambah Profil Anak"
-                android:textColor="#1F2937"
-                android:textSize="25sp"
+                android:textColor="#2F2F2F"
+                android:textSize="17sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Card utama -->
+    <!-- Card Utama (Neutral & Cool Style) -->
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="22dp"
-        android:layout_marginEnd="22dp"
-        app:cardBackgroundColor="#FDFDFD"
-        app:cardCornerRadius="30dp"
-        app:cardElevation="8dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="18dp"
+        app:cardBackgroundColor="#FFFDFB"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerTambahAnak">
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
-            <!-- Form title -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/quicksand"
-                android:text="Data Anak"
-                android:textColor="#1F2937"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <!-- Nama Anak -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:fontFamily="@font/quicksand"
-                android:text="Nama Panggilan Anak"
-                android:textColor="#374151"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/etNamaAnak"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_input_login"
-                android:fontFamily="@font/quicksand"
-                android:hint="Contoh: Budi"
-                android:inputType="textPersonName"
-                android:paddingHorizontal="16dp"
-                android:textColor="#1F2937"
-                android:textColorHint="#A0AEC0"
-                android:textSize="15sp" />
-
-            <!-- Usia Anak -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:fontFamily="@font/quicksand"
-                android:text="Usia Anak"
-                android:textColor="#374151"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/etUsiaAnak"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_input_login"
-                android:fontFamily="@font/quicksand"
-                android:hint="Contoh: 10"
-                android:inputType="number"
-                android:paddingHorizontal="16dp"
-                android:textColor="#1F2937"
-                android:textColorHint="#A0AEC0"
-                android:textSize="15sp" />
-
-            <!-- Pilih avatar -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:fontFamily="@font/quicksand"
-                android:text="Pilih Profil Anak"
-                android:textColor="#374151"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="6dp">
-
-                    <ImageView
-                        android:id="@+id/avatarRed"
-                        android:layout_width="58dp"
-                        android:layout_height="58dp"
-                        android:layout_margin="6dp"
-                        android:background="@drawable/bg_avatar_selected"
-                        android:padding="8dp"
-                        android:src="@drawable/char_red" />
-
-                    <ImageView
-                        android:id="@+id/avatarBlue"
-                        android:layout_width="58dp"
-                        android:layout_height="58dp"
-                        android:layout_margin="6dp"
-                        android:background="@drawable/bg_avatar_normal"
-                        android:padding="8dp"
-                        android:src="@drawable/char_blue" />
-
-                    <ImageView
-                        android:id="@+id/avatarPurple"
-                        android:layout_width="58dp"
-                        android:layout_height="58dp"
-                        android:layout_margin="6dp"
-                        android:background="@drawable/bg_avatar_normal"
-                        android:padding="8dp"
-                        android:src="@drawable/char_purple" />
-
-                    <ImageView
-                        android:id="@+id/avatarStar"
-                        android:layout_width="58dp"
-                        android:layout_height="58dp"
-                        android:layout_margin="6dp"
-                        android:background="@drawable/bg_avatar_normal"
-                        android:padding="8dp"
-                        android:src="@drawable/char_star" />
-
-                </LinearLayout>
-            </HorizontalScrollView>
-
-            <!-- Info -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:background="@drawable/bg_info_soft"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="14dp">
+                android:orientation="vertical"
+                android:padding="22dp">
+
+                <!-- Form Title Section -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Identitas Anak"
+                    android:textColor="#243447"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_weight="1"
+                    android:layout_marginTop="4dp"
                     android:fontFamily="@font/quicksand"
-                    android:text="Setelah profil disimpan, anak bisa dipilih dari halaman profil anak."
-                    android:textColor="#6B7280"
+                    android:text="Lengkapi data untuk membuat profil baru"
+                    android:textColor="#7B8895"
+                    android:textSize="12sp" />
+
+                <!-- Nama Anak Input -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Nama Panggilan"
+                    android:textColor="#4B5563"
                     android:textSize="13sp" />
+
+                <EditText
+                    android:id="@+id/etNamaAnak"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input_login"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:hint="Contoh: Budi"
+                    android:inputType="textPersonName"
+                    android:paddingHorizontal="18dp"
+                    android:textColor="#1F2937"
+                    android:textColorHint="#9CA3AF"
+                    android:textSize="14sp" />
+
+                <!-- Usia Anak Input -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Usia (Tahun)"
+                    android:textColor="#4B5563"
+                    android:textSize="13sp" />
+
+                <EditText
+                    android:id="@+id/etUsiaAnak"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input_login"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:hint="Contoh: 7"
+                    android:inputType="number"
+                    android:paddingHorizontal="18dp"
+                    android:textColor="#1F2937"
+                    android:textColorHint="#9CA3AF"
+                    android:textSize="14sp" />
+
+                <!-- Pilih Avatar Section -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Pilih Karakter"
+                    android:textColor="#4B5563"
+                    android:textSize="13sp" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/avatarRed"
+                            android:layout_width="72dp"
+                            android:layout_height="72dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/bg_avatar_selected"
+                            android:padding="10dp"
+                            android:src="@drawable/char_red" />
+
+                        <ImageView
+                            android:id="@+id/avatarBlue"
+                            android:layout_width="72dp"
+                            android:layout_height="72dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/bg_avatar_normal"
+                            android:padding="10dp"
+                            android:src="@drawable/char_blue" />
+
+                        <ImageView
+                            android:id="@+id/avatarPurple"
+                            android:layout_width="72dp"
+                            android:layout_height="72dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/bg_avatar_normal"
+                            android:padding="10dp"
+                            android:src="@drawable/char_purple" />
+
+                        <ImageView
+                            android:id="@+id/avatarStar"
+                            android:layout_width="72dp"
+                            android:layout_height="72dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/bg_avatar_normal"
+                            android:padding="10dp"
+                            android:src="@drawable/char_star" />
+
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <!-- Info Hint -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="28dp"
+                    android:background="@drawable/bg_info_soft"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/quicksand"
+                        android:text="Setelah disimpan, profil ini akan muncul di daftar pilihan profil anak."
+                        android:textColor="#6B7280"
+                        android:textSize="12sp"
+                        android:lineSpacingExtra="2dp" />
+                </LinearLayout>
+
+                <!-- Save Button (Modern Green/Neutral mix) -->
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnSimpanAnak"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_button_green"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Simpan Profil Anak"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:elevation="4dp" />
+
             </LinearLayout>
 
-            <!-- Tombol -->
-            <Button
-                android:id="@+id/btnSimpanAnak"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="22dp"
-                android:background="@drawable/bg_button_green"
-                android:backgroundTint="@null"
-                android:fontFamily="@font/quicksand"
-                android:text="Simpan Profil Anak"
-                android:textAllCaps="false"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+        </androidx.core.widget.NestedScrollView>
 
-        </LinearLayout>
     </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

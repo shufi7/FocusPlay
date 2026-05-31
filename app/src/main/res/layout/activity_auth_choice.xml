@@ -10,7 +10,18 @@
         android:layout_height="match_parent"
         android:contentDescription="@null"
         android:scaleType="centerCrop"
-        android:src="@drawable/bg_splash" />
+        android:src="@drawable/bg_auth" />
+
+    <!-- Logo FocusPlay -->
+    <ImageView
+        android:id="@+id/ivLogoAuth"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="100dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="Logo FocusPlay"
+        android:src="@drawable/logo_focusplay" />
 
     <ImageView
         android:id="@+id/btnLogin"

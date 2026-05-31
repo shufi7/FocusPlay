@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
+import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -23,7 +24,7 @@ class PilihAnakActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
-    private lateinit var containerProfilAnak: LinearLayout
+    private lateinit var containerProfilAnak: GridLayout
     private lateinit var tvEmptyState: TextView
     private lateinit var ivBack: ImageView
 
@@ -168,6 +169,14 @@ class PilihAnakActivity : AppCompatActivity() {
             containerProfilAnak,
             false
         )
+
+        // Set layout params for GridLayout to ensure 2 columns work well
+        val params = GridLayout.LayoutParams()
+        params.width = 0
+        params.height = GridLayout.LayoutParams.WRAP_CONTENT
+        params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
+        params.setMargins(dp(6), dp(6), dp(6), dp(6))
+        itemView.layoutParams = params
 
         val imgAvatarAnak = itemView.findViewById<ImageView>(R.id.imgAvatarAnak)
         val tvItemNamaAnak = itemView.findViewById<TextView>(R.id.tvItemNamaAnak)

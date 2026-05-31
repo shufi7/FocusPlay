@@ -1,89 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_margin="8dp"
     android:foreground="?attr/selectableItemBackground"
-    app:cardBackgroundColor="#FFF8F1"
-    app:cardCornerRadius="18dp"
-    app:cardElevation="1dp"
-    app:cardUseCompatPadding="true">
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="3dp"
+    app:strokeColor="#FFD8B1"
+    app:strokeWidth="1.5dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="14dp"
-        android:paddingTop="12dp"
-        android:paddingEnd="14dp"
-        android:paddingBottom="12dp">
+        android:padding="16dp"
+        android:clipToPadding="false">
 
-        <FrameLayout
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="@drawable/bg_avatar_normal"
-            android:padding="7dp">
+        <!-- Dekorasi Bulat Sisi 1 (Organik) -->
 
-            <ImageView
-                android:id="@+id/imgAvatarAnak"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="Avatar anak"
-                android:scaleType="fitCenter"
-                android:src="@drawable/char_red" />
-        </FrameLayout>
+        <!-- Dekorasi Bulat Sisi 2 (Organik) -->
+        <View
+            android:layout_width="124dp"
+            android:layout_height="117dp"
+            android:layout_marginTop="-25dp"
+            android:layout_marginEnd="-25dp"
+            android:alpha="0.3"
+            android:background="@drawable/bg_circle_soft_orange"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
+        <View
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="-15dp"
+            android:layout_marginEnd="88dp"
+            android:alpha="0.2"
+            android:background="@drawable/bg_circle_soft_orange"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="86dp"
+            android:layout_height="86dp"
+            android:layout_marginStart="-20dp"
+            android:layout_marginBottom="-20dp"
+            android:alpha="0.25"
+            android:background="@drawable/bg_circle_soft_orange"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:layout_width="44dp"
+            android:layout_height="43dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginBottom="-12dp"
+            android:alpha="0.15"
+            android:background="@drawable/bg_circle_peach_soft"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/bgAvatar"
+            android:layout_width="85dp"
+            android:layout_height="85dp"
+            android:background="@drawable/bg_avatar_tile"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imgAvatarAnak"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:contentDescription="Avatar anak"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="@id/bgAvatar"
+            app:layout_constraintEnd_toEndOf="@id/bgAvatar"
+            app:layout_constraintStart_toStartOf="@id/bgAvatar"
+            app:layout_constraintTop_toTopOf="@id/bgAvatar"
+            tools:src="@drawable/char_red" />
+
+        <TextView
+            android:id="@+id/tvItemNamaAnak"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_marginTop="14dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/quicksand_bold"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="#3A2A1F"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bgAvatar"
+            tools:text="Nama Anak" />
 
-            <TextView
-                android:id="@+id/tvItemNamaAnak"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="Nama Anak"
-                android:textColor="#3A2A1F"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tvItemUmurAnak"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_label_soft_orange"
+            android:fontFamily="@font/quicksand"
+            android:paddingStart="14dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="5dp"
+            android:textColor="#D35400"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvItemNamaAnak"
+            tools:text="5 Tahun" />
 
-            <TextView
-                android:id="@+id/tvItemUmurAnak"
-                android:background="@drawable/bg_label_soft_orange"
-                android:paddingStart="10dp"
-                android:paddingTop="4dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="4dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="Umur: 5 Tahun"
-                android:textColor="#E47A22"
-                android:textSize="11sp"
-                android:textStyle="bold"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </LinearLayout>
-
-        <FrameLayout
-            android:layout_width="34dp"
-            android:layout_height="34dp"
-            android:background="@drawable/bg_circle_soft_orange">
-
-            <ImageView
-                android:layout_width="17dp"
-                android:layout_height="17dp"
-                android:layout_gravity="center"
-                android:contentDescription="Pilih anak"
-                android:src="@android:drawable/ic_media_play"
-                app:tint="#E47A22" />
-        </FrameLayout>
-
-    </LinearLayout>
-
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

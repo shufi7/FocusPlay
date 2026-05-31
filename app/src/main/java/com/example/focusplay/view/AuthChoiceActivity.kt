@@ -3,6 +3,8 @@ package com.example.focusplay.view
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
 import com.example.focusplay.profile.PilihPeranActivity
@@ -37,6 +39,9 @@ class AuthChoiceActivity : AppCompatActivity() {
 
         btnLogin = findViewById(R.id.btnLogin)
         btnRegister = findViewById(R.id.btnRegister)
+
+        val ivLogoAuth = findViewById<ImageView>(R.id.ivLogoAuth)
+        mulaiAnimasiLogo(ivLogoAuth)
 
         aturTombolLogin()
         aturTombolRegister()
@@ -139,5 +144,31 @@ class AuthChoiceActivity : AppCompatActivity() {
     private fun bukaPilihPeran() {
         startActivity(android.content.Intent(this, PilihPeranActivity::class.java))
         finish()
+    }
+
+    private fun mulaiAnimasiLogo(view: ImageView) {
+        val movingDistance = 25f
+
+        view.animate()
+            .translationY(movingDistance)
+            .setDuration(1500)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .withEndAction {
+                animasiKebalikan(view, movingDistance)
+            }
+            .start()
+    }
+
+    private fun animasiKebalikan(view: ImageView, distance: Float) {
+        val target = if (view.translationY > 0) -distance else distance
+
+        view.animate()
+            .translationY(target)
+            .setDuration(1500)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .withEndAction {
+                animasiKebalikan(view, distance)
+            }
+            .start()
     }
 }
