@@ -261,14 +261,6 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
         etPassword.setSelection(etPassword.text.length)
     }
 
-    private fun ambilNamaPanggilan(namaLengkap: String): String {
-        return namaLengkap
-            .trim()
-            .split(" ")
-            .firstOrNull()
-            ?: "Pengguna"
-    }
-
     private fun ambilNamaDariEmail(email: String): String {
         return email
             .substringBefore("@")

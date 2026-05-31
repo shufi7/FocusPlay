@@ -19,6 +19,7 @@ import com.example.focusplay.R
 import com.example.focusplay.history.EvaluasiActivity
 import com.example.focusplay.utils.AdaptiveGameManager
 import com.example.focusplay.utils.GameResultHelper
+import kotlin.math.min
 
 class GamePasangKartuActivity : AppCompatActivity() {
 
@@ -66,7 +67,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         waktuMulaiSesi = System.currentTimeMillis()
 
         mulaiTimerGlobal()
-        mulaiRonde()
+        gridKartu.post { mulaiRonde() }
     }
 
     private fun ambilDataAnakDariIntent() {
@@ -92,9 +93,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         modeAdaptif = prefs.getBoolean("mode_adaptif", true)
         targetWaktuMenit = prefs.getString("target_waktu", "1")?.toIntOrNull() ?: 1
 
-        // Semua game selalu mulai dari fase 1.
         faseSaatIni = 1
-
         adaptiveManager = AdaptiveGameManager(
             faseSekarang = faseSaatIni,
             modeAdaptifAktif = modeAdaptif
@@ -131,6 +130,10 @@ class GamePasangKartuActivity : AppCompatActivity() {
 
     private fun mulaiRonde() {
         if (sesiSelesai) return
+        if (gridKartu.width <= 0) {
+            gridKartu.post { mulaiRonde() }
+            return
+        }
 
         gridKartu.removeAllViews()
         jumlahPasanganSelesai = 0
@@ -149,7 +152,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
                 gridKartu.rowCount = 2
                 totalPasanganRondeIni = 2
                 waktuPreview = 3000L
-                isiKartu.addAll(listOf("🍎", "🍎", "🐶", "🐶"))
+                isiKartu.addAll(listOf("A", "A", "B", "B"))
             }
 
             2 -> {
@@ -158,7 +161,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
                 gridKartu.rowCount = 3
                 totalPasanganRondeIni = 4
                 waktuPreview = 2000L
-                isiKartu.addAll(listOf("🍎", "🍎", "🐶", "🐶", "🚗", "🚗", "⚽", "⚽"))
+                isiKartu.addAll(listOf("A", "A", "B", "B", "C", "C", "D", "D"))
             }
 
             else -> {
@@ -167,37 +170,27 @@ class GamePasangKartuActivity : AppCompatActivity() {
                 gridKartu.rowCount = 4
                 totalPasanganRondeIni = 6
                 waktuPreview = 1000L
-                isiKartu.addAll(
-                    listOf(
-                        "🍎", "🍎",
-                        "🍅", "🍅",
-                        "🐶", "🐶",
-                        "🐺", "🐺",
-                        "🚗", "🚗",
-                        "🚙", "🚙"
-                    )
-                )
+                isiKartu.addAll(listOf("A", "A", "B", "B", "C", "C", "D", "D", "E", "E", "F", "F"))
             }
         }
 
         isiKartu.shuffle()
 
+        val ukuranKartuPx = hitungUkuranKartu()
         for (i in 0 until totalPasanganRondeIni * 2) {
-            val ukuranKartuPx = dpToPx(80)
-
             val kartu = TextView(this).apply {
                 layoutParams = GridLayout.LayoutParams().apply {
                     width = ukuranKartuPx
                     height = ukuranKartuPx
-                    setMargins(12, 12, 12, 12)
+                    setMargins(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8))
                 }
 
-                textSize = 36f
+                textSize = 34f
                 gravity = Gravity.CENTER
                 elevation = 4f
                 tag = isiKartu[i]
-
                 text = isiKartu[i]
+                contentDescription = "Kartu permainan"
                 background = buatBackgroundKartu("#FFFFFF", "#E0E0E0")
             }
 
@@ -213,12 +206,22 @@ class GamePasangKartuActivity : AppCompatActivity() {
                 kartu.typeface = Typeface.DEFAULT_BOLD
                 kartu.setTextColor(Color.parseColor("#334155"))
                 kartu.background = buatBackgroundKartu("#EAF7FF", "#B9DDF6")
+                kartu.isClickable = true
+                kartu.isFocusable = true
 
                 kartu.setOnClickListener {
                     pilihKartu(kartu)
                 }
             }
         }, waktuPreview)
+    }
+
+    private fun hitungUkuranKartu(): Int {
+        val kolom = gridKartu.columnCount.coerceAtLeast(2)
+        val marginPerKartu = dpToPx(16)
+        val lebarTersedia = resources.displayMetrics.widthPixels - dpToPx(48)
+        val ukuranDariLebar = (lebarTersedia / kolom) - marginPerKartu
+        return min(dpToPx(88), ukuranDariLebar).coerceAtLeast(dpToPx(62))
     }
 
     private fun pilihKartu(kartu: TextView) {
@@ -265,7 +268,6 @@ class GamePasangKartuActivity : AppCompatActivity() {
                     prosesAdaptifSetelahRondeSelesai()
                 }
             }, 500)
-
         } else {
             totalSalah++
             rondeAdaSalah = true
@@ -286,15 +288,6 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun prosesAdaptifSetelahRondeSelesai() {
-        /*
-            Mode adaptif dihitung per ronde, bukan per pasangan kartu.
-
-            Jika 1 ronde selesai tanpa salah pasangan:
-            - dihitung sebagai 1 jawaban benar untuk AdaptiveGameManager.
-
-            Jika dalam 1 ronde pernah salah memasangkan kartu:
-            - dihitung sebagai 1 jawaban salah untuk AdaptiveGameManager.
-        */
         val rondeSempurna = !rondeAdaSalah
         val faseBaru = adaptiveManager.prosesJawaban(rondeSempurna)
 
@@ -320,7 +313,6 @@ class GamePasangKartuActivity : AppCompatActivity() {
         handler.removeCallbacksAndMessages(null)
 
         val totalJawaban = totalBenar + totalSalah
-
         val akurasi = if (totalJawaban > 0) {
             ((totalBenar * 100f) / totalJawaban).toInt()
         } else {

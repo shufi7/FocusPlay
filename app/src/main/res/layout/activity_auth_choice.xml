@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -15,19 +16,23 @@
     <!-- Logo FocusPlay -->
     <ImageView
         android:id="@+id/ivLogoAuth"
-        android:layout_width="300dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="100dp"
+        android:layout_marginStart="42dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="42dp"
         android:adjustViewBounds="true"
         android:contentDescription="Logo FocusPlay"
-        android:src="@drawable/logo_focusplay" />
+        android:src="@drawable/logo_focusplay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="320dp" />
 
     <ImageView
         android:id="@+id/btnLogin"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="75dp"
-        android:layout_gravity="bottom"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="165dp"
@@ -35,13 +40,17 @@
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
         android:clickable="true"
-        android:focusable="true" />
+        android:contentDescription="Login"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_max="380dp" />
 
     <ImageView
         android:id="@+id/btnRegister"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="75dp"
-        android:layout_gravity="bottom"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="75dp"
@@ -49,5 +58,10 @@
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
         android:clickable="true"
-        android:focusable="true" />
-</FrameLayout>
+        android:contentDescription="Register"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_max="380dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

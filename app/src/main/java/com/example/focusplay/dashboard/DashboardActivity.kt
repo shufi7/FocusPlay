@@ -302,8 +302,8 @@ class DashboardActivity : AppCompatActivity() {
         containerProfilAnakDashboard.removeAllViews()
         tambahCardTambahAnakMini()
 
-        daftarAnakDashboard.forEachIndexed { index, anak ->
-            tambahCardProfilAnak(anak, index)
+        daftarAnakDashboard.forEach { anak ->
+            tambahCardProfilAnak(anak)
         }
     }
 
@@ -387,10 +387,6 @@ class DashboardActivity : AppCompatActivity() {
         containerProfilAnakDashboard.addView(outerCard)
     }
 
-    private fun spToPx(sp: Float): Float {
-        return sp * resources.displayMetrics.scaledDensity
-    }
-
     private fun getAvatarResource(avatar: String): Int {
         return when (avatar) {
             "char_red" -> R.drawable.char_red
@@ -408,7 +404,7 @@ class DashboardActivity : AppCompatActivity() {
             else -> R.drawable.char_red
         }
     }
-    private fun tambahCardProfilAnak(anak: AnakDashboard, index: Int) {
+    private fun tambahCardProfilAnak(anak: AnakDashboard) {
         val sedangDipilih = anak.idDokumen == selectedAnakId
         val karakter = getAvatarResource(anak.avatar)
 
@@ -495,7 +491,7 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         val usia = TextView(this).apply {
-            text = if (sedangDipilih) "${anak.usia} tahun • dipilih" else "${anak.usia} tahun"
+            text = if (sedangDipilih) "${anak.usia} tahun - dipilih" else "${anak.usia} tahun"
             gravity = Gravity.CENTER
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             setTextColor(if (sedangDipilih) Color.parseColor("#5E7FE0") else Color.parseColor("#6B7280"))

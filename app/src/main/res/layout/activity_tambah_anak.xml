@@ -173,6 +173,9 @@
                             android:layout_height="72dp"
                             android:layout_marginEnd="12dp"
                             android:background="@drawable/bg_avatar_selected"
+                            android:clickable="true"
+                            android:contentDescription="Pilih karakter merah"
+                            android:focusable="true"
                             android:padding="10dp"
                             android:src="@drawable/char_red" />
 
@@ -182,6 +185,9 @@
                             android:layout_height="72dp"
                             android:layout_marginEnd="12dp"
                             android:background="@drawable/bg_avatar_normal"
+                            android:clickable="true"
+                            android:contentDescription="Pilih karakter biru"
+                            android:focusable="true"
                             android:padding="10dp"
                             android:src="@drawable/char_blue" />
 
@@ -191,6 +197,9 @@
                             android:layout_height="72dp"
                             android:layout_marginEnd="12dp"
                             android:background="@drawable/bg_avatar_normal"
+                            android:clickable="true"
+                            android:contentDescription="Pilih karakter ungu"
+                            android:focusable="true"
                             android:padding="10dp"
                             android:src="@drawable/char_purple" />
 
@@ -200,6 +209,9 @@
                             android:layout_height="72dp"
                             android:layout_marginEnd="12dp"
                             android:background="@drawable/bg_avatar_normal"
+                            android:clickable="true"
+                            android:contentDescription="Pilih karakter bintang"
+                            android:focusable="true"
                             android:padding="10dp"
                             android:src="@drawable/char_star" />
 

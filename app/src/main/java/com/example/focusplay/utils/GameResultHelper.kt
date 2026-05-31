@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import com.example.focusplay.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
@@ -29,8 +30,6 @@ import java.util.Date
 import java.util.Locale
 
 object GameResultHelper {
-
-    private const val FREEMODEL_API_KEY = "fe_oa_49bd5dde1f507018fdd8440f7ea822a87c47d45be580365c"
 
     fun evaluasiDanSimpanRealtime(
         activity: Activity,
@@ -63,9 +62,8 @@ object GameResultHelper {
                 indeterminateTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#2196F3"))
             }
 
-            // Membuat teks pemberitahuan ramah anak
             val textView = TextView(activity).apply {
-                text = "Robot AI sedang meracik evaluasi...\nMohon tunggu sebentar ya! 🤖"
+                text = "AI sedang membuat evaluasi...\nMohon tunggu sebentar ya!"
                 textSize = 16f
                 gravity = Gravity.CENTER
                 setTextColor(Color.parseColor("#334155"))
@@ -81,16 +79,14 @@ object GameResultHelper {
                 .setCancelable(false) // Mengunci pop-up agar tidak bisa di-cancel manual
                 .create()
 
-            // Membuat sudut kotak pop-up menjadi membulat mulus (Rounded Card)
+            loadingDialog.show()
+
             val bgShape = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
                 cornerRadius = 48f
                 setColor(Color.WHITE)
             }
             loadingDialog.window?.setBackgroundDrawable(bgShape)
-
-            // TAMPILKAN POP-UP DETIK INI JUGA!
-            loadingDialog.show()
 
             // Jalankan komunikasi data dengan API FreeModel GPT-5.5
             jalankanProsesAI(activity, idAnak, namaAnak, namaGame, skor, akurasi, durasiMenit, loadingDialog, onSelesai)
@@ -112,8 +108,9 @@ object GameResultHelper {
             var hasilAI = "Wah, $namaAnak sangat fokus di game $namaGame! Saran untuk ortu: pertahankan durasi bermain ini agar konsentrasinya stabil."
             var isApiBerhasil = false
 
-            // 1. Hubungkan ke Server FreeModel AI
-            try {
+            val apiKey = BuildConfig.FREEMODEL_API_KEY
+
+            if (apiKey.isNotBlank()) try {
                 val prompt = "Anak bernama $namaAnak baru saja selesai bermain game kognitif '$namaGame'. " +
                         "Dia mendapatkan skor $skor dengan akurasi $akurasi% dalam waktu $durasiMenit menit. " +
                         "Tolong berikan 1 kalimat pujian singkat yang ramah untuk anak, dan 1 kalimat evaluasi ringkas untuk orang tua. Langsung saja teks biasa."
@@ -121,7 +118,7 @@ object GameResultHelper {
                 val url = URL("https://api.freemodel.dev/v1/chat/completions")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
-                connection.setRequestProperty("Authorization", "Bearer $FREEMODEL_API_KEY")
+                connection.setRequestProperty("Authorization", "Bearer $apiKey")
                 connection.setRequestProperty("Content-Type", "application/json")
                 connection.connectTimeout = 15000
                 connection.readTimeout = 15000

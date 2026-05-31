@@ -68,6 +68,8 @@ class TambahAnakActivity : AppCompatActivity() {
         }
 
         btnSimpanAnak.setOnClickListener {
+            if (!btnSimpanAnak.isEnabled) return@setOnClickListener
+
             val nama = etNamaAnak.text.toString().trim()
             val usiaText = etUsiaAnak.text.toString().trim()
 
@@ -100,6 +102,25 @@ class TambahAnakActivity : AppCompatActivity() {
             "char_purple" -> avatarPurple.setBackgroundResource(R.drawable.bg_avatar_selected)
             "char_star" -> avatarStar.setBackgroundResource(R.drawable.bg_avatar_selected)
         }
+
+        val selectedView = when (avatar) {
+            "char_blue" -> avatarBlue
+            "char_purple" -> avatarPurple
+            "char_star" -> avatarStar
+            else -> avatarRed
+        }
+        selectedView.animate()
+            .scaleX(0.94f)
+            .scaleY(0.94f)
+            .setDuration(60)
+            .withEndAction {
+                selectedView.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(80)
+                    .start()
+            }
+            .start()
     }
 
     private fun prosesSimpanAnakFirebase(nama: String, usia: Int) {
@@ -121,6 +142,9 @@ class TambahAnakActivity : AppCompatActivity() {
             "avatar" to selectedAvatar
         )
 
+        btnSimpanAnak.isEnabled = false
+        btnSimpanAnak.text = "Menyimpan..."
+
         db.collection("tb_anak")
             .add(anakData)
             .addOnSuccessListener {
@@ -132,6 +156,8 @@ class TambahAnakActivity : AppCompatActivity() {
                 finish()
             }
             .addOnFailureListener { e ->
+                btnSimpanAnak.isEnabled = true
+                btnSimpanAnak.text = "Simpan Profil Anak"
                 Toast.makeText(
                     this,
                     "Gagal menyimpan: ${e.message}",

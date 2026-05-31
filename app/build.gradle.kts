@@ -3,6 +3,12 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
 }
 
+val freemodelApiKey = providers.gradleProperty("FREEMODEL_API_KEY")
+    .orElse(providers.environmentVariable("FREEMODEL_API_KEY"))
+    .getOrElse("")
+    .replace("\\", "\\\\")
+    .replace("\"", "\\\"")
+
 android {
     namespace = "com.example.focusplay"
     compileSdk {
@@ -17,6 +23,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "FREEMODEL_API_KEY", "\"$freemodelApiKey\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -40,26 +51,13 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 
-    implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.auth)
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.play.services.auth)
-    implementation(libs.googleid)
     implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    // Retrofit & Gson
 
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.google.android.gms:play-services-auth:21.0.0")
-    implementation("com.google.ai.client.generativeai:generativeai:0.6.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
-    implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
