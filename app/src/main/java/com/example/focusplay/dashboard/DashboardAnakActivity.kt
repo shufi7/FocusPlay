@@ -15,8 +15,10 @@ class DashboardAnakActivity : AppCompatActivity() {
     private var idAnak: String = ""
     private var namaAnak: String = "Anak Hebat"
     private var usiaAnak: Int = 0
+    private var avatarAnak: String = "char_red"
 
     private lateinit var tvWelcomeAnak: TextView
+    private lateinit var imgAvatarAnak: android.widget.ImageView
     private lateinit var btnKembaliKeOrtu: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,15 +44,28 @@ class DashboardAnakActivity : AppCompatActivity() {
             "USIA_ANAK",
             intent.getIntExtra("usia_anak", 0)
         )
+
+        avatarAnak = intent.getStringExtra("AVATAR_ANAK")
+            ?: intent.getStringExtra("avatar_anak")
+                    ?: "char_red"
     }
 
     private fun hubungkanView() {
         tvWelcomeAnak = findViewById(R.id.tvWelcomeAnak)
+        imgAvatarAnak = findViewById(R.id.imgAvatarAnakDashboard)
         btnKembaliKeOrtu = findViewById(R.id.btnKembaliKeOrtu)
     }
 
     private fun tampilkanDataAnak() {
-        tvWelcomeAnak.text = "Halo, $namaAnak!"
+        tvWelcomeAnak.text = getString(R.string.welcome_anak, namaAnak)
+
+        val resourceAvatar = when (avatarAnak) {
+            "char_blue" -> R.drawable.char_blue
+            "char_purple" -> R.drawable.char_purple
+            "char_star" -> R.drawable.char_star
+            else -> R.drawable.char_red
+        }
+        imgAvatarAnak.setImageResource(resourceAvatar)
     }
 
     private fun aturTombol() {

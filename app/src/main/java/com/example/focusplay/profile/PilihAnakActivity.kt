@@ -199,10 +199,12 @@ class PilihAnakActivity : AppCompatActivity() {
             intent.putExtra("ID_ANAK", anak.idDokumen)
             intent.putExtra("NAMA_ANAK", anak.namaAnak)
             intent.putExtra("USIA_ANAK", anak.usia)
+            intent.putExtra("AVATAR_ANAK", anak.avatar)
 
             intent.putExtra("id_anak", anak.idDokumen)
             intent.putExtra("nama_anak", anak.namaAnak)
             intent.putExtra("usia_anak", anak.usia)
+            intent.putExtra("avatar_anak", anak.avatar)
 
             startActivity(intent)
         }
