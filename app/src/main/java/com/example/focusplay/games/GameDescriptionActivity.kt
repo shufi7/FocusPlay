@@ -77,7 +77,7 @@ class GameDescriptionActivity : AppCompatActivity() {
             }
 
             "pasang_kartu" -> {
-                imgGame.setImageResource(R.drawable.bg_antar_si_domba)
+                imgGame.setImageResource(R.drawable.bg_card)
 
                 tvNamaGame.text = "Pasang Kartu"
 
@@ -85,10 +85,10 @@ class GameDescriptionActivity : AppCompatActivity() {
                     "Melatih daya ingat, konsentrasi, dan kemampuan mencocokkan pasangan gambar."
 
                 tvCaraBermain.text =
-                    "1. Perhatikan kartu yang tersedia.\n" +
-                            "2. Pilih kartu yang memiliki pasangan yang sesuai.\n" +
-                            "3. Cocokkan kartu dengan teliti.\n" +
-                            "4. Kumpulkan skor sebanyak mungkin sebelum waktu habis."
+                    "1. Ingat posisi gambar saat seluruh kartu masih terbuka.\n" +
+                            "2. Setelah beberapa detik, seluruh kartu akan tertutup.\n" +
+                            "3. Buka dua kartu dan cocokkan gambar yang sama.\n" +
+                            "4. Setelah satu sesi selesai, kartu baru akan muncul kembali dari tahap mengingat."
             }
 
             "urut_angka" -> {
