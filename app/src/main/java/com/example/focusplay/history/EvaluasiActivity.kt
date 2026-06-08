@@ -2,14 +2,27 @@ package com.example.focusplay.history
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.focusplay.BuildConfig
 import com.example.focusplay.R
 import com.example.focusplay.dashboard.DashboardAnakActivity
 import com.example.focusplay.games.GameDescriptionActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -21,6 +34,11 @@ class EvaluasiActivity : AppCompatActivity() {
     private var usiaAnak = 0
     private var namaGame = "Antar Si Domba"
     private var gameKey = "antar_rumah"
+
+    companion object {
+        private const val MODEL_AI = "gpt-5.5"
+        private const val FREEMODEL_CHAT_URL = "https://api.freemodel.dev/v1/chat/completions"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,13 +95,145 @@ class EvaluasiActivity : AppCompatActivity() {
 
         val loading = findViewById<LinearLayout>(R.id.layLoadingAI)
         val catatan = findViewById<TextView>(R.id.tvHasilAI)
-        if (hasilAI.isNullOrBlank()) {
+        if (perluGenerateEvaluasiAi(hasilAI)) {
             loading.visibility = View.VISIBLE
             catatan.visibility = View.GONE
+            generateEvaluasiAi(
+                skor = skor,
+                akurasi = akurasi,
+                durasiDetik = durasiDetik,
+                fase = fase,
+                loading = loading,
+                catatan = catatan
+            )
         } else {
             loading.visibility = View.GONE
             catatan.visibility = View.VISIBLE
             catatan.text = hasilAI
+        }
+    }
+
+    private fun perluGenerateEvaluasiAi(hasilAI: String?): Boolean {
+        if (hasilAI.isNullOrBlank()) return true
+
+        return hasilAI.contains(
+            "Saran untuk ortu: pertahankan durasi bermain",
+            ignoreCase = true
+        )
+    }
+
+    private fun generateEvaluasiAi(
+        skor: Int,
+        akurasi: Int,
+        durasiDetik: Int,
+        fase: Int,
+        loading: LinearLayout,
+        catatan: TextView
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val hasil = panggilModelEvaluasi(
+                skor = skor,
+                akurasi = akurasi,
+                durasiDetik = durasiDetik,
+                fase = fase
+            )
+
+            withContext(Dispatchers.Main) {
+                loading.visibility = View.GONE
+                catatan.visibility = View.VISIBLE
+                catatan.text = hasil
+            }
+        }
+    }
+
+    private fun panggilModelEvaluasi(
+        skor: Int,
+        akurasi: Int,
+        durasiDetik: Int,
+        fase: Int
+    ): String {
+        val apiKey = BuildConfig.FREEMODEL_API_KEY.trim()
+
+        if (apiKey.isBlank()) {
+            Log.e("EVALUASI_AI", "FREEMODEL_API_KEY kosong. Periksa local.properties.")
+            return buatEvaluasiCadangan(skor, akurasi, fase)
+        }
+
+        return try {
+            val prompt = """
+                Kamu adalah asisten evaluasi permainan kognitif anak di aplikasi FocusPlay.
+                Nilai hasil bermain anak berdasarkan data sesi ini:
+                - Nama anak: $namaAnak
+                - Nama game: $namaGame
+                - Skor: $skor
+                - Akurasi: $akurasi%
+                - Durasi bermain: $durasiDetik detik
+                - Fase akhir: $fase
+
+                Tulis dalam Bahasa Indonesia, hangat, jelas, dan mudah dipahami orang tua.
+                Maksimal 3 kalimat.
+                Kalimat pertama menilai performa anak berdasarkan skor dan akurasi.
+                Kalimat kedua memberi saran pendampingan praktis.
+                Jika akurasi tinggi, beri apresiasi dan boleh sarankan tantangan lebih sulit.
+                Jika akurasi rendah, sarankan latihan pelan-pelan tanpa menyalahkan anak.
+                Jangan gunakan bullet, markdown, atau judul.
+            """.trimIndent()
+
+            val connection = (URL(FREEMODEL_CHAT_URL).openConnection() as HttpURLConnection).apply {
+                requestMethod = "POST"
+                setRequestProperty("Authorization", "Bearer $apiKey")
+                setRequestProperty("Content-Type", "application/json")
+                connectTimeout = 15000
+                readTimeout = 15000
+                doOutput = true
+            }
+
+            val jsonBody = JSONObject().apply {
+                put("model", MODEL_AI)
+                put(
+                    "messages",
+                    JSONArray().put(
+                        JSONObject().apply {
+                            put("role", "user")
+                            put("content", prompt)
+                        }
+                    )
+                )
+            }
+
+            OutputStreamWriter(connection.outputStream).use { writer ->
+                writer.write(jsonBody.toString())
+                writer.flush()
+            }
+
+            val responseCode = connection.responseCode
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                val responseString = BufferedReader(InputStreamReader(connection.inputStream)).use {
+                    it.readText()
+                }
+                val jsonResponse = JSONObject(responseString)
+                jsonResponse
+                    .getJSONArray("choices")
+                    .getJSONObject(0)
+                    .getJSONObject("message")
+                    .getString("content")
+                    .trim()
+            } else {
+                val errorBody = connection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
+                Log.e("EVALUASI_AI", "FreeModel gagal. HTTP $responseCode: $errorBody")
+                buatEvaluasiCadangan(skor, akurasi, fase)
+            }
+        } catch (e: Exception) {
+            Log.e("EVALUASI_AI", "Gagal memanggil model $MODEL_AI: ${e.message}")
+            buatEvaluasiCadangan(skor, akurasi, fase)
+        }
+    }
+
+    private fun buatEvaluasiCadangan(skor: Int, akurasi: Int, fase: Int): String {
+        return when {
+            akurasi >= 80 -> "$namaAnak menunjukkan fokus yang baik di game $namaGame dengan skor $skor dan akurasi $akurasi%. Orang tua dapat memberi tantangan bertahap sambil tetap menjaga durasi bermain tetap nyaman."
+            akurasi >= 60 -> "$namaAnak sudah berusaha cukup baik di game $namaGame dengan akurasi $akurasi% pada fase $fase. Dampingi dengan latihan singkat dan beri pujian saat anak berhasil mengikuti urutan dengan benar."
+            else -> "$namaAnak masih perlu latihan pelan-pelan di game $namaGame karena akurasi sesi ini $akurasi%. Coba ulangi permainan dengan suasana tenang dan bantu anak mengenali pola sebelum meningkatkan tantangan."
         }
     }
 

@@ -87,12 +87,24 @@ object GameResultHelper {
             var hasilAI = "Wah, $namaAnak sangat fokus di game $namaGame! Saran untuk ortu: pertahankan durasi bermain ini agar konsentrasinya stabil."
             var isApiBerhasil = false
 
-            val apiKey = BuildConfig.FREEMODEL_API_KEY
+            val apiKey = BuildConfig.FREEMODEL_API_KEY.trim()
 
-            if (apiKey.isNotBlank()) try {
-                val prompt = "Anak bernama $namaAnak baru saja selesai bermain game kognitif '$namaGame'. " +
-                        "Dia mendapatkan skor $skor dengan akurasi $akurasi% dalam waktu $durasiMenit menit. " +
-                        "Tolong berikan 1 kalimat pujian singkat yang ramah untuk anak, dan 1 kalimat evaluasi ringkas untuk orang tua. Langsung saja teks biasa."
+            if (apiKey.isBlank()) {
+                Log.e("AI_ERROR", "FREEMODEL_API_KEY kosong. Periksa local.properties atau environment variable.")
+            } else try {
+                val prompt = """
+                    Kamu adalah asisten evaluasi permainan kognitif anak untuk aplikasi FocusPlay.
+                    Buat evaluasi singkat berdasarkan data sesi berikut:
+                    - Nama anak: $namaAnak
+                    - Game: $namaGame
+                    - Skor: $skor
+                    - Akurasi: $akurasi%
+                    - Durasi: $durasiMenit menit
+
+                    Tulis dalam Bahasa Indonesia, ramah untuk orang tua, maksimal 3 kalimat.
+                    Isi harus menilai performa anak dari skor dan akurasi, lalu beri saran pendampingan praktis.
+                    Jangan pakai bullet, markdown, atau pembuka seperti "Berikut evaluasinya".
+                """.trimIndent()
 
                 val url = URL("https://api.freemodel.dev/v1/chat/completions")
                 val connection = url.openConnection() as HttpURLConnection
@@ -117,7 +129,8 @@ object GameResultHelper {
                 writer.flush()
                 writer.close()
 
-                if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
                     val reader = BufferedReader(InputStreamReader(connection.inputStream))
                     val responseString = reader.readText()
                     reader.close()
@@ -128,6 +141,9 @@ object GameResultHelper {
                         hasilAI = choices.getJSONObject(0).getJSONObject("message").getString("content").trim()
                         isApiBerhasil = true
                     }
+                } else {
+                    val errorBody = connection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
+                    Log.e("AI_ERROR", "FreeModel gagal. HTTP $responseCode: $errorBody")
                 }
             } catch (e: Exception) {
                 Log.e("AI_ERROR", "Gagal memanggil API: ${e.message}")

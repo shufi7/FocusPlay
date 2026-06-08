@@ -1,10 +1,20 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
 }
 
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use(::load)
+    }
+}
+
 val freemodelApiKey = providers.gradleProperty("FREEMODEL_API_KEY")
     .orElse(providers.environmentVariable("FREEMODEL_API_KEY"))
+    .orElse(localProperties.getProperty("FREEMODEL_API_KEY", ""))
     .getOrElse("")
     .replace("\\", "\\\\")
     .replace("\"", "\\\"")

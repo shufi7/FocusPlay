@@ -40,6 +40,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
     private var faseSaatIni = 1
     private var idAnak = ""
     private var namaAnak = "Anak"
+    private var usiaAnak = 0
 
     private var modeAdaptif = true
     private var targetWaktuMenit = 1
@@ -110,6 +111,11 @@ class GamePasangKartuActivity : AppCompatActivity() {
         namaAnak = intent.getStringExtra("NAMA_ANAK")
             ?: intent.getStringExtra("nama_anak")
             ?: "Anak"
+
+        usiaAnak = intent.getIntExtra(
+            "USIA_ANAK",
+            intent.getIntExtra("usia_anak", 0)
+        )
     }
 
     private fun hubungkanView() {
@@ -618,6 +624,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         }
 
         val durasiMillis = System.currentTimeMillis() - waktuMulaiPermainan
+        val durasiDetik = maxOf(1, (durasiMillis / 1000L).toInt())
         val durasiMenit = maxOf(1, (durasiMillis / 60000L).toInt())
 
         GameResultHelper.evaluasiDanSimpanRealtime(
@@ -632,6 +639,13 @@ class GamePasangKartuActivity : AppCompatActivity() {
                 val intentToEvaluasi = Intent(this, EvaluasiActivity::class.java)
                 intentToEvaluasi.putExtra("ID_ANAK", idAnak)
                 intentToEvaluasi.putExtra("NAMA_ANAK", namaAnak)
+                intentToEvaluasi.putExtra("USIA_ANAK", usiaAnak)
+                intentToEvaluasi.putExtra("NAMA_GAME", namaGame)
+                intentToEvaluasi.putExtra("GAME_KEY", "pasang_kartu")
+                intentToEvaluasi.putExtra("SKOR", skor)
+                intentToEvaluasi.putExtra("AKURASI", akurasi)
+                intentToEvaluasi.putExtra("DURASI_DETIK", durasiDetik)
+                intentToEvaluasi.putExtra("FASE_AKHIR", faseSaatIni)
                 intentToEvaluasi.putExtra("EVALUASI_LANGSUNG", hasilEvaluasi)
                 startActivity(intentToEvaluasi)
                 finish()
