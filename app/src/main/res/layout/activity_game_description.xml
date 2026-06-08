@@ -115,17 +115,6 @@
                         android:gravity="top"
                         android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="58dp"
-                            android:layout_height="58dp"
-                            android:background="@drawable/bg_circle_soft_green"
-                            android:fontFamily="@font/quicksand_bold"
-                            android:gravity="center"
-                            android:text="Target"
-                            android:textColor="#2E7D32"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -172,17 +161,6 @@
                         android:layout_marginTop="20dp"
                         android:gravity="top"
                         android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="58dp"
-                            android:layout_height="58dp"
-                            android:background="@drawable/bg_circle_soft_blue"
-                            android:fontFamily="@font/quicksand_bold"
-                            android:gravity="center"
-                            android:text="Cara"
-                            android:textColor="#1565C0"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
 
                         <LinearLayout
                             android:layout_width="0dp"

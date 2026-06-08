@@ -64,7 +64,7 @@ class GameDescriptionActivity : AppCompatActivity() {
             "antar_rumah" -> {
                 imgGame.setImageResource(R.drawable.bg_antar_si_domba)
 
-                tvNamaGame.text = "Antar ke Rumah"
+                tvNamaGame.text = "Antar Si Domba"
 
                 tvTujuanGame.text =
                     "Melatih fokus, ketelitian, koordinasi tangan dan mata, serta kemampuan mencocokkan warna."
@@ -109,7 +109,7 @@ class GameDescriptionActivity : AppCompatActivity() {
             else -> {
                 imgGame.setImageResource(R.drawable.bg_antar_si_domba)
 
-                tvNamaGame.text = "Antar ke Rumah"
+                tvNamaGame.text = "Antar Si Domba"
 
                 tvTujuanGame.text =
                     "Melatih fokus, ketelitian, koordinasi tangan dan mata, serta kemampuan mencocokkan warna."

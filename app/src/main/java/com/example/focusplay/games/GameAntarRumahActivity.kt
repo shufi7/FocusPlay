@@ -48,7 +48,7 @@ class GameAntarRumahActivity : AppCompatActivity() {
     private var sisaWaktuMillis = 0L
     private var gameSedangPause = false
 
-    private val namaGame = "Antar ke Rumah"
+    private val namaGame = "Antar Si Domba"
 
     data class DombaRumah(
         val nama: String,
@@ -235,7 +235,7 @@ class GameAntarRumahActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setTitle("Tentang Game")
             .setMessage(
-                "Antar ke Rumah adalah permainan mencocokkan domba dengan rumah sesuai warna.\n\n" +
+                "Antar Si Domba adalah permainan mencocokkan domba dengan rumah sesuai warna.\n\n" +
                         "Game ini membantu anak melatih fokus, ketelitian, koordinasi tangan dan mata, serta kemampuan mengenali warna."
             )
             .setPositiveButton("Mengerti", null)
