@@ -19,5 +19,10 @@
         <item name="cornerSizeBottomLeft">32dp</item>
         <item name="cornerSizeBottomRight">32dp</item>
     </style>
+
+    <style name="RoundedGameCover">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
 </resources>
 
