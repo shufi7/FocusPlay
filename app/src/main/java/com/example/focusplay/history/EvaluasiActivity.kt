@@ -1,56 +1,138 @@
 package com.example.focusplay.history
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.dashboard.DashboardAnakActivity
+import com.example.focusplay.games.GameDescriptionActivity
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class EvaluasiActivity : AppCompatActivity() {
 
-    private lateinit var ivBackEvaluasi: ImageView
-    private lateinit var tvNamaAnakEvaluasi: TextView
-    private lateinit var layLoadingAI: LinearLayout
-    private lateinit var tvHasilAI: TextView
-    private lateinit var btnRefreshEvaluasi: Button
+    private var idAnak = ""
+    private var namaAnak = "Anak"
+    private var usiaAnak = 0
+    private var namaGame = "Antar Si Domba"
+    private var gameKey = "antar_rumah"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_evaluasi)
 
-        // Hubungkan dengan XML (Error garis merah akan hilang setelah XML di atas di-paste)
-        ivBackEvaluasi = findViewById(R.id.ivBackEvaluasi)
-        tvNamaAnakEvaluasi = findViewById(R.id.tvNamaAnakEvaluasi)
-        layLoadingAI = findViewById(R.id.layLoadingAI)
-        tvHasilAI = findViewById(R.id.tvHasilAI)
-        btnRefreshEvaluasi = findViewById(R.id.btnRefreshEvaluasi)
+        ambilData()
+        tampilkanHasil()
+        aturTombol()
+    }
 
-        // Set nama anak di header
-        val namaAnak = intent.getStringExtra("NAMA_ANAK") ?: "Anak"
-        tvNamaAnakEvaluasi.text = "Analisis perkembangan $namaAnak"
+    private fun ambilData() {
+        idAnak = intent.getStringExtra("ID_ANAK") ?: ""
+        namaAnak = intent.getStringExtra("NAMA_ANAK") ?: "Anak"
+        usiaAnak = intent.getIntExtra("USIA_ANAK", 0)
+        namaGame = intent.getStringExtra("NAMA_GAME") ?: "Antar Si Domba"
+        gameKey = intent.getStringExtra("GAME_KEY") ?: "antar_rumah"
+    }
 
-        // Tombol kembali
-        ivBackEvaluasi.setOnClickListener { finish() }
-        btnRefreshEvaluasi.setOnClickListener { finish() }
+    private fun tampilkanHasil() {
+        val skor = intent.getIntExtra("SKOR", 0)
+        val akurasi = intent.getIntExtra("AKURASI", 0)
+        val durasiDetik = intent.getIntExtra("DURASI_DETIK", 0)
+        val fase = intent.getIntExtra("FASE_AKHIR", 1)
+        val hasilAI = intent.getStringExtra("EVALUASI_LANGSUNG")
 
-        // MENGAMBIL HASIL AI DARI GAME
-        val evaluasiLangsung = intent.getStringExtra("EVALUASI_LANGSUNG")
+        findViewById<TextView>(R.id.tvJudulHasil).text =
+            "${namaAnak.lowercase().replaceFirstChar { it.titlecase() }} selesai bermain."
+        findViewById<TextView>(R.id.tvRingkasanHasil).text =
+            "Ringkasan sesi $namaGame sudah tersimpan. Gunakan hasil ini untuk melihat skor, akurasi, fase akhir, dan catatan pendampingan."
+        findViewById<TextView>(R.id.tvNamaAnakEvaluasi).text = namaAnak
+        findViewById<TextView>(R.id.tvInisialAnak).text =
+            namaAnak.trim().firstOrNull()?.uppercase() ?: "A"
+        findViewById<TextView>(R.id.tvInfoGame).text = "Game       $namaGame"
+        findViewById<TextView>(R.id.tvInfoTanggal).text =
+            "Tanggal    ${SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(Date())}"
 
-        if (evaluasiLangsung != null) {
-            // Anak baru saja selesai main, langsung tampilkan hasilnya!
-            layLoadingAI.visibility = View.GONE
-            tvHasilAI.visibility = View.VISIBLE
-            tvHasilAI.text = evaluasiLangsung
+        findViewById<TextView>(R.id.tvEvaluasiSkor).text = skor.toString()
+        findViewById<TextView>(R.id.tvEvaluasiAkurasi).text = "$akurasi%"
+        findViewById<TextView>(R.id.tvEvaluasiDurasi).text = "${durasiDetik}s"
+        findViewById<TextView>(R.id.tvEvaluasiFase).text = fase.toString()
 
-            btnRefreshEvaluasi.visibility = View.VISIBLE
-            btnRefreshEvaluasi.text = "Kembali ke Menu"
+        val fokus = when {
+            akurasi >= 80 -> "Baik"
+            akurasi >= 60 -> "Cukup"
+            else -> "Berlatih"
+        }
+        val rekomendasi = if (akurasi >= 80 && fase < 3) "Naik" else "Tetap"
+        val rekomendasiDetail =
+            if (rekomendasi == "Naik") "Coba tantangan berikutnya" else "Pertahankan ritme bermain"
+
+        findViewById<TextView>(R.id.tvFokus).text = fokus
+        findViewById<TextView>(R.id.tvRekomendasi).text = rekomendasi
+        findViewById<TextView>(R.id.tvRekomendasiDetail).text = rekomendasiDetail
+
+        val loading = findViewById<LinearLayout>(R.id.layLoadingAI)
+        val catatan = findViewById<TextView>(R.id.tvHasilAI)
+        if (hasilAI.isNullOrBlank()) {
+            loading.visibility = View.VISIBLE
+            catatan.visibility = View.GONE
         } else {
-            // Jika masuk dari Dashboard (bukan dari selesai main)
-            layLoadingAI.visibility = View.VISIBLE
-            tvHasilAI.visibility = View.GONE
+            loading.visibility = View.GONE
+            catatan.visibility = View.VISIBLE
+            catatan.text = hasilAI
+        }
+    }
+
+    private fun aturTombol() {
+        val mainLagi: () -> Unit = {
+            startActivity(Intent(this, GameDescriptionActivity::class.java).apply {
+                putExtra("ID_ANAK", idAnak)
+                putExtra("NAMA_ANAK", namaAnak)
+                putExtra("USIA_ANAK", usiaAnak)
+                putExtra("GAME_KEY", gameKey)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            })
+            finish()
+        }
+
+        findViewById<TextView>(R.id.btnMainGameLagiAtas).jadiTombol(mainLagi)
+        findViewById<TextView>(R.id.btnMainLagi).jadiTombol(mainLagi)
+        findViewById<TextView>(R.id.btnPilihGameLain).jadiTombol { bukaDashboard() }
+        findViewById<TextView>(R.id.btnLihatDashboard).jadiTombol { bukaDashboard() }
+    }
+
+    private fun bukaDashboard() {
+        startActivity(Intent(this, DashboardAnakActivity::class.java).apply {
+            putExtra("ID_ANAK", idAnak)
+            putExtra("NAMA_ANAK", namaAnak)
+            putExtra("USIA_ANAK", usiaAnak)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        })
+        finish()
+    }
+
+    private fun View.jadiTombol(onClick: () -> Unit) {
+        setOnTouchListener { view, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    view.animate().scaleX(0.96f).scaleY(0.96f).setDuration(45).start()
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    view.animate().scaleX(1f).scaleY(1f).setDuration(55)
+                        .withEndAction(onClick).start()
+                    true
+                }
+                MotionEvent.ACTION_CANCEL -> {
+                    view.animate().scaleX(1f).scaleY(1f).setDuration(55).start()
+                    true
+                }
+                else -> true
+            }
         }
     }
 }

@@ -3,14 +3,13 @@ package com.example.focusplay.utils
 import android.app.Activity
 import android.app.AlertDialog
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.util.Log
-import android.view.Gravity
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.view.LayoutInflater
+import android.view.Window
+import android.view.WindowManager
 import android.widget.Toast
 import com.example.focusplay.BuildConfig
+import com.example.focusplay.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
@@ -49,44 +48,24 @@ object GameResultHelper {
                 return@runOnUiThread
             }
 
-            // Membuat susunan tata letak pop-up
-            val layout = LinearLayout(activity).apply {
-                orientation = LinearLayout.VERTICAL
-                gravity = Gravity.CENTER
-                setPadding(80, 80, 80, 80)
-            }
+            val layout = LayoutInflater.from(activity)
+                .inflate(R.layout.dialog_loading_evaluasi, null, false)
 
-            // Membuat lingkaran berputar (Spinner) berwarna biru cerah FocusPlay
-            val progressBar = ProgressBar(activity).apply {
-                isIndeterminate = true
-                indeterminateTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#2196F3"))
-            }
-
-            val textView = TextView(activity).apply {
-                text = "AI sedang membuat evaluasi...\nMohon tunggu sebentar ya!"
-                textSize = 16f
-                gravity = Gravity.CENTER
-                setTextColor(Color.parseColor("#334155"))
-                setPadding(0, 40, 0, 0)
-            }
-
-            layout.addView(progressBar)
-            layout.addView(textView)
-
-            // Membangun Dialog Alert
             val loadingDialog = AlertDialog.Builder(activity)
                 .setView(layout)
-                .setCancelable(false) // Mengunci pop-up agar tidak bisa di-cancel manual
+                .setCancelable(false)
                 .create()
 
             loadingDialog.show()
-
-            val bgShape = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = 48f
-                setColor(Color.WHITE)
+            loadingDialog.window?.apply {
+                setBackgroundDrawableResource(android.R.color.transparent)
+                setDimAmount(0.68f)
+                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                setLayout(
+                    (activity.resources.displayMetrics.widthPixels * 0.9f).toInt(),
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
             }
-            loadingDialog.window?.setBackgroundDrawable(bgShape)
 
             // Jalankan komunikasi data dengan API FreeModel GPT-5.5
             jalankanProsesAI(activity, idAnak, namaAnak, namaGame, skor, akurasi, durasiMenit, loadingDialog, onSelesai)
