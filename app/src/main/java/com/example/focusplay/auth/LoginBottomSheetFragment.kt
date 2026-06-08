@@ -9,9 +9,9 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
-import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.focusplay.R
+import com.example.focusplay.utils.AuthBottomSheetHelper
 import com.example.focusplay.utils.ErrorDialogHelper
 import com.example.focusplay.utils.LoadingDialogHelper
 import com.example.focusplay.utils.SessionManager
@@ -20,7 +20,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -87,27 +86,7 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
-
-        dialog.setOnShowListener { dialogInterface ->
-            val bottomSheetDialog = dialogInterface as BottomSheetDialog
-            val bottomSheet = bottomSheetDialog.findViewById<View>(
-                com.google.android.material.R.id.design_bottom_sheet
-            )
-
-            bottomSheet?.let { sheet ->
-                sheet.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-                sheet.requestLayout()
-
-                BottomSheetBehavior.from(sheet).apply {
-                    isDraggable = true
-                    isHideable = true
-                    skipCollapsed = true
-                    peekHeight = BottomSheetBehavior.PEEK_HEIGHT_AUTO
-                    state = BottomSheetBehavior.STATE_EXPANDED
-                }
-            }
-        }
-
+        AuthBottomSheetHelper.setup(dialog)
         return dialog
     }
 
@@ -150,10 +129,12 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
         aturTombolCepat(btnRegister) {
             dismiss()
 
-            RegisterBottomSheetFragment().show(
-                parentFragmentManager,
-                "RegisterBottomSheet"
-            )
+            view?.postDelayed({
+                RegisterBottomSheetFragment().show(
+                    parentFragmentManager,
+                    "RegisterBottomSheet"
+                )
+            }, 120)
         }
 
         aturTombolCepat(btnLoginGoogle) {

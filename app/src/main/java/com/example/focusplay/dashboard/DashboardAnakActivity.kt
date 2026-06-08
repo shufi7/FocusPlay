@@ -9,14 +9,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.example.focusplay.R
 import com.example.focusplay.games.GameDescriptionActivity
+import com.example.focusplay.utils.AvatarHelper
 
 class DashboardAnakActivity : AppCompatActivity() {
 
     private var idAnak: String = ""
     private var namaAnak: String = "Anak Hebat"
     private var usiaAnak: Int = 0
+    private var avatarAnak: String = "char_red"
 
     private lateinit var tvWelcomeAnak: TextView
+    private lateinit var imgAvatarAnak: android.widget.ImageView
     private lateinit var btnKembaliKeOrtu: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,15 +45,22 @@ class DashboardAnakActivity : AppCompatActivity() {
             "USIA_ANAK",
             intent.getIntExtra("usia_anak", 0)
         )
+
+        avatarAnak = intent.getStringExtra("AVATAR_ANAK")
+            ?: intent.getStringExtra("avatar_anak")
+                    ?: "char_red"
     }
 
     private fun hubungkanView() {
         tvWelcomeAnak = findViewById(R.id.tvWelcomeAnak)
+        imgAvatarAnak = findViewById(R.id.imgAvatarAnakDashboard)
         btnKembaliKeOrtu = findViewById(R.id.btnKembaliKeOrtu)
     }
 
     private fun tampilkanDataAnak() {
-        tvWelcomeAnak.text = "Halo, $namaAnak!"
+        tvWelcomeAnak.text = getString(R.string.welcome_anak, namaAnak)
+
+        imgAvatarAnak.setImageResource(AvatarHelper.getAvatarResource(avatarAnak))
     }
 
     private fun aturTombol() {

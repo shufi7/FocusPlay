@@ -25,10 +25,11 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.example.focusplay.utils.SessionManager
+import com.example.focusplay.utils.AvatarHelper
 import com.example.focusplay.view.AuthChoiceActivity
-import com.example.focusplay.settings.PengaturanPermainanActivity
 import com.example.focusplay.history.RiwayatPermainanActivity
 import com.example.focusplay.profile.TambahAnakActivity
+import com.example.focusplay.settings.PengaturanPermainanActivity
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -250,7 +251,7 @@ class DashboardActivity : AppCompatActivity() {
                         idDokumen = doc.id,
                         namaAnak = nama,
                         usia = usia,
-                        avatar = doc.getString("avatar") ?: "char_moon_purple"
+                        avatar = doc.getString("avatar") ?: "char_red"
                     )
                 }
 
@@ -387,26 +388,9 @@ class DashboardActivity : AppCompatActivity() {
         containerProfilAnakDashboard.addView(outerCard)
     }
 
-    private fun getAvatarResource(avatar: String): Int {
-        return when (avatar) {
-            "char_red" -> R.drawable.char_red
-            "char_blue" -> R.drawable.char_blue
-            "char_purple" -> R.drawable.char_purple
-            "char_star" -> R.drawable.char_star
-
-            // Cadangan untuk data lama yang masih memakai nama avatar lama
-            "char_moon_purple" -> R.drawable.char_moon_purple
-            "char_cucumber" -> R.drawable.char_cucumber
-            "char_cloud_blue" -> R.drawable.char_cloud_blue
-            "char_heart" -> R.drawable.char_heart
-            "char_diamond_orange" -> R.drawable.char_diamond_orange
-
-            else -> R.drawable.char_red
-        }
-    }
     private fun tambahCardProfilAnak(anak: AnakDashboard) {
         val sedangDipilih = anak.idDokumen == selectedAnakId
-        val karakter = getAvatarResource(anak.avatar)
+        val karakter = AvatarHelper.getAvatarResource(anak.avatar)
 
         val outerCard = FrameLayout(this).apply {
             isClickable = true
@@ -702,7 +686,7 @@ class DashboardActivity : AppCompatActivity() {
                     return@addOnSuccessListener
                 }
 
-                val formatHari = SimpleDateFormat("dd/MM", Locale("id", "ID"))
+                val formatHari = SimpleDateFormat("dd/MM", Locale.forLanguageTag("id-ID"))
 
                 val dataGrafik = daftarSesi
                     .groupBy { formatHari.format(it.first) }
@@ -780,7 +764,7 @@ class DashboardActivity : AppCompatActivity() {
                     val timestamp = ambilTimestampMillis(doc)
 
                     RecapAi(
-                        namaGame = doc.getString("nama_game") ?: "Permainan",
+                        namaGame = normalisasiNamaGame(doc.getString("nama_game") ?: "Permainan"),
                         evaluasiAi = evaluasi,
                         tanggal = formatTanggal(timestamp, doc.getString("tanggal")),
                         timestampMillis = timestamp
@@ -1013,9 +997,17 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun formatTanggal(timestampMillis: Long, fallback: String?): String {
         return if (timestampMillis > 0) {
-            SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("id", "ID")).format(timestampMillis)
+            SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.forLanguageTag("id-ID")).format(timestampMillis)
         } else {
             fallback ?: "-"
+        }
+    }
+
+    private fun normalisasiNamaGame(namaGame: String): String {
+        return when (namaGame.trim().lowercase(Locale.ROOT)) {
+            "antar ke rumah",
+            "antar rumah" -> "Antar Si Domba"
+            else -> namaGame
         }
     }
 
