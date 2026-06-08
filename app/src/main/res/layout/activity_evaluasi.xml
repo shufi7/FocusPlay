@@ -1,150 +1,513 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_sky_gradient"
-    android:orientation="vertical">
+    android:background="@drawable/bg_card"
+    android:fillViewport="true"
+    android:overScrollMode="never">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#00FFFFFF"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="20dp">
-
-        <ImageView
-            android:id="@+id/ivBackEvaluasi"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/bg_circle_white"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@android:drawable/ic_menu_revert"
-            app:tint="#1F2937" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Evaluasi AI"
-                android:textColor="#1F2937"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvNamaAnakEvaluasi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Analisis perkembangan anak"
-                android:textColor="#475569"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:padding="16dp">
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="24dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="32dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:background="@drawable/bg_evaluation_card"
+            android:elevation="5dp"
+            android:orientation="vertical"
+            android:padding="22dp">
 
-            <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_marginBottom="-30dp"
-                android:elevation="10dp"
-                android:src="@drawable/char_cloud_blue" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_result_badge"
+                android:fontFamily="@font/quicksand_bold"
+                android:gravity="center"
+                android:paddingStart="18dp"
+                android:paddingEnd="18dp"
+                android:text="Hasil Permainan"
+                android:textColor="#C77720"
+                android:textSize="13sp" />
 
-            <androidx.cardview.widget.CardView
+            <TextView
+                android:id="@+id/tvJudulHasil"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="#FFFFFF"
-                app:cardCornerRadius="32dp"
-                app:cardElevation="4dp">
+                android:layout_marginTop="14dp"
+                android:fontFamily="@font/quicksand_bold"
+                android:text="Anak selesai bermain."
+                android:textColor="#7C471E"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/tvRingkasanHasil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/quicksand_bold"
+                android:lineSpacingExtra="5dp"
+                android:text="Ringkasan sesi permainan sudah tersimpan."
+                android:textColor="#70543C"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/btnMainGameLagiAtas"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_result_primary_button"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:gravity="center"
+                    android:text="Main Lagi"
+                    android:textColor="#263747"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/btnPilihGameLain"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_result_secondary_button"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:gravity="center"
+                    android:text="Pilih Game Lain"
+                    android:textColor="#2462CE"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_evaluation_card"
+            android:elevation="5dp"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvInisialAnak"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:background="@drawable/bg_evaluation_avatar"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:gravity="center"
+                    android:text="A"
+                    android:textColor="#2563EB"
+                    android:textSize="25sp" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="32dp">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="16dp"/>
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp"
-                        android:gravity="center"
-                        android:text="Pesan dari AI FocusPlay"
-                        android:textColor="#2196F3"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:id="@+id/layLoadingAI"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <ProgressBar
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:indeterminateTint="#8DB52A" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:gravity="center"
-                            android:text="Sedang menganalisis\ndan menyusun evaluasi..."
-                            android:textColor="#64748B"
-                            android:textSize="14sp" />
-                    </LinearLayout>
+                        android:fontFamily="@font/quicksand_bold"
+                        android:text="Profil anak"
+                        android:textColor="#6B7280"
+                        android:textSize="13sp" />
 
                     <TextView
-                        android:id="@+id/tvHasilAI"
-                        android:layout_width="match_parent"
+                        android:id="@+id/tvNamaAnakEvaluasi"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:lineSpacingExtra="8dp"
-                        android:textColor="#334155"
-                        android:textSize="16sp"
-                        android:visibility="gone" />
-
+                        android:fontFamily="@font/quicksand_bold"
+                        android:text="Anak"
+                        android:textColor="#7C471E"
+                        android:textSize="22sp" />
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </LinearLayout>
 
-            <Button
-                android:id="@+id/btnRefreshEvaluasi"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:layout_marginTop="32dp"
-                android:backgroundTint="#8DB52A"
-                android:text="Kembali ke Menu"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:cornerRadius="32dp" />
+                android:layout_height="1dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="14dp"
+                android:background="#E9E2D8" />
 
+            <TextView
+                android:id="@+id/tvInfoGame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/quicksand_bold"
+                android:text="Game     Antar Si Domba"
+                android:textColor="#3B4652"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvInfoTanggal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/quicksand_bold"
+                android:text="Tanggal  08 Jun 2026, 14:37"
+                android:textColor="#3B4652"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/quicksand_bold"
+                android:text="Status    Tersimpan"
+                android:textColor="#3B4652"
+                android:textSize="15sp" />
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 
-</LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="132dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_evaluation_stat"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:padding="17dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Skor"
+                    android:textColor="#73543A"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvEvaluasiSkor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="0"
+                    android:textColor="#8A501E"
+                    android:textSize="33sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total poin sesi ini"
+                    android:textColor="#6B7280"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="132dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_evaluation_stat"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:padding="17dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Akurasi"
+                    android:textColor="#73543A"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvEvaluasiAkurasi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="0%"
+                    android:textColor="#8A501E"
+                    android:textSize="33sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Jawaban benar"
+                    android:textColor="#6B7280"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="132dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_evaluation_stat"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:padding="17dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Durasi"
+                    android:textColor="#73543A"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvEvaluasiDurasi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="0s"
+                    android:textColor="#8A501E"
+                    android:textSize="33sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lama bermain"
+                    android:textColor="#6B7280"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="132dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_evaluation_stat"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:padding="17dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Fase Akhir"
+                    android:textColor="#73543A"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvEvaluasiFase"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="1"
+                    android:textColor="#8A501E"
+                    android:textSize="33sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Level adaptif terakhir"
+                    android:textColor="#6B7280"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_evaluation_card"
+            android:elevation="5dp"
+            android:orientation="vertical"
+            android:padding="22dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/quicksand_bold"
+                android:text="Catatan AI"
+                android:textColor="#7C471E"
+                android:textSize="25sp" />
+
+            <LinearLayout
+                android:id="@+id/layLoadingAI"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="22dp"
+                android:paddingBottom="12dp">
+
+                <ProgressBar
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:indeterminateTint="#F59E0B" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Mohon tunggu sebentar ya..."
+                    android:textColor="#6B7280"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvHasilAI"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/quicksand_bold"
+                android:lineSpacingExtra="7dp"
+                android:textColor="#70543C"
+                android:textSize="15sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="122dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_evaluation_stat"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:padding="17dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Rekomendasi Lanjut"
+                    android:textColor="#73543A"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvRekomendasi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Tetap"
+                    android:textColor="#8A501E"
+                    android:textSize="29sp" />
+
+                <TextView
+                    android:id="@+id/tvRekomendasiDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pertahankan ritme bermain"
+                    android:textColor="#6B7280"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="122dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_evaluation_stat"
+                android:elevation="4dp"
+                android:orientation="vertical"
+                android:padding="17dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Fokus"
+                    android:textColor="#73543A"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/tvFokus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Baik"
+                    android:textColor="#8A501E"
+                    android:textSize="29sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Berdasarkan akurasi"
+                    android:textColor="#6B7280"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/btnMainLagi"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_result_primary_button"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/quicksand_bold"
+                android:gravity="center"
+                android:text="Main Lagi"
+                android:textColor="#263747"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/btnLihatDashboard"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_marginStart="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_result_secondary_button"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/quicksand_bold"
+                android:gravity="center"
+                android:text="Lihat Dashboard"
+                android:textColor="#2462CE"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -7,10 +7,13 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.LayoutInflater
 import android.view.DragEvent
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -18,6 +21,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.dashboard.DashboardAnakActivity
 import com.example.focusplay.history.EvaluasiActivity
 import com.example.focusplay.utils.AdaptiveGameManager
 import com.example.focusplay.utils.GameResultHelper
@@ -34,6 +38,7 @@ class GameAntarRumahActivity : AppCompatActivity() {
 
     private var idAnak = ""
     private var namaAnak = "Anak"
+    private var usiaAnak = 0
 
     private var faseSekarang = 1
     private var modeAdaptif = true
@@ -86,6 +91,11 @@ class GameAntarRumahActivity : AppCompatActivity() {
         namaAnak = intent.getStringExtra("NAMA_ANAK")
             ?: intent.getStringExtra("nama_anak")
                     ?: "Anak"
+
+        usiaAnak = intent.getIntExtra(
+            "USIA_ANAK",
+            intent.getIntExtra("usia_anak", 0)
+        )
     }
 
     private fun hubungkanView() {
@@ -344,6 +354,25 @@ class GameAntarRumahActivity : AppCompatActivity() {
     private fun tampilkanDomba(itemAktif: List<DombaRumah>) {
         val data = itemAktif.random()
 
+        arenaGame.setOnDragListener { _, event ->
+            val dombaDiseret = event.localState as? View
+
+            when (event.action) {
+                DragEvent.ACTION_DRAG_STARTED -> true
+                DragEvent.ACTION_DROP -> {
+                    dombaDiseret?.visibility = View.VISIBLE
+                    true
+                }
+                DragEvent.ACTION_DRAG_ENDED -> {
+                    if (!event.result) {
+                        dombaDiseret?.visibility = View.VISIBLE
+                    }
+                    true
+                }
+                else -> true
+            }
+        }
+
         val domba = ImageView(this).apply {
             setImageResource(data.gambarDomba)
             scaleType = ImageView.ScaleType.FIT_CENTER
@@ -356,12 +385,16 @@ class GameAntarRumahActivity : AppCompatActivity() {
                     val clipData = ClipData.newPlainText(data.nama, data.nama)
                     val shadow = View.DragShadowBuilder(view)
 
-                    view.startDragAndDrop(
+                    val dragDimulai = view.startDragAndDrop(
                         clipData,
                         shadow,
                         view,
                         0
                     )
+
+                    if (dragDimulai) {
+                        view.visibility = View.INVISIBLE
+                    }
 
                     true
                 } else {
@@ -423,9 +456,72 @@ class GameAntarRumahActivity : AppCompatActivity() {
             0
         }
 
-        val durasiMillis = System.currentTimeMillis() - waktuMulaiSesi
+        val durasiMillis = (System.currentTimeMillis() - waktuMulaiSesi)
+            .coerceAtLeast(1000L)
+        val durasiDetik = (durasiMillis / 1000L).toInt()
         val durasiMenit = maxOf(1, (durasiMillis / 60000L).toInt())
 
+        tampilkanHasilSementara(akurasi, durasiDetik, durasiMenit)
+    }
+
+    private fun tampilkanHasilSementara(
+        akurasi: Int,
+        durasiDetik: Int,
+        durasiMenit: Int
+    ) {
+        val contentView = LayoutInflater.from(this)
+            .inflate(R.layout.dialog_hasil_sementara, null, false)
+
+        contentView.findViewById<TextView>(R.id.tvHasilSkor).text = skor.toString()
+        contentView.findViewById<TextView>(R.id.tvHasilAkurasi).text = "$akurasi%"
+        contentView.findViewById<TextView>(R.id.tvHasilDurasi).text = "$durasiDetik detik"
+        contentView.findViewById<TextView>(R.id.tvHasilFase).text = faseSekarang.toString()
+
+        val dialog = Dialog(this).apply {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            setContentView(contentView)
+            setCancelable(false)
+        }
+
+        contentView.findViewById<TextView>(R.id.btnSimpanLihatHasil).apply {
+            pasangAnimasiTekan(this)
+            setOnClickListener {
+                isEnabled = false
+                dialog.dismiss()
+                simpanDanBukaEvaluasi(akurasi, durasiDetik, durasiMenit)
+            }
+        }
+
+        contentView.findViewById<TextView>(R.id.btnKembaliDashboard).apply {
+            pasangAnimasiTekan(this)
+            setOnClickListener {
+                dialog.dismiss()
+                kembaliKeDashboard()
+            }
+        }
+
+        dialog.setOnShowListener {
+            val maxWidth = dp(650)
+            val screenWidth = resources.displayMetrics.widthPixels
+            dialog.window?.apply {
+                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                setDimAmount(0.55f)
+                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                setLayout(
+                    minOf((screenWidth * 0.92f).toInt(), maxWidth),
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun simpanDanBukaEvaluasi(
+        akurasi: Int,
+        durasiDetik: Int,
+        durasiMenit: Int
+    ) {
         GameResultHelper.evaluasiDanSimpanRealtime(
             activity = this,
             idAnak = idAnak,
@@ -438,10 +534,28 @@ class GameAntarRumahActivity : AppCompatActivity() {
             val intent = Intent(this, EvaluasiActivity::class.java)
             intent.putExtra("ID_ANAK", idAnak)
             intent.putExtra("NAMA_ANAK", namaAnak)
+            intent.putExtra("USIA_ANAK", usiaAnak)
+            intent.putExtra("NAMA_GAME", namaGame)
+            intent.putExtra("GAME_KEY", "antar_rumah")
+            intent.putExtra("SKOR", skor)
+            intent.putExtra("AKURASI", akurasi)
+            intent.putExtra("DURASI_DETIK", durasiDetik)
+            intent.putExtra("FASE_AKHIR", faseSekarang)
             intent.putExtra("EVALUASI_LANGSUNG", hasilAI)
             startActivity(intent)
             finish()
         }
+    }
+
+    private fun kembaliKeDashboard() {
+        val intent = Intent(this, DashboardAnakActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            putExtra("ID_ANAK", idAnak)
+            putExtra("NAMA_ANAK", namaAnak)
+            putExtra("USIA_ANAK", usiaAnak)
+        }
+        startActivity(intent)
+        finish()
     }
 
     override fun onDestroy() {
