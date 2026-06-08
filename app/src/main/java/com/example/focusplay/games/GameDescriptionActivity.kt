@@ -77,7 +77,7 @@ class GameDescriptionActivity : AppCompatActivity() {
             }
 
             "pasang_kartu" -> {
-                imgGame.setImageResource(R.drawable.bg_card)
+                imgGame.setImageResource(R.drawable.cover_pasang_kartu)
 
                 tvNamaGame.text = "Pasang Kartu"
 

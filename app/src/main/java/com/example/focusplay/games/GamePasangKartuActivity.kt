@@ -1,19 +1,24 @@
 package com.example.focusplay.games
 
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.GridLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
 import com.example.focusplay.history.EvaluasiActivity
@@ -23,6 +28,7 @@ import kotlin.math.min
 
 class GamePasangKartuActivity : AppCompatActivity() {
 
+    private lateinit var btnMenuGame: ImageView
     private lateinit var gridKartu: GridLayout
     private lateinit var tvSkor: TextView
     private lateinit var tvFase: TextView
@@ -53,7 +59,13 @@ class GamePasangKartuActivity : AppCompatActivity() {
     private var kartuKedua: FrameLayout? = null
 
     private var timerPermainan: CountDownTimer? = null
+    private var sisaWaktuMillis = 0L
+    private var gameSedangPause = false
+
     private val handler = Handler(Looper.getMainLooper())
+    private var aksiTertunda: Runnable? = null
+    private var batasWaktuAksiTertunda = 0L
+    private var sisaDelayAksiTertunda = 0L
 
     private val namaGame = "Pasang Kartu"
 
@@ -101,6 +113,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun hubungkanView() {
+        btnMenuGame = findViewById(R.id.btnMenuGame)
         gridKartu = findViewById(R.id.gridKartu)
         tvSkor = findViewById(R.id.tvSkor)
         tvFase = findViewById(R.id.tvFase)
@@ -123,18 +136,149 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun aturTombol() {
-        findViewById<ImageView>(R.id.btnKembali).setOnClickListener {
-            hentikanProsesBerjalan()
-            finish()
+        pasangAnimasiTekan(btnMenuGame)
+
+        btnMenuGame.setOnClickListener {
+            tampilkanMenuGame()
         }
     }
 
-    private fun mulaiTimerGlobal() {
-        val totalMillis = targetWaktuMenit * 60 * 1000L
-        tvTimer.visibility = View.VISIBLE
+    private fun tampilkanMenuGame() {
+        pauseGame()
 
-        timerPermainan = object : CountDownTimer(totalMillis, 1000L) {
+        val dialog = Dialog(this)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCancelable(false)
+
+        val root = FrameLayout(this).apply {
+            background = getDrawable(R.drawable.latar_menu)
+        }
+
+        val menuContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(dpToPx(28), dpToPx(20), dpToPx(28), dpToPx(20))
+        }
+
+        val btnResume = buatTombolMenu(R.drawable.btn_lanjutkan)
+        val btnAbout = buatTombolMenu(R.drawable.btn_tentang)
+        val btnQuit = buatTombolMenu(R.drawable.btn_keluar)
+
+        menuContainer.addView(btnResume)
+        menuContainer.addView(btnAbout)
+        menuContainer.addView(btnQuit)
+
+        val menuParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            gravity = Gravity.CENTER
+            leftMargin = dpToPx(34)
+            rightMargin = dpToPx(34)
+        }
+
+        root.addView(menuContainer, menuParams)
+
+        btnResume.setOnClickListener {
+            dialog.dismiss()
+            resumeGame()
+        }
+
+        btnAbout.setOnClickListener {
+            tampilkanAboutGame()
+        }
+
+        btnQuit.setOnClickListener {
+            dialog.dismiss()
+            hentikanProsesBerjalan()
+            finish()
+        }
+
+        dialog.setContentView(root)
+
+        dialog.setOnShowListener {
+            val width = (resources.displayMetrics.widthPixels * 0.80).toInt()
+            val height = dpToPx(340)
+            dialog.window?.setLayout(width, height)
+        }
+
+        dialog.show()
+    }
+
+    private fun buatTombolMenu(backgroundRes: Int): ImageView {
+        val tombol = ImageView(this).apply {
+            setImageResource(backgroundRes)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            adjustViewBounds = true
+            isClickable = true
+            isFocusable = true
+        }
+
+        pasangAnimasiTekan(tombol)
+
+        val params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            dpToPx(62)
+        ).apply {
+            setMargins(0, dpToPx(8), 0, dpToPx(8))
+        }
+
+        tombol.layoutParams = params
+        return tombol
+    }
+
+    private fun pasangAnimasiTekan(view: View) {
+        view.isClickable = true
+        view.isFocusable = true
+
+        view.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.animate()
+                        .scaleX(0.94f)
+                        .scaleY(0.94f)
+                        .setDuration(45)
+                        .start()
+                }
+
+                MotionEvent.ACTION_UP,
+                MotionEvent.ACTION_CANCEL -> {
+                    v.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(60)
+                        .start()
+                }
+            }
+
+            false
+        }
+    }
+
+    private fun tampilkanAboutGame() {
+        AlertDialog.Builder(this)
+            .setTitle("Tentang Game")
+            .setMessage(
+                "Pasang Kartu adalah permainan mengingat posisi gambar dan mencocokkan kartu yang sama.\n\n" +
+                        "Game ini membantu anak melatih daya ingat, fokus, dan ketelitian."
+            )
+            .setPositiveButton("Mengerti", null)
+            .show()
+    }
+
+    private fun mulaiTimerGlobal() {
+        sisaWaktuMillis = targetWaktuMenit * 60 * 1000L
+        tvTimer.visibility = View.VISIBLE
+        jalankanTimerGlobal()
+    }
+
+    private fun jalankanTimerGlobal() {
+        timerPermainan?.cancel()
+
+        timerPermainan = object : CountDownTimer(sisaWaktuMillis, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
+                sisaWaktuMillis = millisUntilFinished
+
                 val totalDetik = millisUntilFinished / 1000L
                 val menit = totalDetik / 60L
                 val detik = totalDetik % 60L
@@ -142,10 +286,57 @@ class GamePasangKartuActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
+                sisaWaktuMillis = 0L
                 tvTimer.text = "0:00"
                 simpanRiwayatAkhir()
             }
         }.start()
+    }
+
+    private fun pauseGame() {
+        if (gameSedangPause || permainanSelesai) return
+
+        gameSedangPause = true
+        timerPermainan?.cancel()
+
+        aksiTertunda?.let { runnable ->
+            handler.removeCallbacks(runnable)
+            sisaDelayAksiTertunda =
+                (batasWaktuAksiTertunda - System.currentTimeMillis()).coerceAtLeast(0L)
+        }
+    }
+
+    private fun resumeGame() {
+        if (!gameSedangPause || permainanSelesai) return
+
+        gameSedangPause = false
+        jalankanTimerGlobal()
+
+        aksiTertunda?.let { runnable ->
+            batasWaktuAksiTertunda = System.currentTimeMillis() + sisaDelayAksiTertunda
+            handler.postDelayed(runnable, sisaDelayAksiTertunda)
+        }
+    }
+
+    private fun jadwalkanAksi(delayMillis: Long, aksi: () -> Unit) {
+        aksiTertunda?.let { handler.removeCallbacks(it) }
+
+        val runnable = Runnable {
+            aksiTertunda = null
+            sisaDelayAksiTertunda = 0L
+
+            if (!permainanSelesai) {
+                aksi()
+            }
+        }
+
+        aksiTertunda = runnable
+        sisaDelayAksiTertunda = delayMillis
+        batasWaktuAksiTertunda = System.currentTimeMillis() + delayMillis
+
+        if (!gameSedangPause) {
+            handler.postDelayed(runnable, delayMillis)
+        }
     }
 
     private fun mulaiSesiBaru() {
@@ -170,9 +361,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
 
         tvPetunjuk.text = "Ingat letak gambarnya, lalu cocokkan kartu yang sama!"
 
-        handler.postDelayed({
-            if (permainanSelesai) return@postDelayed
-
+        jadwalkanAksi(waktuPreview) {
             sedangPreview = false
             for (i in 0 until gridKartu.childCount) {
                 val kartu = gridKartu.getChildAt(i) as FrameLayout
@@ -182,7 +371,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
             }
 
             tvPetunjuk.text = "Sekarang cari dan pasangkan gambar yang sama!"
-        }, waktuPreview)
+        }
     }
 
     private fun aturTampilanFase(): Long {
@@ -316,7 +505,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun pilihKartu(kartu: FrameLayout) {
-        if (permainanSelesai || sedangPreview || sedangMemeriksa) return
+        if (permainanSelesai || gameSedangPause || sedangPreview || sedangMemeriksa) return
         if (kartu == kartuPertama) return
 
         val data = kartu.tag as DataKartu
@@ -348,26 +537,22 @@ class GamePasangKartuActivity : AppCompatActivity() {
             skor += 15
             tvSkor.text = skor.toString()
 
-            handler.postDelayed({
-                if (permainanSelesai) return@postDelayed
-
+            jadwalkanAksi(450L) {
                 resetPilihan()
 
                 if (jumlahPasanganSelesai == totalPasanganSesiIni) {
                     prosesSesiSelesai()
                 }
-            }, 450L)
+            }
         } else {
             sesiAdaKesalahan = true
             totalSalah++
 
-            handler.postDelayed({
-                if (permainanSelesai) return@postDelayed
-
+            jadwalkanAksi(750L) {
                 kartuPertama?.let { tampilkanKartuTertutup(it) }
                 kartuKedua?.let { tampilkanKartuTertutup(it) }
                 resetPilihan()
-            }, 750L)
+            }
         }
     }
 
@@ -386,11 +571,9 @@ class GamePasangKartuActivity : AppCompatActivity() {
 
         tvPetunjuk.text = "Bagus! Bersiap untuk sesi berikutnya..."
 
-        handler.postDelayed({
-            if (!permainanSelesai) {
-                mulaiSesiBaru()
-            }
-        }, 900L)
+        jadwalkanAksi(900L) {
+            mulaiSesiBaru()
+        }
     }
 
     private fun resetPilihan() {
@@ -458,6 +641,8 @@ class GamePasangKartuActivity : AppCompatActivity() {
 
     private fun hentikanProsesBerjalan() {
         timerPermainan?.cancel()
+        aksiTertunda?.let { handler.removeCallbacks(it) }
+        aksiTertunda = null
         handler.removeCallbacksAndMessages(null)
     }
 
