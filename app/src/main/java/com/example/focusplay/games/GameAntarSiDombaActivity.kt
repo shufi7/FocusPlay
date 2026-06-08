@@ -4,7 +4,9 @@ import android.app.Dialog
 import android.content.ClipData
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -242,14 +244,133 @@ class GameAntarSiDombaActivity : AppCompatActivity() {
     }
 
     private fun tampilkanAboutGame() {
-        AlertDialog.Builder(this)
-            .setTitle("Tentang Game")
-            .setMessage(
-                "Antar Si Domba adalah permainan mencocokkan domba dengan rumah sesuai warna.\n\n" +
-                        "Game ini membantu anak melatih fokus, ketelitian, koordinasi tangan dan mata, serta kemampuan mengenali warna."
+        tampilkanDialogInfoGame(
+            isi = "Antar Si Domba adalah permainan mencocokkan domba dengan rumah sesuai warna.\n\n" +
+                    "Game ini membantu anak melatih fokus, ketelitian, koordinasi tangan dan mata, serta kemampuan mengenali warna."
+        )
+    }
+
+    private fun tampilkanDialogInfoGame(isi: String) {
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(22), dp(20), dp(22), dp(18))
+            background = roundedDrawable("#FFFDF8", 28, "#D8E5F5")
+        }
+
+        val header = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        val icon = TextView(this).apply {
+            text = "?"
+            textSize = 18f
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            includeFontPadding = false
+            setTextColor(Color.WHITE)
+            background = circleDrawable("#5E7FE0")
+            layoutParams = LinearLayout.LayoutParams(dp(42), dp(42))
+        }
+
+        val titleBox = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(12), 0, 0, 0)
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+
+        val title = TextView(this).apply {
+            text = "Tentang Game"
+            textSize = 18f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor("#243447"))
+            includeFontPadding = false
+        }
+
+        val subtitle = TextView(this).apply {
+            text = "Petunjuk singkat untuk pendamping"
+            textSize = 12f
+            setTextColor(Color.parseColor("#7B8895"))
+            setPadding(0, dp(4), 0, 0)
+        }
+
+        titleBox.addView(title)
+        titleBox.addView(subtitle)
+        header.addView(icon)
+        header.addView(titleBox)
+
+        val body = TextView(this).apply {
+            text = isi
+            textSize = 14f
+            setTextColor(Color.parseColor("#4B5563"))
+            setLineSpacing(dp(3).toFloat(), 1f)
+            background = roundedDrawable("#F6FAFF", 20, "#E1ECFA")
+            setPadding(dp(15), dp(14), dp(15), dp(14))
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, dp(18), 0, dp(16))
+            }
+        }
+
+        val dialog = Dialog(this).apply {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            setContentView(root)
+            setCancelable(true)
+        }
+
+        val button = TextView(this).apply {
+            text = "Mengerti"
+            textSize = 14f
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setTextColor(Color.WHITE)
+            background = roundedDrawable("#5E7FE0", 18, "#5E7FE0")
+            setPadding(dp(22), dp(11), dp(22), dp(11))
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            .setPositiveButton("Mengerti", null)
-            .show()
+            pasangAnimasiTekan(this)
+            setOnClickListener { dialog.dismiss() }
+        }
+
+        root.addView(header)
+        root.addView(body)
+        root.addView(button)
+
+        dialog.setOnShowListener {
+            val maxWidth = dp(560)
+            val screenWidth = resources.displayMetrics.widthPixels
+            dialog.window?.apply {
+                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                setDimAmount(0.45f)
+                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                setLayout(
+                    minOf((screenWidth * 0.88f).toInt(), maxWidth),
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun roundedDrawable(fillColor: String, radiusDp: Int, strokeColor: String): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dp(radiusDp).toFloat()
+            setColor(Color.parseColor(fillColor))
+            setStroke(dp(1), Color.parseColor(strokeColor))
+        }
+    }
+
+    private fun circleDrawable(fillColor: String): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(Color.parseColor(fillColor))
+        }
     }
 
     private fun mulaiTimer() {

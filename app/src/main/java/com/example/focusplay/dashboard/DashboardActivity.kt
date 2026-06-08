@@ -40,6 +40,10 @@ import com.example.focusplay.utils.DashboardTutorialOverlay
 
 class DashboardActivity : AppCompatActivity() {
 
+    private companion object {
+        const val MAX_BARIS_RECAP_AI = 7
+    }
+
     private lateinit var session: SessionManager
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
@@ -178,7 +182,7 @@ class DashboardActivity : AppCompatActivity() {
         chartWeekly.setDragEnabled(false)
         chartWeekly.setScaleEnabled(false)
         chartWeekly.setPinchZoom(false)
-        chartWeekly.setExtraOffsets(dp(8).toFloat(), dp(8).toFloat(), dp(18).toFloat(), dp(10).toFloat())
+        chartWeekly.setExtraOffsets(dp(8).toFloat(), dp(16).toFloat(), dp(18).toFloat(), dp(12).toFloat())
 
         chartWeekly.xAxis.apply {
             position = XAxis.XAxisPosition.BOTTOM
@@ -193,8 +197,9 @@ class DashboardActivity : AppCompatActivity() {
 
         chartWeekly.axisLeft.apply {
             axisMinimum = 0f
-            axisMaximum = 100f
-            setLabelCount(6, true)
+            axisMaximum = 105f
+            granularity = 20f
+            setLabelCount(6, false)
             setDrawAxisLine(false)
             gridColor = Color.parseColor("#D8E5F5")
             textColor = Color.parseColor("#6B7C8F")
@@ -904,7 +909,7 @@ class DashboardActivity : AppCompatActivity() {
             textSize = 12.5f
             setTextColor(Color.parseColor("#374151"))
             setLineSpacing(4f, 1f)
-            maxLines = 7
+            maxLines = MAX_BARIS_RECAP_AI
             ellipsize = TextUtils.TruncateAt.END
 
             layoutParams = LinearLayout.LayoutParams(
@@ -913,7 +918,47 @@ class DashboardActivity : AppCompatActivity() {
             )
         }
 
+        val btnSelengkapnya = TextView(this).apply {
+            text = "Selengkapnya"
+            textSize = 12f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor("#5E7FE0"))
+            visibility = View.GONE
+            isClickable = true
+            isFocusable = true
+            setPadding(0, dp(8), 0, 0)
+
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        btnSelengkapnya.setOnClickListener {
+            val sedangTerbuka = tvEvaluasi.maxLines == Int.MAX_VALUE
+
+            if (sedangTerbuka) {
+                tvEvaluasi.maxLines = MAX_BARIS_RECAP_AI
+                tvEvaluasi.ellipsize = TextUtils.TruncateAt.END
+                btnSelengkapnya.text = "Selengkapnya"
+            } else {
+                tvEvaluasi.maxLines = Int.MAX_VALUE
+                tvEvaluasi.ellipsize = null
+                btnSelengkapnya.text = "Tampilkan lebih sedikit"
+            }
+        }
+
+        tvEvaluasi.post {
+            val layout = tvEvaluasi.layout ?: return@post
+            val barisTerakhir = MAX_BARIS_RECAP_AI - 1
+            val teksTerpotong = tvEvaluasi.lineCount >= MAX_BARIS_RECAP_AI &&
+                    layout.getEllipsisCount(barisTerakhir) > 0
+
+            btnSelengkapnya.visibility = if (teksTerpotong) View.VISIBLE else View.GONE
+        }
+
         boxEvaluasi.addView(tvEvaluasi)
+        boxEvaluasi.addView(btnSelengkapnya)
 
         card.addView(header)
         card.addView(labelFeedback)

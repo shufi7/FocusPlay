@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Window
 import android.view.WindowManager
-import android.widget.Toast
 import com.example.focusplay.BuildConfig
 import com.example.focusplay.R
 import com.google.firebase.auth.FirebaseAuth
@@ -85,7 +84,6 @@ object GameResultHelper {
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             var hasilAI = "Wah, $namaAnak sangat fokus di game $namaGame! Saran untuk ortu: pertahankan durasi bermain ini agar konsentrasinya stabil."
-            var isApiBerhasil = false
 
             val apiKey = BuildConfig.FREEMODEL_API_KEY.trim()
 
@@ -139,7 +137,6 @@ object GameResultHelper {
                     val choices = jsonResponse.getJSONArray("choices")
                     if (choices.length() > 0) {
                         hasilAI = choices.getJSONObject(0).getJSONObject("message").getString("content").trim()
-                        isApiBerhasil = true
                     }
                 } else {
                     val errorBody = connection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
@@ -181,12 +178,6 @@ object GameResultHelper {
                     } catch (e: Exception) {
                         Log.e("UI_ERROR", "Gagal menghentikan pop-up dialog: ${e.message}")
                     }
-                }
-
-                if (isApiBerhasil) {
-                    Toast.makeText(activity, "Evaluasi AI berhasil direkam!", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(activity, "Evaluasi AI menggunakan sistem cadangan.", Toast.LENGTH_SHORT).show()
                 }
 
                 // Pindah ke layar EvaluasiActivity

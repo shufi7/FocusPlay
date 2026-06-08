@@ -1,9 +1,15 @@
 package com.example.focusplay.settings
 
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.Gravity
+import android.widget.LinearLayout
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Switch
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
@@ -71,10 +77,57 @@ class PengaturanPermainanActivity : AppCompatActivity() {
                 .putBoolean("mode_adaptif", modeAdaptif)
                 .apply()
 
-            Toast.makeText(this, "Pengaturan berhasil disimpan", Toast.LENGTH_SHORT).show()
+            tampilkanToastSukses("Pengaturan berhasil disimpan")
             finish()
         }
     }
 
+    private fun tampilkanToastSukses(pesan: String) {
+
+        val textBox = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(0, 0, 0, 0)
+
+            layoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+        }
+
+        val isi = TextView(this).apply {
+            text = pesan
+            textSize = 12f
+            setTextColor(Color.parseColor("#4E6B4F"))
+            setPadding(0,0, 0, 0)
+        }
+
+        textBox.addView(isi)
+
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(15), dp(12), dp(16), dp(12))
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = dp(18).toFloat()
+                setColor(Color.parseColor("#F1F8E9"))
+                setStroke(dp(1), Color.parseColor("#C5E1A5"))
+            }
+            elevation = dp(6).toFloat()
+            addView(textBox)
+        }
+
+        Toast(this).apply {
+            duration = Toast.LENGTH_SHORT
+            view = layout
+            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, dp(28))
+            show()
+        }
+    }
+
+    private fun dp(value: Int): Int {
+        return (value * resources.displayMetrics.density).toInt()
+    }
 
 }

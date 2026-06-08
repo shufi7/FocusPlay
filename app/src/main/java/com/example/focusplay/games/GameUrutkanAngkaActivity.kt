@@ -1,13 +1,19 @@
 package com.example.focusplay.games
 
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -16,6 +22,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.dashboard.DashboardAnakActivity
 import com.example.focusplay.history.EvaluasiActivity
 import com.example.focusplay.utils.AdaptiveGameManager
 import com.example.focusplay.utils.GameResultHelper
@@ -46,11 +53,13 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
     private var totalSalah = 0
     private var waktuMulaiSesi = 0L
     private var sesiSelesai = false
+    private var gameSedangPause = false
     private var sedangTransisiRonde = false
     private var rondeAdaSalah = false
     private var acakRondeBerikutnya = false
 
     private var timerPermainan: CountDownTimer? = null
+    private var sisaWaktuMillis = 0L
 
     private val namaGame = "Urut Angka"
 
@@ -117,26 +126,108 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
 
     private fun aturTombol() {
         val btnKembali = findViewById<ImageView>(R.id.btnKembali)
+        pasangAnimasiTekan(btnKembali)
+
         btnKembali.setOnClickListener {
+            tampilkanMenuGame()
+        }
+    }
+
+    private fun tampilkanMenuGame() {
+        pauseGame()
+
+        val dialog = Dialog(this)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCancelable(false)
+
+        val root = FrameLayout(this).apply {
+            background = getDrawable(R.drawable.latar_menu)
+        }
+
+        val menuContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(dpToPx(28), dpToPx(20), dpToPx(28), dpToPx(20))
+        }
+
+        val btnResume = buatTombolMenu(R.drawable.btn_lanjutkan)
+        val btnAbout = buatTombolMenu(R.drawable.btn_tentang)
+        val btnQuit = buatTombolMenu(R.drawable.btn_keluar)
+
+        menuContainer.addView(btnResume)
+        menuContainer.addView(btnAbout)
+        menuContainer.addView(btnQuit)
+
+        val menuParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            gravity = Gravity.CENTER
+            leftMargin = dpToPx(34)
+            rightMargin = dpToPx(34)
+        }
+
+        root.addView(menuContainer, menuParams)
+
+        btnResume.setOnClickListener {
+            dialog.dismiss()
+            resumeGame()
+        }
+
+        btnAbout.setOnClickListener {
+            tampilkanAboutGame()
+        }
+
+        btnQuit.setOnClickListener {
+            dialog.dismiss()
             timerPermainan?.cancel()
             finish()
         }
 
-        btnKembali.setOnTouchListener { view, event ->
-            when (event.action) {
-                android.view.MotionEvent.ACTION_DOWN -> view.animate().scaleX(0.94f).scaleY(0.94f).setDuration(45).start()
-                android.view.MotionEvent.ACTION_UP,
-                android.view.MotionEvent.ACTION_CANCEL -> view.animate().scaleX(1f).scaleY(1f).setDuration(60).start()
-            }
-            false
+        dialog.setContentView(root)
+
+        dialog.setOnShowListener {
+            val width = (resources.displayMetrics.widthPixels * 0.80).toInt()
+            val height = dpToPx(340)
+            dialog.window?.setLayout(width, height)
         }
+
+        dialog.show()
+    }
+
+    private fun buatTombolMenu(backgroundRes: Int): ImageView {
+        val tombol = ImageView(this).apply {
+            setImageResource(backgroundRes)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            adjustViewBounds = true
+            isClickable = true
+            isFocusable = true
+        }
+
+        pasangAnimasiTekan(tombol)
+
+        tombol.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            dpToPx(62)
+        ).apply {
+            setMargins(0, dpToPx(8), 0, dpToPx(8))
+        }
+
+        return tombol
     }
 
     private fun mulaiTimerGlobal() {
-        val totalMillis = targetWaktuMenit * 60 * 1000L
+        sisaWaktuMillis = targetWaktuMenit * 60 * 1000L
+        jalankanTimerGlobal()
+    }
 
-        timerPermainan = object : CountDownTimer(totalMillis, 1000L) {
+    private fun jalankanTimerGlobal() {
+        timerPermainan?.cancel()
+
+        timerPermainan = object : CountDownTimer(sisaWaktuMillis, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
+                sisaWaktuMillis = millisUntilFinished
+
                 val detik = millisUntilFinished / 1000
                 val menit = detik / 60
                 val sisaDetik = detik % 60
@@ -144,10 +235,155 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
+                sisaWaktuMillis = 0L
                 tvTimer.text = "0:00"
                 simpanRiwayatAkhir()
             }
         }.start()
+    }
+
+    private fun pauseGame() {
+        if (gameSedangPause || sesiSelesai) return
+
+        gameSedangPause = true
+        timerPermainan?.cancel()
+    }
+
+    private fun resumeGame() {
+        if (!gameSedangPause || sesiSelesai) return
+
+        gameSedangPause = false
+        jalankanTimerGlobal()
+    }
+
+    private fun tampilkanAboutGame() {
+        tampilkanDialogInfoGame(
+            isi = "Urut Angka adalah permainan mengetuk angka sesuai urutan yang diminta.\n\n" +
+                    "Game ini membantu anak melatih fokus, ketelitian, ingatan urutan, dan kontrol impuls."
+        )
+    }
+
+    private fun tampilkanDialogInfoGame(isi: String) {
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dpToPx(22), dpToPx(20), dpToPx(22), dpToPx(18))
+            background = roundedDrawable("#FFFDF8", 28, "#D8E5F5")
+        }
+
+        val header = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        val icon = TextView(this).apply {
+            text = "?"
+            textSize = 18f
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            includeFontPadding = false
+            setTextColor(Color.WHITE)
+            background = circleDrawable("#5E7FE0")
+            layoutParams = LinearLayout.LayoutParams(dpToPx(42), dpToPx(42))
+        }
+
+        val titleBox = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dpToPx(12), 0, 0, 0)
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+
+        val title = TextView(this).apply {
+            text = "Tentang Game"
+            textSize = 18f
+            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor("#243447"))
+            includeFontPadding = false
+        }
+
+        val subtitle = TextView(this).apply {
+            text = "Petunjuk singkat untuk pendamping"
+            textSize = 12f
+            setTextColor(Color.parseColor("#7B8895"))
+            setPadding(0, dpToPx(4), 0, 0)
+        }
+
+        titleBox.addView(title)
+        titleBox.addView(subtitle)
+        header.addView(icon)
+        header.addView(titleBox)
+
+        val body = TextView(this).apply {
+            text = isi
+            textSize = 14f
+            setTextColor(Color.parseColor("#4B5563"))
+            setLineSpacing(dpToPx(3).toFloat(), 1f)
+            background = roundedDrawable("#F6FAFF", 20, "#E1ECFA")
+            setPadding(dpToPx(15), dpToPx(14), dpToPx(15), dpToPx(14))
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, dpToPx(18), 0, dpToPx(16))
+            }
+        }
+
+        val dialog = Dialog(this).apply {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            setContentView(root)
+            setCancelable(true)
+        }
+
+        val button = TextView(this).apply {
+            text = "Mengerti"
+            textSize = 14f
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setTextColor(Color.WHITE)
+            background = roundedDrawable("#5E7FE0", 18, "#5E7FE0")
+            setPadding(dpToPx(22), dpToPx(11), dpToPx(22), dpToPx(11))
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            pasangAnimasiTekan(this)
+            setOnClickListener { dialog.dismiss() }
+        }
+
+        root.addView(header)
+        root.addView(body)
+        root.addView(button)
+
+        dialog.setOnShowListener {
+            val maxWidth = dpToPx(560)
+            val screenWidth = resources.displayMetrics.widthPixels
+            dialog.window?.apply {
+                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                setDimAmount(0.45f)
+                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                setLayout(
+                    minOf((screenWidth * 0.88f).toInt(), maxWidth),
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun roundedDrawable(fillColor: String, radiusDp: Int, strokeColor: String): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dpToPx(radiusDp).toFloat()
+            setColor(Color.parseColor(fillColor))
+            setStroke(dpToPx(1), Color.parseColor(strokeColor))
+        }
+    }
+
+    private fun circleDrawable(fillColor: String): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(Color.parseColor(fillColor))
+        }
     }
 
     private fun mulaiRonde() {
@@ -396,6 +632,67 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
         val durasiDetik = maxOf(1, (durasiMillis / 1000L).toInt())
         val durasiMenit = maxOf(1, (durasiMillis / 60000L).toInt())
 
+        tampilkanHasilSementara(akurasi, durasiDetik, durasiMenit)
+    }
+
+    private fun tampilkanHasilSementara(
+        akurasi: Int,
+        durasiDetik: Int,
+        durasiMenit: Int
+    ) {
+        val contentView = LayoutInflater.from(this)
+            .inflate(R.layout.dialog_hasil_sementara, null, false)
+
+        contentView.findViewById<TextView>(R.id.tvHasilSkor).text = skor.toString()
+        contentView.findViewById<TextView>(R.id.tvHasilAkurasi).text = "$akurasi%"
+        contentView.findViewById<TextView>(R.id.tvHasilDurasi).text = "$durasiDetik detik"
+        contentView.findViewById<TextView>(R.id.tvHasilFase).text = faseSaatIni.toString()
+
+        val dialog = Dialog(this).apply {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            setContentView(contentView)
+            setCancelable(false)
+        }
+
+        contentView.findViewById<TextView>(R.id.btnSimpanLihatHasil).apply {
+            pasangAnimasiTekan(this)
+            setOnClickListener {
+                isEnabled = false
+                dialog.dismiss()
+                simpanDanBukaEvaluasi(akurasi, durasiDetik, durasiMenit)
+            }
+        }
+
+        contentView.findViewById<TextView>(R.id.btnKembaliDashboard).apply {
+            pasangAnimasiTekan(this)
+            setOnClickListener {
+                dialog.dismiss()
+                kembaliKeDashboard()
+            }
+        }
+
+        dialog.setOnShowListener {
+            val maxWidth = dpToPx(650)
+            val screenWidth = resources.displayMetrics.widthPixels
+            dialog.window?.apply {
+                setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                setDimAmount(0.55f)
+                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                setLayout(
+                    minOf((screenWidth * 0.92f).toInt(), maxWidth),
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun simpanDanBukaEvaluasi(
+        akurasi: Int,
+        durasiDetik: Int,
+        durasiMenit: Int
+    ) {
         GameResultHelper.evaluasiDanSimpanRealtime(
             activity = this,
             idAnak = idAnak,
@@ -420,6 +717,45 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
                 finish()
             }
         )
+    }
+
+    private fun kembaliKeDashboard() {
+        val intent = Intent(this, DashboardAnakActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            putExtra("ID_ANAK", idAnak)
+            putExtra("NAMA_ANAK", namaAnak)
+            putExtra("USIA_ANAK", usiaAnak)
+        }
+        startActivity(intent)
+        finish()
+    }
+
+    private fun pasangAnimasiTekan(view: View) {
+        view.isClickable = true
+        view.isFocusable = true
+
+        view.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.animate()
+                        .scaleX(0.94f)
+                        .scaleY(0.94f)
+                        .setDuration(45)
+                        .start()
+                }
+
+                MotionEvent.ACTION_UP,
+                MotionEvent.ACTION_CANCEL -> {
+                    v.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(60)
+                        .start()
+                }
+            }
+
+            false
+        }
     }
 
     private fun dpToPx(dp: Int): Int {
