@@ -81,7 +81,7 @@ class GameDescriptionActivity : AppCompatActivity() {
         val targetActivity = when (gameKey) {
             "pasang_kartu" -> GamePasangKartuActivity::class.java
             "urut_angka" -> GameUrutkanAngkaActivity::class.java
-            else -> GameAntarRumahActivity::class.java
+            else -> GameAntarSiDombaActivity::class.java
         }
 
         val intent = Intent(this, targetActivity)

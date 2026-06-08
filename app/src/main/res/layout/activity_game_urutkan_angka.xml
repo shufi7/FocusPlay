@@ -1,91 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="false">
+    android:layout_height="match_parent">
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/bg_antardomba" />
+        android:src="@drawable/bg_antardomba"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/hudGame"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="14dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="18dp"
         android:layout_marginEnd="14dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/btnKembali"
-            android:layout_width="58dp"
-            android:layout_height="58dp"
-            android:adjustViewBounds="true"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/btn_menu"
             android:clickable="true"
-            android:contentDescription="Kembali"
+            android:contentDescription="Menu permainan"
             android:focusable="true"
-            android:scaleType="fitCenter"
-            android:src="@drawable/btn_menu" />
+            android:padding="14dp" />
 
         <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="46dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/latar_waktu" />
-
-            <TextView
-                android:id="@+id/tvTimer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fontFamily="@font/quicksand_bold"
-                android:gravity="center"
-                android:paddingStart="30dp"
-                android:paddingEnd="8dp"
-                android:text="1:00"
-                android:textColor="#6A3816"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="46dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/latar_skor" />
-
-            <TextView
-                android:id="@+id/tvSkor"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fontFamily="@font/quicksand_bold"
-                android:gravity="center"
-                android:paddingStart="30dp"
-                android:paddingEnd="8dp"
-                android:text="0"
-                android:textColor="#1F5FAE"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="46dp"
-            android:layout_marginStart="10dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="8dp"
             android:layout_weight="1">
 
             <ImageView
@@ -100,27 +55,85 @@
                 android:layout_height="match_parent"
                 android:fontFamily="@font/quicksand_bold"
                 android:gravity="center"
-                android:paddingStart="30dp"
+                android:paddingStart="26dp"
                 android:paddingEnd="8dp"
-                android:text="1"
+                android:text="Fase 1"
                 android:textColor="#538004"
-                android:textSize="20sp"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/latar_waktu" />
+
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/quicksand_bold"
+                android:gravity="center"
+                android:paddingStart="24dp"
+                android:paddingEnd="8dp"
+                android:text="1:00"
+                android:textColor="#8B4A16"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/latar_skor" />
+
+            <TextView
+                android:id="@+id/tvSkor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/quicksand_bold"
+                android:gravity="center"
+                android:paddingStart="26dp"
+                android:paddingEnd="8dp"
+                android:text="0"
+                android:textColor="#2378D7"
+                android:textSize="12sp"
                 android:textStyle="bold" />
         </FrameLayout>
     </LinearLayout>
 
     <FrameLayout
         android:id="@+id/arenaGame"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="315dp"
-        android:layout_gravity="center"
         android:layout_marginStart="40dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="40dp"
+        android:layout_marginBottom="28dp"
         android:background="@drawable/bg_panel_urut_angka"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:elevation="3dp"
-        android:padding="18dp">
+        android:padding="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/hudGame"
+        app:layout_constraintVertical_bias="0.5">
 
         <LinearLayout
             android:id="@+id/containerAngka"
@@ -144,4 +157,4 @@
             android:visibility="gone" />
     </FrameLayout>
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

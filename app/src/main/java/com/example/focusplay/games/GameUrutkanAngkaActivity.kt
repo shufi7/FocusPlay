@@ -350,7 +350,7 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
 
     private fun updateHud() {
         tvSkor.text = skor.toString()
-        tvFase.text = faseSaatIni.toString()
+        tvFase.text = "Fase $faseSaatIni"
     }
 
     private fun updatePapanTarget() {

@@ -5,29 +5,34 @@ class AdaptiveGameManager(
     private val modeAdaptifAktif: Boolean = true
 ) {
 
-    private var benarBeruntun = 0
-    private var salahBeruntun = 0
+    private var jumlahBenar = 0
+    private var jumlahSalah = 0
+
+    init {
+        if (!modeAdaptifAktif) {
+            faseSekarang = 1
+        }
+    }
 
     fun prosesJawaban(jawabanBenar: Boolean): Int {
         if (!modeAdaptifAktif) {
-            return faseSekarang
+            faseSekarang = 1
+            return 1
         }
 
         if (jawabanBenar) {
-            benarBeruntun++
-            salahBeruntun = 0
+            jumlahBenar++
 
-            if (benarBeruntun >= 5) {
+            if (jumlahBenar >= 5) {
                 naikFase()
-                benarBeruntun = 0
+                resetHitungan()
             }
         } else {
-            salahBeruntun++
-            benarBeruntun = 0
+            jumlahSalah++
 
-            if (salahBeruntun >= 3) {
+            if (jumlahSalah >= 3) {
                 turunFase()
-                salahBeruntun = 0
+                resetHitungan()
             }
         }
 
@@ -51,7 +56,7 @@ class AdaptiveGameManager(
     }
 
     fun resetHitungan() {
-        benarBeruntun = 0
-        salahBeruntun = 0
+        jumlahBenar = 0
+        jumlahSalah = 0
     }
 }

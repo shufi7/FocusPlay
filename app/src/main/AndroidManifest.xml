@@ -27,7 +27,7 @@
             android:name=".games.GamePasangKartuActivity"
             android:exported="false" />
         <activity
-            android:name=".games.GameAntarRumahActivity"
+            android:name=".games.GameAntarSiDombaActivity"
             android:exported="false" />
         <activity
             android:name=".dashboard.DashboardAnakActivity"

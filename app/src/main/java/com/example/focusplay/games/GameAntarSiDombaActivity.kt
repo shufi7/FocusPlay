@@ -27,7 +27,7 @@ import com.example.focusplay.utils.AdaptiveGameManager
 import com.example.focusplay.utils.GameResultHelper
 import kotlin.random.Random
 
-class GameAntarRumahActivity : AppCompatActivity() {
+class GameAntarSiDombaActivity : AppCompatActivity() {
 
     private lateinit var btnMenuGame: TextView
     private lateinit var tvFase: TextView
@@ -70,7 +70,7 @@ class GameAntarRumahActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_game_antar_rumah)
+        setContentView(R.layout.activity_game_antar_si_domba)
 
         ambilDataAnakDariIntent()
         hubungkanView()
