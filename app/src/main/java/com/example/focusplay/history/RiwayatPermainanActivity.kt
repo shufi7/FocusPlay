@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
@@ -11,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import com.example.focusplay.R
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
@@ -45,17 +47,18 @@ class RiwayatPermainanActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        aturSystemBar()
         setContentView(R.layout.activity_riwayat_permainan)
 
         db = FirebaseFirestore.getInstance()
 
         idAnak = intent.getStringExtra("ID_ANAK")
             ?: intent.getStringExtra("id_anak")
-                    ?: ""
+            ?: ""
 
         namaAnak = intent.getStringExtra("NAMA_ANAK")
             ?: intent.getStringExtra("nama_anak")
-                    ?: "Anak"
+            ?: "Anak"
 
         hubungkanView()
         aturTombol()
@@ -69,6 +72,14 @@ class RiwayatPermainanActivity : AppCompatActivity() {
         tvTotalDurasi = findViewById(R.id.tvTotalDurasi)
         tvRiwayatKosong = findViewById(R.id.tvRiwayatKosong)
         containerRiwayatPermainan = findViewById(R.id.containerRiwayatPermainan)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun aturSystemBar() {
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.parseColor("#FFFDF8")
+        window.decorView.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
     }
 
     private fun aturTombol() {
@@ -104,13 +115,13 @@ class RiwayatPermainanActivity : AppCompatActivity() {
         val timestampMillis = ambilTimestampMillis(doc)
 
         val tanggalLabel = if (timestampMillis > 0) {
-            SimpleDateFormat("dd MMM yyyy", Locale("id", "ID")).format(timestampMillis)
+            SimpleDateFormat("dd MMM yyyy", Locale.forLanguageTag("id-ID")).format(timestampMillis)
         } else {
             doc.getString("tanggal") ?: "-"
         }
 
         return RiwayatPermainan(
-            namaGame = doc.getString("nama_game") ?: "Permainan",
+            namaGame = normalisasiNamaGame(doc.getString("nama_game") ?: "Permainan"),
             namaAnak = doc.getString("nama_anak") ?: namaAnak,
             akurasi = ambilAngka(doc, "akurasi"),
             skor = ambilAngka(doc, "skor"),
@@ -149,33 +160,53 @@ class RiwayatPermainanActivity : AppCompatActivity() {
 
     private fun tambahCardRiwayat(riwayat: RiwayatPermainan, index: Int) {
         val warnaIcon = when (index % 4) {
-            0 -> "#F0FBEA"
-            1 -> "#F4EEFF"
-            2 -> "#EAF7FF"
-            else -> "#FFF8E8"
+            0 -> "#EEFADB"
+            1 -> "#EAF7FF"
+            2 -> "#FFF4D9"
+            else -> "#F3EEFF"
         }
+        val warnaTeksIcon = when (index % 4) {
+            0 -> "#315D15"
+            1 -> "#1F6A8D"
+            2 -> "#9A5B10"
+            else -> "#5B4B9A"
+        }
+        val quicksandBold = ResourcesCompat.getFont(this, R.font.quicksand_bold)
 
         val card = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(16), dp(14), dp(16), dp(14))
-            background = roundedDrawable("#FFFFFF", 22, "#E5EEF7")
-            elevation = dp(2).toFloat()
-
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.START
+            setPadding(dp(14), dp(14), dp(14), dp(14))
+            setBackgroundResource(R.drawable.bg_history_item)
+            elevation = dp(4).toFloat()
+            translationZ = dp(1).toFloat()
+            minimumHeight = dp(116)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(104)
+                LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                setMargins(0, 0, 0, dp(12))
+                setMargins(dp(3), 0, dp(3), dp(16))
             }
         }
 
+        val mainRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        val iconLabel = riwayat.namaGame.trim().firstOrNull()?.uppercaseChar()?.toString() ?: "P"
         val icon = TextView(this).apply {
-            text = "🎮"
+            text = iconLabel
             textSize = 22f
+            typeface = quicksandBold ?: Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor(warnaTeksIcon))
             gravity = Gravity.CENTER
-            background = roundedDrawable(warnaIcon, 16, "#E5EEF7")
-            layoutParams = LinearLayout.LayoutParams(dp(52), dp(52))
+            background = roundedDrawable(warnaIcon, 16, "#DDE7F2")
+            layoutParams = LinearLayout.LayoutParams(dp(54), dp(54))
         }
 
         val textBox = LinearLayout(this).apply {
@@ -185,23 +216,41 @@ class RiwayatPermainanActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 1f
             ).apply {
-                setMargins(dp(14), 0, dp(10), 0)
+                setMargins(dp(12), 0, dp(8), 0)
             }
         }
 
         val tvGame = TextView(this).apply {
             text = riwayat.namaGame
             textSize = 16f
-            typeface = Typeface.DEFAULT_BOLD
+            typeface = quicksandBold ?: Typeface.DEFAULT_BOLD
             setTextColor(Color.parseColor("#1F2937"))
             maxLines = 1
+            ellipsize = TextUtils.TruncateAt.END
         }
 
         val tvDetail = TextView(this).apply {
-            text = "${riwayat.namaAnak} • Akurasi ${riwayat.akurasi}% • Skor ${riwayat.skor} • ${riwayat.durasiMenit} menit"
+            text = riwayat.namaAnak
             textSize = 12.5f
             setTextColor(Color.parseColor("#6B7280"))
             setPadding(0, dp(4), 0, 0)
+            maxLines = 1
+            ellipsize = TextUtils.TruncateAt.END
+        }
+
+        val tvMetrics = TextView(this).apply {
+            text = "Akurasi ${riwayat.akurasi}%  -  Skor ${riwayat.skor}  -  ${riwayat.durasiMenit} menit"
+            textSize = 12f
+            typeface = quicksandBold ?: Typeface.DEFAULT_BOLD
+            setTextColor(Color.parseColor("#406915"))
+            setPadding(0, dp(8), 0, 0)
+            maxLines = 2
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(dp(66), 0, 0, 0)
+            }
         }
 
         textBox.addView(tvGame)
@@ -209,15 +258,26 @@ class RiwayatPermainanActivity : AppCompatActivity() {
 
         val tvTanggal = TextView(this).apply {
             text = riwayat.tanggal
-            textSize = 12f
-            typeface = Typeface.DEFAULT_BOLD
+            textSize = 11.5f
+            typeface = quicksandBold ?: Typeface.DEFAULT_BOLD
             setTextColor(Color.parseColor("#406915"))
             gravity = Gravity.CENTER
+            setPadding(dp(9), dp(7), dp(9), dp(7))
+            setBackgroundResource(R.drawable.bg_history_date)
+            maxLines = 1
+            ellipsize = TextUtils.TruncateAt.END
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
         }
 
-        card.addView(icon)
-        card.addView(textBox)
-        card.addView(tvTanggal)
+        mainRow.addView(icon)
+        mainRow.addView(textBox)
+        mainRow.addView(tvTanggal)
+
+        card.addView(mainRow)
+        card.addView(tvMetrics)
 
         containerRiwayatPermainan.addView(card)
     }
@@ -230,6 +290,14 @@ class RiwayatPermainanActivity : AppCompatActivity() {
             }
         }
         return 0
+    }
+
+    private fun normalisasiNamaGame(namaGame: String): String {
+        return when (namaGame.trim().lowercase(Locale.ROOT)) {
+            "antar ke rumah",
+            "antar rumah" -> "Antar Si Domba"
+            else -> namaGame
+        }
     }
 
     private fun ambilTimestampMillis(doc: DocumentSnapshot): Long {

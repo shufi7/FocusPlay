@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.example.focusplay.R
 import com.example.focusplay.games.GameDescriptionActivity
+import com.example.focusplay.utils.AvatarHelper
 
 class DashboardAnakActivity : AppCompatActivity() {
 
@@ -59,13 +60,7 @@ class DashboardAnakActivity : AppCompatActivity() {
     private fun tampilkanDataAnak() {
         tvWelcomeAnak.text = getString(R.string.welcome_anak, namaAnak)
 
-        val resourceAvatar = when (avatarAnak) {
-            "char_blue" -> R.drawable.char_blue
-            "char_purple" -> R.drawable.char_purple
-            "char_star" -> R.drawable.char_star
-            else -> R.drawable.char_red
-        }
-        imgAvatarAnak.setImageResource(resourceAvatar)
+        imgAvatarAnak.setImageResource(AvatarHelper.getAvatarResource(avatarAnak))
     }
 
     private fun aturTombol() {

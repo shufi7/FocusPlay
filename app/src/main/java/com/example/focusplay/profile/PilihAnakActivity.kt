@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
 import com.example.focusplay.dashboard.DashboardAnakActivity
+import com.example.focusplay.utils.AvatarHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
@@ -182,14 +183,7 @@ class PilihAnakActivity : AppCompatActivity() {
         val tvItemNamaAnak = itemView.findViewById<TextView>(R.id.tvItemNamaAnak)
         val tvItemUmurAnak = itemView.findViewById<TextView>(R.id.tvItemUmurAnak)
 
-        val karakterAnak = when (anak.avatar) {
-            "char_blue" -> R.drawable.char_blue
-            "char_purple" -> R.drawable.char_purple
-            "char_star" -> R.drawable.char_star
-            else -> R.drawable.char_red
-        }
-
-        imgAvatarAnak.setImageResource(karakterAnak)
+        imgAvatarAnak.setImageResource(AvatarHelper.getAvatarResource(anak.avatar))
         tvItemNamaAnak.text = anak.namaAnak
         tvItemUmurAnak.text = "${anak.usia} tahun"
 
