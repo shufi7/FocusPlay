@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "4589933201",
+    "project_id": "praktikum11-9d177",
+    "storage_bucket": "praktikum11-9d177.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4589933201:android:cffddf35749d563c4e2530",
+        "android_client_info": {
+          "package_name": "com.example.praktikum11"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "4589933201-vnc9302k0urccs5vipcvbdivrbjtstfh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvNEHj-PXfzO8KXcuBulmfmTJRiq_3uhA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "4589933201-vnc9302k0urccs5vipcvbdivrbjtstfh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4589933201:android:468c7fa7c97fca3f4e2530",
+        "android_client_info": {
+          "package_name": "com.lupisstudio.praktikum11"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "4589933201-vnc9302k0urccs5vipcvbdivrbjtstfh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvNEHj-PXfzO8KXcuBulmfmTJRiq_3uhA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "4589933201-vnc9302k0urccs5vipcvbdivrbjtstfh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
