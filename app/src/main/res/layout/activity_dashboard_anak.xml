@@ -1,169 +1,412 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_sky_gradient"
-    android:fillViewport="true">
+    android:background="@drawable/backgrounds"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/headerDashboardAnak"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="22dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/imgAvatarAnakDashboard"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_icon_circle_blue"
-            android:contentDescription="@string/desc_avatar_anak"
-            android:padding="12dp"
-            android:src="@drawable/char_red" />
-
-        <TextView
-            android:id="@+id/tvWelcomeAnak"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Halo, Anak Hebat!"
-            android:textColor="#1E293B"
-            android:textSize="28sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:text="Ayo pilih permainanmu hari ini!"
-            android:textColor="#334155"
-            android:textSize="16sp" />
-
-        <!-- Kotak Permainan 1 -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardGame1"
-            android:layout_width="match_parent"
-            android:layout_height="128dp"
-            android:layout_marginBottom="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            app:cardBackgroundColor="#FFEAEA"
-            app:cardCornerRadius="32dp"
-            app:cardElevation="0dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/char_heart" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Antar Si Domba"
-                    android:textColor="#C62828"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Kotak Permainan 2 -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardGame2"
-            android:layout_width="match_parent"
-            android:layout_height="128dp"
-            android:layout_marginBottom="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            app:cardBackgroundColor="#EAF7EA"
-            app:cardCornerRadius="32dp"
-            app:cardElevation="0dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/char_cucumber" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Pasang Kartu"
-                    android:textColor="#2E7D32"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Kotak Permainan 3 -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardGame3"
-            android:layout_width="match_parent"
-            android:layout_height="128dp"
-            android:layout_marginBottom="24dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            app:cardBackgroundColor="#E6F2FF"
-            app:cardCornerRadius="32dp"
-            app:cardElevation="0dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/char_cloud_blue" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Urut Angka"
-                    android:textColor="#1565C0"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Tombol Keluar -->
-        <Button
             android:id="@+id/btnKembaliKeOrtu"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="#FF6B6B"
-            android:text="Keluar Area Anak"
-            android:textColor="#FFFFFF"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:cornerRadius="30dp" />
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_button_back_orange"
+            android:contentDescription="Kembali"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_arrow_back" />
 
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/quicksand_bold"
+            android:text="Pilih Permainan"
+            android:textColor="#2F2F2F"
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </LinearLayout>
-</ScrollView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="18dp"
+        app:cardBackgroundColor="#FFFDF8"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerDashboardAnak">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#FFF3E8"
+                app:cardCornerRadius="25dp"
+                app:cardElevation="0dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <View
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_marginEnd="-46dp"
+                        android:background="@drawable/bg_circle_orange_soft" />
+
+                    <View
+                        android:layout_width="88dp"
+                        android:layout_height="88dp"
+                        android:layout_gravity="end|bottom"
+                        android:layout_marginEnd="44dp"
+                        android:layout_marginBottom="-28dp"
+                        android:background="@drawable/bg_circle_peach_soft" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="132dp"
+                        android:orientation="horizontal"
+                        android:paddingStart="18dp"
+                        android:paddingTop="16dp"
+                        android:paddingEnd="14dp"
+                        android:paddingBottom="16dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvWelcomeAnak"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/quicksand_bold"
+                                android:lineSpacingExtra="2dp"
+                                android:text="Halo, Anak Hebat! Mau main apa?"
+                                android:textColor="#2F2F2F"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="7dp"
+                                android:fontFamily="@font/quicksand"
+                                android:lineSpacingExtra="2dp"
+                                android:maxLines="3"
+                                android:text="Pilih permainan yang kamu suka. Skor, durasi, akurasi, dan fase akan tersimpan otomatis."
+                                android:textColor="#7A6B5D"
+                                android:textSize="12.5sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:background="@drawable/bg_badge_orange_soft"
+                                android:fontFamily="@font/quicksand_bold"
+                                android:gravity="center"
+                                android:paddingStart="12dp"
+                                android:paddingTop="6dp"
+                                android:paddingEnd="12dp"
+                                android:paddingBottom="6dp"
+                                android:text="Latihan fokus anak"
+                                android:textColor="#C56A10"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/imgAvatarAnakDashboard"
+                            android:layout_width="84dp"
+                            android:layout_height="84dp"
+                            android:adjustViewBounds="true"
+                            android:contentDescription="@string/desc_avatar_anak"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/char_red" />
+                    </LinearLayout>
+                </FrameLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/quicksand_bold"
+                android:text="Daftar Permainan"
+                android:textColor="#2F2F2F"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/quicksand"
+                android:text="Pilih salah satu game untuk mulai bermain"
+                android:textColor="#7A6B5D"
+                android:textSize="12sp" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="12dp"
+                android:layout_weight="1"
+                app:cardBackgroundColor="#F0F7EC"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fillViewport="true"
+                    android:nestedScrollingEnabled="true"
+                    android:overScrollMode="ifContentScrolls"
+                    android:paddingStart="12dp"
+                    android:paddingTop="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="12dp"
+                    android:scrollbarStyle="outsideOverlay">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardGame1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="18dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            app:cardBackgroundColor="#FFFFFB"
+                            app:cardCornerRadius="26dp"
+                            app:cardElevation="4dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="150dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingStart="16dp"
+                                android:paddingTop="14dp"
+                                android:paddingEnd="16dp"
+                                android:paddingBottom="14dp">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:id="@+id/imgCoverGame1"
+                                    android:layout_width="118dp"
+                                    android:layout_height="118dp"
+                                    android:background="@drawable/bg_game_cover_panel"
+                                    android:contentDescription="@null"
+                                    android:padding="8dp"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/bg_antar_si_domba"
+                                    app:shapeAppearanceOverlay="@style/RoundedGameCover" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/tvTitleGame1"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/quicksand_bold"
+                                        android:text="Antar Si Domba"
+                                        android:textColor="#7A3E18"
+                                        android:textSize="17sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/tvDescriptionGame1"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="7dp"
+                                        android:fontFamily="@font/quicksand"
+                                        android:lineSpacingExtra="2dp"
+                                        android:maxLines="3"
+                                        android:text="Seret domba ke rumah dengan warna yang sesuai untuk melatih koordinasi visual."
+                                        android:textColor="#6D4C41"
+                                        android:textSize="12sp" />
+
+                                </LinearLayout>
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardGame2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="18dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            app:cardBackgroundColor="#FFFFFB"
+                            app:cardCornerRadius="26dp"
+                            app:cardElevation="4dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="150dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingStart="16dp"
+                                android:paddingTop="14dp"
+                                android:paddingEnd="16dp"
+                                android:paddingBottom="14dp">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:id="@+id/imgCoverGame2"
+                                    android:layout_width="118dp"
+                                    android:layout_height="118dp"
+                                    android:background="@drawable/bg_game_cover_panel"
+                                    android:contentDescription="@null"
+                                    android:padding="8dp"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/cover_pasang_kartu"
+                                    app:shapeAppearanceOverlay="@style/RoundedGameCover" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/tvTitleGame2"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/quicksand_bold"
+                                        android:text="Pasang Kartu"
+                                        android:textColor="#7A3E18"
+                                        android:textSize="17sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/tvDescriptionGame2"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="7dp"
+                                        android:fontFamily="@font/quicksand"
+                                        android:lineSpacingExtra="2dp"
+                                        android:maxLines="3"
+                                        android:text="Cocokkan kartu yang sama untuk melatih memori dan konsentrasi."
+                                        android:textColor="#6D4C41"
+                                        android:textSize="12sp" />
+
+                                </LinearLayout>
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardGame3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="6dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            app:cardBackgroundColor="#FFFFFB"
+                            app:cardCornerRadius="26dp"
+                            app:cardElevation="4dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="150dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingStart="16dp"
+                                android:paddingTop="14dp"
+                                android:paddingEnd="16dp"
+                                android:paddingBottom="14dp">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:id="@+id/imgCoverGame3"
+                                    android:layout_width="118dp"
+                                    android:layout_height="118dp"
+                                    android:background="@drawable/bg_game_cover_panel"
+                                    android:contentDescription="@null"
+                                    android:padding="8dp"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/bg_antar_si_domba"
+                                    app:shapeAppearanceOverlay="@style/RoundedGameCover" />
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:id="@+id/tvTitleGame3"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/quicksand_bold"
+                                        android:text="Urutkan Angka"
+                                        android:textColor="#7A3E18"
+                                        android:textSize="17sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/tvDescriptionGame3"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="7dp"
+                                        android:fontFamily="@font/quicksand"
+                                        android:lineSpacingExtra="2dp"
+                                        android:maxLines="3"
+                                        android:text="Susun angka secara berurutan untuk melatih logika sederhana."
+                                        android:textColor="#6D4C41"
+                                        android:textSize="12sp" />
+
+                                </LinearLayout>
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
+                    </LinearLayout>
+                </ScrollView>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

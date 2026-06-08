@@ -1,7 +1,6 @@
 package com.example.focusplay.settings
 
 import android.os.Bundle
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Switch
@@ -14,7 +13,7 @@ class PengaturanPermainanActivity : AppCompatActivity() {
     private lateinit var ivBack: ImageView
     private lateinit var etTargetWaktu: EditText
     private lateinit var switchAdaptif: Switch
-    private lateinit var btnSimpanPengaturan: Button
+    private lateinit var btnSimpanPengaturan: ImageView
 
     private val namaPrefs = "pengaturan_permainan"
 
