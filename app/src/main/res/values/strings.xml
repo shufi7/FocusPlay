@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">FocusPlay</string>
+    <string name="desc_avatar_anak">Avatar Anak</string>
+    <string name="welcome_anak">Halo, %s!</string>
+    <string name="default_nama_anak">Anak Hebat</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

@@ -250,7 +250,7 @@ class DashboardActivity : AppCompatActivity() {
                         idDokumen = doc.id,
                         namaAnak = nama,
                         usia = usia,
-                        avatar = doc.getString("avatar") ?: "char_moon_purple"
+                        avatar = doc.getString("avatar") ?: "char_red"
                     )
                 }
 
