@@ -27,9 +27,9 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.example.focusplay.utils.SessionManager
 import com.example.focusplay.utils.AvatarHelper
 import com.example.focusplay.view.AuthChoiceActivity
-import com.example.focusplay.settings.PengaturanPermainanActivity
 import com.example.focusplay.history.RiwayatPermainanActivity
 import com.example.focusplay.profile.TambahAnakActivity
+import com.example.focusplay.settings.PengaturanPermainanActivity
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
