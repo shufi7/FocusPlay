@@ -2,13 +2,15 @@ package com.example.focusplay.dashboard
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.example.focusplay.R
+import com.example.focusplay.games.GameCatalog
 import com.example.focusplay.games.GameDescriptionActivity
+import com.example.focusplay.games.GameInfo
 import com.example.focusplay.utils.AvatarHelper
 
 class DashboardAnakActivity : AppCompatActivity() {
@@ -20,7 +22,7 @@ class DashboardAnakActivity : AppCompatActivity() {
 
     private lateinit var tvWelcomeAnak: TextView
     private lateinit var imgAvatarAnak: android.widget.ImageView
-    private lateinit var btnKembaliKeOrtu: Button
+    private lateinit var btnKembaliKeOrtu: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +31,7 @@ class DashboardAnakActivity : AppCompatActivity() {
         ambilDataAnakDariIntent()
         hubungkanView()
         tampilkanDataAnak()
+        tampilkanDaftarGame()
         aturTombol()
     }
 
@@ -58,9 +61,33 @@ class DashboardAnakActivity : AppCompatActivity() {
     }
 
     private fun tampilkanDataAnak() {
-        tvWelcomeAnak.text = getString(R.string.welcome_anak, namaAnak)
+        tvWelcomeAnak.text = "Halo, $namaAnak! Mau main apa?"
 
         imgAvatarAnak.setImageResource(AvatarHelper.getAvatarResource(avatarAnak))
+    }
+
+    private fun tampilkanDaftarGame() {
+        val gameViews = listOf(
+            GameCardViews(
+                cover = findViewById(R.id.imgCoverGame1),
+                title = findViewById(R.id.tvTitleGame1),
+                description = findViewById(R.id.tvDescriptionGame1)
+            ),
+            GameCardViews(
+                cover = findViewById(R.id.imgCoverGame2),
+                title = findViewById(R.id.tvTitleGame2),
+                description = findViewById(R.id.tvDescriptionGame2)
+            ),
+            GameCardViews(
+                cover = findViewById(R.id.imgCoverGame3),
+                title = findViewById(R.id.tvTitleGame3),
+                description = findViewById(R.id.tvDescriptionGame3)
+            )
+        )
+
+        GameCatalog.dashboardGames.zip(gameViews).forEach { (gameInfo, views) ->
+            views.tampilkan(gameInfo)
+        }
     }
 
     private fun aturTombol() {
@@ -104,6 +131,18 @@ class DashboardAnakActivity : AppCompatActivity() {
         intent.putExtra("GAME_KEY", gameKey)
 
         startActivity(intent)
+    }
+
+    private data class GameCardViews(
+        val cover: ImageView,
+        val title: TextView,
+        val description: TextView
+    ) {
+        fun tampilkan(gameInfo: GameInfo) {
+            cover.setImageResource(gameInfo.coverRes)
+            title.text = gameInfo.title
+            description.text = gameInfo.dashboardDescription
+        }
     }
 
 }

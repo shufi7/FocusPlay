@@ -60,67 +60,11 @@ class GameDescriptionActivity : AppCompatActivity() {
     }
 
     private fun tampilkanDeskripsiGame() {
-        when (gameKey) {
-            "antar_rumah" -> {
-                imgGame.setImageResource(R.drawable.bg_antar_si_domba)
-
-                tvNamaGame.text = "Antar Si Domba"
-
-                tvTujuanGame.text =
-                    "Melatih fokus, ketelitian, koordinasi tangan dan mata, serta kemampuan mencocokkan warna."
-
-                tvCaraBermain.text =
-                    "1. Perhatikan domba yang muncul di area permainan.\n" +
-                            "2. Seret domba ke rumah yang memiliki warna yang sama.\n" +
-                            "3. Jika jawaban benar, skor akan bertambah.\n" +
-                            "4. Jika mode adaptif aktif, fase permainan akan naik atau turun sesuai hasil jawaban."
-            }
-
-            "pasang_kartu" -> {
-                imgGame.setImageResource(R.drawable.cover_pasang_kartu)
-
-                tvNamaGame.text = "Pasang Kartu"
-
-                tvTujuanGame.text =
-                    "Melatih daya ingat, konsentrasi, dan kemampuan mencocokkan pasangan gambar."
-
-                tvCaraBermain.text =
-                    "1. Ingat posisi gambar saat seluruh kartu masih terbuka.\n" +
-                            "2. Setelah beberapa detik, seluruh kartu akan tertutup.\n" +
-                            "3. Buka dua kartu dan cocokkan gambar yang sama.\n" +
-                            "4. Setelah satu sesi selesai, kartu baru akan muncul kembali dari tahap mengingat."
-            }
-
-            "urut_angka" -> {
-                imgGame.setImageResource(R.drawable.bg_antar_si_domba)
-
-                tvNamaGame.text = "Urutkan Angka"
-
-                tvTujuanGame.text =
-                    "Melatih fokus, logika berpikir, dan kemampuan mengenali urutan angka."
-
-                tvCaraBermain.text =
-                    "1. Perhatikan angka yang muncul di layar.\n" +
-                            "2. Susun angka dari urutan yang benar.\n" +
-                            "3. Pilih dengan hati-hati agar skor bertambah.\n" +
-                            "4. Selesaikan permainan sebelum waktu habis."
-            }
-
-            else -> {
-                imgGame.setImageResource(R.drawable.bg_antar_si_domba)
-
-                tvNamaGame.text = "Antar Si Domba"
-
-                tvTujuanGame.text =
-                    "Melatih fokus, ketelitian, koordinasi tangan dan mata, serta kemampuan mencocokkan warna."
-
-                tvCaraBermain.text =
-                    "1. Perhatikan domba yang muncul di area permainan.\n" +
-                            "2. Seret domba ke rumah yang memiliki warna yang sama.\n" +
-                            "3. Jika jawaban benar, skor akan bertambah.\n" +
-                            "4. Jika mode adaptif aktif, fase permainan akan naik atau turun sesuai hasil jawaban."
-            }
-        }
+        val gameInfo = GameCatalog.get(gameKey)
+        imgGame.setImageResource(gameInfo.coverRes)
+        tvNamaGame.text = gameInfo.title
+        tvTujuanGame.text = gameInfo.goal
+        tvCaraBermain.text = gameInfo.howToPlay
     }
 
     private fun aturTombol() {
