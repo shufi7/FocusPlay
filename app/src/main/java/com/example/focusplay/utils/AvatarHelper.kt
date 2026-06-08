@@ -4,6 +4,19 @@ import androidx.annotation.DrawableRes
 import com.example.focusplay.R
 
 object AvatarHelper {
+    val avatarIds = listOf(
+        "char_red",
+        "char_blue",
+        "char_purple",
+        "char_star",
+        "char_mushroom",
+        "char_moon_purple",
+        "char_cucumber",
+        "char_cloud_blue",
+        "char_heart",
+        "char_diamond_orange"
+    )
+
     @DrawableRes
     fun getAvatarResource(avatar: String?): Int {
         return when (avatar) {

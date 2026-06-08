@@ -261,20 +261,19 @@
                 </LinearLayout>
 
                 <!-- SAVE BUTTON -->
-                <androidx.appcompat.widget.AppCompatButton
+                <ImageView
                     android:id="@+id/btnSimpanPengaturan"
                     android:layout_width="match_parent"
-                    android:layout_height="58dp"
+                    android:layout_height="75dp"
                     android:layout_marginTop="24dp"
                     android:layout_marginBottom="12dp"
-                    android:background="@drawable/bg_button_green"
-                    android:fontFamily="@font/quicksand_bold"
-                    android:text="Simpan Konfigurasi"
-                    android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:elevation="4dp" />
+                    android:adjustViewBounds="true"
+                    android:clickable="true"
+                    android:contentDescription="Simpan Konfigurasi"
+                    android:elevation="4dp"
+                    android:focusable="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/btn_simpan" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

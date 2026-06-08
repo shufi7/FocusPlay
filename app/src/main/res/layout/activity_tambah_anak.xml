@@ -162,60 +162,11 @@
                     android:scrollbars="none">
 
                     <LinearLayout
+                        android:id="@+id/containerAvatarAnak"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/avatarRed"
-                            android:layout_width="72dp"
-                            android:layout_height="72dp"
-                            android:layout_marginEnd="12dp"
-                            android:background="@drawable/bg_avatar_selected"
-                            android:clickable="true"
-                            android:contentDescription="Pilih karakter merah"
-                            android:focusable="true"
-                            android:padding="10dp"
-                            android:src="@drawable/char_red" />
-
-                        <ImageView
-                            android:id="@+id/avatarBlue"
-                            android:layout_width="72dp"
-                            android:layout_height="72dp"
-                            android:layout_marginEnd="12dp"
-                            android:background="@drawable/bg_avatar_normal"
-                            android:clickable="true"
-                            android:contentDescription="Pilih karakter biru"
-                            android:focusable="true"
-                            android:padding="10dp"
-                            android:src="@drawable/char_blue" />
-
-                        <ImageView
-                            android:id="@+id/avatarPurple"
-                            android:layout_width="72dp"
-                            android:layout_height="72dp"
-                            android:layout_marginEnd="12dp"
-                            android:background="@drawable/bg_avatar_normal"
-                            android:clickable="true"
-                            android:contentDescription="Pilih karakter ungu"
-                            android:focusable="true"
-                            android:padding="10dp"
-                            android:src="@drawable/char_purple" />
-
-                        <ImageView
-                            android:id="@+id/avatarStar"
-                            android:layout_width="72dp"
-                            android:layout_height="72dp"
-                            android:layout_marginEnd="12dp"
-                            android:background="@drawable/bg_avatar_normal"
-                            android:clickable="true"
-                            android:contentDescription="Pilih karakter bintang"
-                            android:focusable="true"
-                            android:padding="10dp"
-                            android:src="@drawable/char_star" />
-
-                    </LinearLayout>
+                        android:orientation="horizontal" />
                 </HorizontalScrollView>
 
                 <!-- Info Hint -->
@@ -238,7 +189,7 @@
                         android:lineSpacingExtra="2dp" />
                 </LinearLayout>
 
-                <!-- Save Button (Modern Green/Neutral mix) -->
+                <!-- Save Button -->
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnSimpanAnak"
                     android:layout_width="match_parent"
@@ -246,13 +197,13 @@
                     android:layout_marginTop="24dp"
                     android:layout_marginBottom="12dp"
                     android:background="@drawable/bg_button_green"
+                    android:elevation="4dp"
                     android:fontFamily="@font/quicksand_bold"
                     android:text="Simpan Profil Anak"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:elevation="4dp" />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 

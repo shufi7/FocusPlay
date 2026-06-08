@@ -459,12 +459,12 @@
                                     android:orientation="vertical">
 
                                     <ImageView
-                                        android:layout_width="48dp"
-                                        android:layout_height="48dp"
-                                        android:background="@drawable/bg_circle_menu_blue"
-                                        android:padding="12dp"
-                                        android:src="@drawable/ic_arrow_up_right"
-                                        app:tint="#5E7FE0" />
+                                        android:layout_width="64dp"
+                                        android:layout_height="64dp"
+                                        android:adjustViewBounds="true"
+                                        android:contentDescription="Riwayat"
+                                        android:scaleType="fitCenter"
+                                        android:src="@drawable/icon_riwayat" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -494,12 +494,12 @@
                                     android:orientation="vertical">
 
                                     <ImageView
-                                        android:layout_width="48dp"
-                                        android:layout_height="48dp"
-                                        android:background="@drawable/bg_circle_menu_blue"
-                                        android:padding="12dp"
-                                        android:src="@drawable/ic_settings"
-                                        app:tint="#5E7FE0" />
+                                        android:layout_width="64dp"
+                                        android:layout_height="64dp"
+                                        android:adjustViewBounds="true"
+                                        android:contentDescription="Pengaturan"
+                                        android:scaleType="fitCenter"
+                                        android:src="@drawable/icon_setting" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
