@@ -233,7 +233,7 @@
                                     android:contentDescription="@null"
                                     android:padding="8dp"
                                     android:scaleType="centerCrop"
-                                    android:src="@drawable/bg_antar_si_domba"
+                                    android:src="@drawable/cover_urut_angka"
                                     app:shapeAppearanceOverlay="@style/RoundedGameCover" />
 
                                 <LinearLayout

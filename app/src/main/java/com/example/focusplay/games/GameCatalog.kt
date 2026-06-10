@@ -36,7 +36,7 @@ object GameCatalog {
             "urut_angka" -> GameInfo(
                 key = "urut_angka",
                 title = "Urutkan Angka",
-                coverRes = R.drawable.bg_antar_si_domba,
+                coverRes = R.drawable.cover_urut_angka,
                 dashboardDescription = "Susun angka secara berurutan untuk melatih logika sederhana.",
                 goal = "Melatih fokus, logika berpikir, dan kemampuan mengenali urutan angka.",
                 howToPlay = "1. Perhatikan angka yang muncul di layar.\n" +
