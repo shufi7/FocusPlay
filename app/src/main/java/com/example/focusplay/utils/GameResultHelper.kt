@@ -36,14 +36,19 @@ object GameResultHelper {
         namaGame: String,
         skor: Int,
         akurasi: Int,
+        durasiDetik: Int,
         durasiMenit: Int,
+        faseAkhir: Int,
         onSelesai: (String) -> Unit
     ) {
         // MEMAKSA PEMBUATAN POP-UP DI MAIN THREAD INSTAN
         activity.runOnUiThread {
             if (activity.isFinishing || activity.isDestroyed) {
                 // Jika activity game ternyata sudah mati duluan, langsung jalankan AI di background tanpa pop-up
-                jalankanProsesAI(activity, idAnak, namaAnak, namaGame, skor, akurasi, durasiMenit, null, onSelesai)
+                jalankanProsesAI(
+                    activity, idAnak, namaAnak, namaGame, skor, akurasi,
+                    durasiDetik, durasiMenit, faseAkhir, null, onSelesai
+                )
                 return@runOnUiThread
             }
 
@@ -66,8 +71,10 @@ object GameResultHelper {
                 )
             }
 
-            // Jalankan komunikasi data dengan API FreeModel GPT-5.5
-            jalankanProsesAI(activity, idAnak, namaAnak, namaGame, skor, akurasi, durasiMenit, loadingDialog, onSelesai)
+            jalankanProsesAI(
+                activity, idAnak, namaAnak, namaGame, skor, akurasi,
+                durasiDetik, durasiMenit, faseAkhir, loadingDialog, onSelesai
+            )
         }
     }
 
@@ -78,7 +85,9 @@ object GameResultHelper {
         namaGame: String,
         skor: Int,
         akurasi: Int,
+        durasiDetik: Int,
         durasiMenit: Int,
+        faseAkhir: Int,
         loadingDialog: AlertDialog?,
         onSelesai: (String) -> Unit
     ) {
@@ -97,14 +106,16 @@ object GameResultHelper {
                     - Game: $namaGame
                     - Skor: $skor
                     - Akurasi: $akurasi%
-                    - Durasi: $durasiMenit menit
+                    - Durasi: $durasiDetik detik ($durasiMenit menit)
+                    - Fase akhir: $faseAkhir
 
                     Tulis dalam Bahasa Indonesia, ramah untuk orang tua, maksimal 3 kalimat.
-                    Isi harus menilai performa anak dari skor dan akurasi, lalu beri saran pendampingan praktis.
+                    Nilai performa anak berdasarkan skor, akurasi, durasi, dan fase akhir.
+                    Berikan apresiasi yang realistis dan satu saran pendampingan praktis.
                     Jangan pakai bullet, markdown, atau pembuka seperti "Berikut evaluasinya".
                 """.trimIndent()
 
-                val url = URL("https://api.freemodel.dev/v1/chat/completions")
+                val url = URL("https://api.freemodel.dev/v1/responses")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
                 connection.setRequestProperty("Authorization", "Bearer $apiKey")
@@ -115,12 +126,8 @@ object GameResultHelper {
 
                 val jsonBody = JSONObject()
                 jsonBody.put("model", "gpt-5.5")
-
-                val message = JSONObject().apply {
-                    put("role", "user")
-                    put("content", prompt)
-                }
-                jsonBody.put("messages", JSONArray().put(message))
+                jsonBody.put("input", prompt)
+                jsonBody.put("store", false)
 
                 val writer = OutputStreamWriter(connection.outputStream)
                 writer.write(jsonBody.toString())
@@ -134,9 +141,19 @@ object GameResultHelper {
                     reader.close()
 
                     val jsonResponse = JSONObject(responseString)
-                    val choices = jsonResponse.getJSONArray("choices")
-                    if (choices.length() > 0) {
-                        hasilAI = choices.getJSONObject(0).getJSONObject("message").getString("content").trim()
+                    val hasilDariApi = ambilTeksResponsesApi(jsonResponse)
+                    if (hasilDariApi.isNotBlank()) {
+                        hasilAI = hasilDariApi
+                        val usage = jsonResponse.optJSONObject("usage")
+                        Log.i(
+                            "FOCUSPLAY_AI",
+                            "FreeModel sukses id=${jsonResponse.optString("id")} " +
+                                "model=${jsonResponse.optString("model")} " +
+                                "input_tokens=${usage?.optInt("input_tokens", 0) ?: 0} " +
+                                "output_tokens=${usage?.optInt("output_tokens", 0) ?: 0}"
+                        )
+                    } else {
+                        Log.e("AI_ERROR", "FreeModel sukses tetapi output_text kosong: $responseString")
                     }
                 } else {
                     val errorBody = connection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
@@ -159,7 +176,9 @@ object GameResultHelper {
                         "nama_game" to namaGame,
                         "skor" to skor,
                         "akurasi" to akurasi,
+                        "durasi_detik" to durasiDetik,
                         "durasi_menit" to durasiMenit,
+                        "fase_akhir" to faseAkhir,
                         "tanggal" to formatTanggal.format(Date()),
                         "timestamp" to System.currentTimeMillis(),
                         "evaluasi_ai" to hasilAI
@@ -184,5 +203,30 @@ object GameResultHelper {
                 onSelesai(hasilAI)
             }
         }
+    }
+
+    private fun ambilTeksResponsesApi(response: JSONObject): String {
+        response.optString("output_text")
+            .takeIf { it.isNotBlank() }
+            ?.let { return it.trim() }
+
+        val output = response.optJSONArray("output") ?: return ""
+        val bagianTeks = mutableListOf<String>()
+
+        for (i in 0 until output.length()) {
+            val item = output.optJSONObject(i) ?: continue
+            val content = item.optJSONArray("content") ?: continue
+
+            for (j in 0 until content.length()) {
+                val bagian = content.optJSONObject(j) ?: continue
+                if (bagian.optString("type") == "output_text") {
+                    bagian.optString("text")
+                        .takeIf { it.isNotBlank() }
+                        ?.let(bagianTeks::add)
+                }
+            }
+        }
+
+        return bagianTeks.joinToString("\n").trim()
     }
 }

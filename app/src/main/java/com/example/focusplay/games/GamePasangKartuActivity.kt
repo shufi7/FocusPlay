@@ -797,7 +797,9 @@ class GamePasangKartuActivity : AppCompatActivity() {
             namaGame = namaGame,
             skor = skor,
             akurasi = akurasi,
+            durasiDetik = durasiDetik,
             durasiMenit = durasiMenit,
+            faseAkhir = faseSaatIni,
             onSelesai = { hasilEvaluasi ->
                 val intentToEvaluasi = Intent(this, EvaluasiActivity::class.java)
                 intentToEvaluasi.putExtra("ID_ANAK", idAnak)

@@ -402,7 +402,7 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
 
             else -> {
                 targetMaksimal = 5
-                listOf(1, 2, 3, 4, 5, 7).map { ItemAngka(it, it <= targetMaksimal) }
+                listOf(1, 2, 3, 4, 5, 6).map { ItemAngka(it, it <= targetMaksimal) }
             }
         }
     }
@@ -411,8 +411,10 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
         val ukuran = when (faseSaatIni) {
             1 -> dpToPx(86)
             2 -> dpToPx(78)
-            else -> dpToPx(68)
+            else -> dpToPx(60)
         }
+        val jarakHorizontal = if (faseSaatIni == 3) dpToPx(7) else dpToPx(14)
+        val jarakVertikal = if (faseSaatIni == 3) dpToPx(20) else dpToPx(28)
 
         val rows = when (items.size) {
             3 -> listOf(items.take(2), items.drop(2))
@@ -428,7 +430,7 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    val topMargin = if (rowIndex == 0) 0 else dpToPx(28)
+                    val topMargin = if (rowIndex == 0) 0 else jarakVertikal
                     setMargins(0, topMargin, 0, 0)
                 }
             }
@@ -436,7 +438,7 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
             rowItems.forEachIndexed { columnIndex, item ->
                 val tombolAngka = buatTombolAngka(item.angka, item.isTarget, ukuran)
                 val params = LinearLayout.LayoutParams(ukuran, ukuran).apply {
-                    val sideMargin = if (rowItems.size == 1) 0 else dpToPx(14)
+                    val sideMargin = if (rowItems.size == 1) 0 else jarakHorizontal
                     setMargins(sideMargin, 0, sideMargin, 0)
                 }
 
@@ -679,7 +681,9 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
             namaGame = namaGame,
             skor = skor,
             akurasi = akurasi,
+            durasiDetik = durasiDetik,
             durasiMenit = durasiMenit,
+            faseAkhir = faseSaatIni,
             onSelesai = { hasilEvaluasi ->
                 val intentToEvaluasi = Intent(this, EvaluasiActivity::class.java)
                 intentToEvaluasi.putExtra("ID_ANAK", idAnak)

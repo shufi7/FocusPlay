@@ -628,7 +628,9 @@ class GameAntarSiDombaActivity : AppCompatActivity() {
             namaGame = namaGame,
             skor = skor,
             akurasi = akurasi,
-            durasiMenit = durasiMenit
+            durasiDetik = durasiDetik,
+            durasiMenit = durasiMenit,
+            faseAkhir = faseSekarang
         ) { hasilAI ->
             val intent = Intent(this, EvaluasiActivity::class.java)
             intent.putExtra("ID_ANAK", idAnak)
