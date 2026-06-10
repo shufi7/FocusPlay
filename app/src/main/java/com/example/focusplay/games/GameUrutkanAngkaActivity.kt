@@ -141,18 +141,18 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
         dialog.setCancelable(false)
 
         val root = FrameLayout(this).apply {
-            background = getDrawable(R.drawable.latar_menu)
+            background = GameMenuStyle.createPanelBackground(this@GameUrutkanAngkaActivity)
         }
 
         val menuContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            setPadding(dpToPx(28), dpToPx(20), dpToPx(28), dpToPx(20))
+            setPadding(dpToPx(32), dpToPx(22), dpToPx(32), dpToPx(22))
         }
 
-        val btnResume = buatTombolMenu(R.drawable.btn_lanjutkan)
-        val btnAbout = buatTombolMenu(R.drawable.btn_tentang)
-        val btnQuit = buatTombolMenu(R.drawable.btn_keluar)
+        val btnResume = GameMenuStyle.createMenuButton(this, "Lanjutkan", "#55B94D", "#137530")
+        val btnAbout = GameMenuStyle.createMenuButton(this, "Petunjuk", "#FF9F22", "#C96A12")
+        val btnQuit = GameMenuStyle.createMenuButton(this, "Keluar", "#F55761", "#B92131")
 
         menuContainer.addView(btnResume)
         menuContainer.addView(btnAbout)
@@ -163,8 +163,8 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
             FrameLayout.LayoutParams.WRAP_CONTENT
         ).apply {
             gravity = Gravity.CENTER
-            leftMargin = dpToPx(34)
-            rightMargin = dpToPx(34)
+            leftMargin = dpToPx(42)
+            rightMargin = dpToPx(42)
         }
 
         root.addView(menuContainer, menuParams)
@@ -193,27 +193,6 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
         }
 
         dialog.show()
-    }
-
-    private fun buatTombolMenu(backgroundRes: Int): ImageView {
-        val tombol = ImageView(this).apply {
-            setImageResource(backgroundRes)
-            scaleType = ImageView.ScaleType.FIT_CENTER
-            adjustViewBounds = true
-            isClickable = true
-            isFocusable = true
-        }
-
-        pasangAnimasiTekan(tombol)
-
-        tombol.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            dpToPx(62)
-        ).apply {
-            setMargins(0, dpToPx(8), 0, dpToPx(8))
-        }
-
-        return tombol
     }
 
     private fun mulaiTimerGlobal() {

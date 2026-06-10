@@ -138,18 +138,18 @@ class GameAntarSiDombaActivity : AppCompatActivity() {
         dialog.setCancelable(false)
 
         val root = FrameLayout(this).apply {
-            background = getDrawable(R.drawable.latar_menu)
+            background = GameMenuStyle.createPanelBackground(this@GameAntarSiDombaActivity)
         }
 
         val menuContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            setPadding(dp(28), dp(20), dp(28), dp(20))
+            setPadding(dp(32), dp(22), dp(32), dp(22))
         }
 
-        val btnResume = buatTombolMenu(R.drawable.btn_lanjutkan)
-        val btnAbout = buatTombolMenu(R.drawable.btn_tentang)
-        val btnQuit = buatTombolMenu(R.drawable.btn_keluar)
+        val btnResume = GameMenuStyle.createMenuButton(this, "Lanjutkan", "#55B94D", "#137530")
+        val btnAbout = GameMenuStyle.createMenuButton(this, "Petunjuk", "#FF9F22", "#C96A12")
+        val btnQuit = GameMenuStyle.createMenuButton(this, "Keluar", "#F55761", "#B92131")
 
         menuContainer.addView(btnResume)
         menuContainer.addView(btnAbout)
@@ -160,8 +160,8 @@ class GameAntarSiDombaActivity : AppCompatActivity() {
             FrameLayout.LayoutParams.WRAP_CONTENT
         ).apply {
             gravity = Gravity.CENTER
-            leftMargin = dp(34)
-            rightMargin = dp(34)
+            leftMargin = dp(42)
+            rightMargin = dp(42)
         }
 
         root.addView(menuContainer, menuParams)
@@ -193,28 +193,6 @@ class GameAntarSiDombaActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun buatTombolMenu(backgroundRes: Int): ImageView {
-        val tombol = ImageView(this).apply {
-            setImageResource(backgroundRes)
-            scaleType = ImageView.ScaleType.FIT_CENTER
-            adjustViewBounds = true
-            isClickable = true
-            isFocusable = true
-        }
-
-        pasangAnimasiTekan(tombol)
-
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            dp(62)
-        ).apply {
-            setMargins(0, dp(8), 0, dp(8))
-        }
-
-        tombol.layoutParams = params
-
-        return tombol
-    }
     private fun pasangAnimasiTekan(view: View) {
         view.isClickable = true
         view.isFocusable = true
