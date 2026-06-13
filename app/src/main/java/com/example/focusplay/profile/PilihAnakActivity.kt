@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
+import com.example.focusplay.dashboard.DashboardActivity
 import com.example.focusplay.dashboard.DashboardAnakActivity
 import com.example.focusplay.utils.AvatarHelper
 import com.google.firebase.auth.FirebaseAuth
@@ -27,6 +28,7 @@ class PilihAnakActivity : AppCompatActivity() {
 
     private lateinit var containerProfilAnak: GridLayout
     private lateinit var tvEmptyState: TextView
+    private lateinit var btnBukaHalamanOrangTua: TextView
     private lateinit var ivBack: ImageView
 
     private val daftarAnakCache = mutableListOf<Anak>()
@@ -48,9 +50,15 @@ class PilihAnakActivity : AppCompatActivity() {
 
         containerProfilAnak = findViewById(R.id.containerProfilAnak)
         tvEmptyState = findViewById(R.id.tvEmptyState)
+        btnBukaHalamanOrangTua = findViewById(R.id.btnBukaHalamanOrangTua)
         ivBack = findViewById(R.id.ivBackPilihAnak)
 
         ivBack.setOnClickListener {
+            finish()
+        }
+
+        btnBukaHalamanOrangTua.setOnClickListener {
+            startActivity(Intent(this, DashboardActivity::class.java))
             finish()
         }
     }
@@ -80,6 +88,7 @@ class PilihAnakActivity : AppCompatActivity() {
         containerProfilAnak.removeAllViews()
         tvEmptyState.visibility = TextView.VISIBLE
         tvEmptyState.text = "Memuat profil anak..."
+        btnBukaHalamanOrangTua.visibility = View.GONE
 
         db.collection("tb_anak")
             .whereEqualTo("id_pendamping", currentUser.uid)
@@ -139,6 +148,7 @@ class PilihAnakActivity : AppCompatActivity() {
                 if (daftarAnakCache.isEmpty()) {
                     tvEmptyState.visibility = TextView.VISIBLE
                     tvEmptyState.text = "Gagal mengambil data anak"
+                    btnBukaHalamanOrangTua.visibility = View.GONE
                 }
 
                 Toast.makeText(
@@ -154,9 +164,11 @@ class PilihAnakActivity : AppCompatActivity() {
 
         if (daftarAnak.isEmpty()) {
             tvEmptyState.visibility = TextView.VISIBLE
-            tvEmptyState.text = "Belum ada profil anak"
+            tvEmptyState.text = "Data anak masih kosong.\nBuat profil anak dulu melalui halaman Orang Tua."
+            btnBukaHalamanOrangTua.visibility = View.VISIBLE
         } else {
             tvEmptyState.visibility = TextView.GONE
+            btnBukaHalamanOrangTua.visibility = View.GONE
 
             daftarAnak.forEach { anak ->
                 tambahCardAnak(anak)
@@ -171,12 +183,15 @@ class PilihAnakActivity : AppCompatActivity() {
             false
         )
 
-        // Set layout params for GridLayout to ensure 2 columns work well
-        val params = GridLayout.LayoutParams()
-        params.width = 0
-        params.height = GridLayout.LayoutParams.WRAP_CONTENT
-        params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-        params.setMargins(dp(6), dp(6), dp(6), dp(6))
+        // Gunakan Spec untuk memaksa item berada di kolom yang benar dengan bobot seimbang (50% lebar)
+        val params = GridLayout.LayoutParams(
+            GridLayout.spec(GridLayout.UNDEFINED, 1f), // row spec
+            GridLayout.spec(GridLayout.UNDEFINED, 1f)  // column spec
+        ).apply {
+            width = 0
+            height = GridLayout.LayoutParams.WRAP_CONTENT
+            setMargins(dp(8), dp(8), dp(8), dp(8))
+        }
         itemView.layoutParams = params
 
         val imgAvatarAnak = itemView.findViewById<ImageView>(R.id.imgAvatarAnak)

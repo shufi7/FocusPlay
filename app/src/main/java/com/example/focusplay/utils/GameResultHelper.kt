@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -28,6 +29,10 @@ import java.util.Date
 import java.util.Locale
 
 object GameResultHelper {
+
+    private const val AI_CONNECT_TIMEOUT_MILLIS = 40000
+    private const val AI_READ_TIMEOUT_MILLIS = 60000
+    private const val FIRESTORE_SAVE_TIMEOUT_MILLIS = 10000L
 
     fun evaluasiDanSimpanRealtime(
         activity: Activity,
@@ -132,8 +137,8 @@ object GameResultHelper {
                         connection.setRequestProperty("Authorization", "Bearer $apiKey")
                         connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
                         connection.setRequestProperty("User-Agent", "FocusPlay-Android-App")
-                        connection.connectTimeout = 60000 // Naikkan ke 60 detik karena gpt-5.5 butuh waktu berpikir
-                        connection.readTimeout = 60000
+                        connection.connectTimeout = AI_CONNECT_TIMEOUT_MILLIS
+                        connection.readTimeout = AI_READ_TIMEOUT_MILLIS
                         connection.doOutput = true
 
                         val jsonBody = JSONObject()
@@ -201,7 +206,14 @@ object GameResultHelper {
                         "timestamp" to System.currentTimeMillis(),
                         "evaluasi_ai" to hasilAI
                     )
-                    FirebaseFirestore.getInstance().collection("tb_riwayat").add(dataRiwayat).await()
+                    val tersimpan = withTimeoutOrNull(FIRESTORE_SAVE_TIMEOUT_MILLIS) {
+                        FirebaseFirestore.getInstance().collection("tb_riwayat").add(dataRiwayat).await()
+                        true
+                    } ?: false
+
+                    if (!tersimpan) {
+                        Log.e("FIRESTORE_ERROR", "Menyimpan riwayat terlalu lama, halaman evaluasi tetap dibuka.")
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("FIRESTORE_ERROR", "Gagal menyimpan data: ${e.message}")

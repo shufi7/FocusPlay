@@ -444,7 +444,7 @@ class GameAntarSiDombaActivity : AppCompatActivity() {
 
             val params = FrameLayout.LayoutParams(dp(ukuranRumah), dp(ukuranRumah))
             params.leftMargin = startX + dp(index * (ukuranRumah + jarak))
-            params.topMargin = (arenaGame.height * 0.41f).toInt()
+            params.topMargin = (arenaGame.height * 0.41f).toInt() + dp(24)
 
             arenaGame.addView(rumah, params)
         }
@@ -525,18 +525,10 @@ class GameAntarSiDombaActivity : AppCompatActivity() {
         if (benar) {
             skor += 10
             totalBenar++
-            android.widget.Toast.makeText(
-                this,
-                "Berhasil! Domba masuk ke rumah yang benar.",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
+            tampilkanToastAtas("Mendapatkan 10 poin")
         } else {
             totalSalah++
-            android.widget.Toast.makeText(
-                this,
-                "Gagal! Masukkan domba ke rumah dengan warna yang sesuai.",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
+            tampilkanToastAtas("Belum mendapatkan poin")
         }
 
         tvSkor.text = "Skor: $skor"
@@ -548,6 +540,17 @@ class GameAntarSiDombaActivity : AppCompatActivity() {
         }
 
         mulaiRonde()
+    }
+
+    private fun tampilkanToastAtas(pesan: String) {
+        android.widget.Toast.makeText(
+            this,
+            pesan,
+            android.widget.Toast.LENGTH_SHORT
+        ).apply {
+            setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, 0, dp(72))
+            show()
+        }
     }
 
     private fun selesaikanSesiDanSimpan() {
