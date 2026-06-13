@@ -401,7 +401,7 @@ class GameUrutkanAngkaActivity : AppCompatActivity() {
             }
 
             else -> {
-                targetMaksimal = 5
+                targetMaksimal = 6
                 listOf(1, 2, 3, 4, 5, 6).map { ItemAngka(it, it <= targetMaksimal) }
             }
         }
