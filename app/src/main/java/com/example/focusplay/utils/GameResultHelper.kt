@@ -44,7 +44,6 @@ object GameResultHelper {
         // MEMAKSA PEMBUATAN POP-UP DI MAIN THREAD INSTAN
         activity.runOnUiThread {
             if (activity.isFinishing || activity.isDestroyed) {
-                // Jika activity game ternyata sudah mati duluan, langsung jalankan AI di background tanpa pop-up
                 jalankanProsesAI(
                     activity, idAnak, namaAnak, namaGame, skor, akurasi,
                     durasiDetik, durasiMenit, faseAkhir, null, onSelesai
@@ -52,29 +51,37 @@ object GameResultHelper {
                 return@runOnUiThread
             }
 
-            val layout = LayoutInflater.from(activity)
-                .inflate(R.layout.dialog_loading_evaluasi, null, false)
+            try {
+                val layout = LayoutInflater.from(activity)
+                    .inflate(R.layout.dialog_loading_evaluasi, null, false)
 
-            val loadingDialog = AlertDialog.Builder(activity)
-                .setView(layout)
-                .setCancelable(false)
-                .create()
+                val loadingDialog = AlertDialog.Builder(activity)
+                    .setView(layout)
+                    .setCancelable(false)
+                    .create()
 
-            loadingDialog.show()
-            loadingDialog.window?.apply {
-                setBackgroundDrawableResource(android.R.color.transparent)
-                setDimAmount(0.68f)
-                addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-                setLayout(
-                    (activity.resources.displayMetrics.widthPixels * 0.9f).toInt(),
-                    WindowManager.LayoutParams.WRAP_CONTENT
+                loadingDialog.show()
+                loadingDialog.window?.apply {
+                    setBackgroundDrawableResource(android.R.color.transparent)
+                    setDimAmount(0.68f)
+                    addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                    setLayout(
+                        (activity.resources.displayMetrics.widthPixels * 0.9f).toInt(),
+                        WindowManager.LayoutParams.WRAP_CONTENT
+                    )
+                }
+
+                jalankanProsesAI(
+                    activity, idAnak, namaAnak, namaGame, skor, akurasi,
+                    durasiDetik, durasiMenit, faseAkhir, loadingDialog, onSelesai
+                )
+            } catch (e: Exception) {
+                Log.e("UI_ERROR", "Gagal menampilkan dialog evaluasi: ${e.message}")
+                jalankanProsesAI(
+                    activity, idAnak, namaAnak, namaGame, skor, akurasi,
+                    durasiDetik, durasiMenit, faseAkhir, null, onSelesai
                 )
             }
-
-            jalankanProsesAI(
-                activity, idAnak, namaAnak, namaGame, skor, akurasi,
-                durasiDetik, durasiMenit, faseAkhir, loadingDialog, onSelesai
-            )
         }
     }
 
@@ -93,74 +100,85 @@ object GameResultHelper {
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             var hasilAI = "Wah, $namaAnak sangat fokus di game $namaGame! Saran untuk ortu: pertahankan durasi bermain ini agar konsentrasinya stabil."
-
+            
             val apiKey = BuildConfig.FREEMODEL_API_KEY.trim()
 
-            if (apiKey.isBlank()) {
-                Log.e("AI_ERROR", "FREEMODEL_API_KEY kosong. Periksa local.properties atau environment variable.")
-            } else try {
-                val prompt = """
-                    Kamu adalah asisten evaluasi permainan kognitif anak untuk aplikasi FocusPlay.
-                    Buat evaluasi singkat berdasarkan data sesi berikut:
-                    - Nama anak: $namaAnak
-                    - Game: $namaGame
-                    - Skor: $skor
-                    - Akurasi: $akurasi%
-                    - Durasi: $durasiDetik detik ($durasiMenit menit)
-                    - Fase akhir: $faseAkhir
+            if (apiKey.isNotBlank()) {
+                var attempt = 0
+                val maxAttempts = 2
+                var success = false
 
-                    Tulis dalam Bahasa Indonesia, ramah untuk orang tua, maksimal 3 kalimat.
-                    Nilai performa anak berdasarkan skor, akurasi, durasi, dan fase akhir.
-                    Berikan apresiasi yang realistis dan satu saran pendampingan praktis.
-                    Jangan pakai bullet, markdown, atau pembuka seperti "Berikut evaluasinya".
-                """.trimIndent()
+                while (attempt < maxAttempts && !success) {
+                    try {
+                        val prompt = """
+                            Kamu adalah asisten evaluasi permainan kognitif anak untuk aplikasi FocusPlay.
+                            Buat evaluasi singkat berdasarkan data sesi berikut:
+                            - Nama anak: $namaAnak
+                            - Game: $namaGame
+                            - Skor: $skor
+                            - Akurasi: $akurasi%
+                            - Durasi: $durasiDetik detik ($durasiMenit menit)
+                            - Fase akhir: $faseAkhir
+        
+                            Tulis dalam Bahasa Indonesia, ramah untuk orang tua, maksimal 3 kalimat.
+                            Nilai performa anak berdasarkan skor, akurasi, durasi, dan fase akhir.
+                            Berikan apresiasi yang realistis dan satu saran pendampingan praktis.
+                            Jangan pakai bullet, markdown, atau pembuka seperti "Berikut evaluasinya".
+                        """.trimIndent()
 
-                val url = URL("https://api.freemodel.dev/v1/responses")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "POST"
-                connection.setRequestProperty("Authorization", "Bearer $apiKey")
-                connection.setRequestProperty("Content-Type", "application/json")
-                connection.connectTimeout = 15000
-                connection.readTimeout = 15000
-                connection.doOutput = true
+                        val url = URL("https://api.freemodel.dev/v1/chat/completions")
+                        val connection = url.openConnection() as HttpURLConnection
+                        connection.requestMethod = "POST"
+                        connection.setRequestProperty("Authorization", "Bearer $apiKey")
+                        connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
+                        connection.setRequestProperty("User-Agent", "FocusPlay-Android-App")
+                        connection.connectTimeout = 60000 // Naikkan ke 60 detik karena gpt-5.5 butuh waktu berpikir
+                        connection.readTimeout = 60000
+                        connection.doOutput = true
 
-                val jsonBody = JSONObject()
-                jsonBody.put("model", "gpt-5.5")
-                jsonBody.put("input", prompt)
-                jsonBody.put("store", false)
+                        val jsonBody = JSONObject()
+                        jsonBody.put("model", "gpt-5.5") // Sesuai dokumen "yang benar"
+                        
+                        val message = JSONObject().apply {
+                            put("role", "user")
+                            put("content", prompt)
+                        }
+                        jsonBody.put("messages", JSONArray().put(message))
+                        jsonBody.put("temperature", 0.7)
 
-                val writer = OutputStreamWriter(connection.outputStream)
-                writer.write(jsonBody.toString())
-                writer.flush()
-                writer.close()
+                        val writer = OutputStreamWriter(connection.outputStream, "UTF-8")
+                        writer.write(jsonBody.toString())
+                        writer.flush()
+                        writer.close()
 
-                val responseCode = connection.responseCode
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
-                    val responseString = reader.readText()
-                    reader.close()
-
-                    val jsonResponse = JSONObject(responseString)
-                    val hasilDariApi = ambilTeksResponsesApi(jsonResponse)
-                    if (hasilDariApi.isNotBlank()) {
-                        hasilAI = hasilDariApi
-                        val usage = jsonResponse.optJSONObject("usage")
-                        Log.i(
-                            "FOCUSPLAY_AI",
-                            "FreeModel sukses id=${jsonResponse.optString("id")} " +
-                                "model=${jsonResponse.optString("model")} " +
-                                "input_tokens=${usage?.optInt("input_tokens", 0) ?: 0} " +
-                                "output_tokens=${usage?.optInt("output_tokens", 0) ?: 0}"
-                        )
-                    } else {
-                        Log.e("AI_ERROR", "FreeModel sukses tetapi output_text kosong: $responseString")
+                        val responseCode = connection.responseCode
+                        if (responseCode == HttpURLConnection.HTTP_OK) {
+                            val responseString = connection.inputStream.bufferedReader().use { it.readText() }
+                            val jsonResponse = JSONObject(responseString)
+                            
+                            val choices = jsonResponse.optJSONArray("choices")
+                            if (choices != null && choices.length() > 0) {
+                                val content = choices.getJSONObject(0)
+                                    .optJSONObject("message")
+                                    ?.optString("content")
+                                
+                                if (!content.isNullOrBlank()) {
+                                    hasilAI = content.trim()
+                                    success = true
+                                    Log.i("AI_SUCCESS", "Respon AI gpt-5.5 berhasil didapat")
+                                }
+                            }
+                        } else {
+                            val errorBody = connection.errorStream?.bufferedReader()?.use { it.readText() }
+                            Log.e("AI_ERROR", "HTTP $responseCode: $errorBody")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("AI_ERROR", "Percobaan ${attempt + 1} gagal: ${e.message}")
                     }
-                } else {
-                    val errorBody = connection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
-                    Log.e("AI_ERROR", "FreeModel gagal. HTTP $responseCode: $errorBody")
+                    attempt++
                 }
-            } catch (e: Exception) {
-                Log.e("AI_ERROR", "Gagal memanggil API: ${e.message}")
+            } else {
+                Log.e("AI_ERROR", "FREEMODEL_API_KEY kosong di BuildConfig.")
             }
 
             // 2. Simpan Dokumen Rekaman ke Cloud Firestore
@@ -203,30 +221,5 @@ object GameResultHelper {
                 onSelesai(hasilAI)
             }
         }
-    }
-
-    private fun ambilTeksResponsesApi(response: JSONObject): String {
-        response.optString("output_text")
-            .takeIf { it.isNotBlank() }
-            ?.let { return it.trim() }
-
-        val output = response.optJSONArray("output") ?: return ""
-        val bagianTeks = mutableListOf<String>()
-
-        for (i in 0 until output.length()) {
-            val item = output.optJSONObject(i) ?: continue
-            val content = item.optJSONArray("content") ?: continue
-
-            for (j in 0 until content.length()) {
-                val bagian = content.optJSONObject(j) ?: continue
-                if (bagian.optString("type") == "output_text") {
-                    bagian.optString("text")
-                        .takeIf { it.isNotBlank() }
-                        ?.let(bagianTeks::add)
-                }
-            }
-        }
-
-        return bagianTeks.joinToString("\n").trim()
     }
 }

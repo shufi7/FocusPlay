@@ -1,0 +1,4 @@
+## Salin file ini menjadi local.properties, lalu isi key milik project.
+## Jangan commit local.properties karena file itu berisi secret.
+
+FREEMODEL_API_KEY=isi_api_key_freemodel_di_sini

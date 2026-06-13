@@ -20,7 +20,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.focusplay.R
 import com.example.focusplay.dashboard.DashboardAnakActivity
@@ -393,18 +392,19 @@ class GameAntarSiDombaActivity : AppCompatActivity() {
     private fun mulaiRonde() {
         if (sesiSelesai) return
 
-        arenaGame.removeAllViews()
-
-        tvFase.text = "Fase $faseSekarang"
-        tvSkor.text = "$skor"
-
-        val itemAktif = when (faseSekarang) {
-            1 -> daftarDombaRumah.take(2)
-            2 -> daftarDombaRumah.take(3)
-            else -> daftarDombaRumah.take(4)
-        }
-
         arenaGame.post {
+            if (sesiSelesai) return@post
+            arenaGame.removeAllViews()
+
+            tvFase.text = "Fase $faseSekarang"
+            tvSkor.text = "$skor"
+
+            val itemAktif = when (faseSekarang) {
+                1 -> daftarDombaRumah.take(2)
+                2 -> daftarDombaRumah.take(3)
+                else -> daftarDombaRumah.take(4)
+            }
+
             tampilkanRumah(itemAktif)
             tampilkanDomba(itemAktif)
         }
@@ -525,8 +525,18 @@ class GameAntarSiDombaActivity : AppCompatActivity() {
         if (benar) {
             skor += 10
             totalBenar++
+            android.widget.Toast.makeText(
+                this,
+                "Berhasil! Domba masuk ke rumah yang benar.",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
         } else {
             totalSalah++
+            android.widget.Toast.makeText(
+                this,
+                "Gagal! Masukkan domba ke rumah dengan warna yang sesuai.",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
         }
 
         tvSkor.text = "Skor: $skor"
@@ -545,22 +555,25 @@ class GameAntarSiDombaActivity : AppCompatActivity() {
         sesiSelesai = true
 
         countDownTimer?.cancel()
-        arenaGame.removeAllViews()
+        
+        arenaGame.post {
+            arenaGame.removeAllViews()
 
-        val totalJawaban = totalBenar + totalSalah
+            val totalJawaban = totalBenar + totalSalah
 
-        val akurasi = if (totalJawaban > 0) {
-            ((totalBenar * 100f) / totalJawaban).toInt()
-        } else {
-            0
+            val akurasi = if (totalJawaban > 0) {
+                ((totalBenar * 100f) / totalJawaban).toInt()
+            } else {
+                0
+            }
+
+            val durasiMillis = (System.currentTimeMillis() - waktuMulaiSesi)
+                .coerceAtLeast(1000L)
+            val durasiDetik = (durasiMillis / 1000L).toInt()
+            val durasiMenit = maxOf(1, (durasiMillis / 60000L).toInt())
+
+            tampilkanHasilSementara(akurasi, durasiDetik, durasiMenit)
         }
-
-        val durasiMillis = (System.currentTimeMillis() - waktuMulaiSesi)
-            .coerceAtLeast(1000L)
-        val durasiDetik = (durasiMillis / 1000L).toInt()
-        val durasiMenit = maxOf(1, (durasiMillis / 60000L).toInt())
-
-        tampilkanHasilSementara(akurasi, durasiDetik, durasiMenit)
     }
 
     private fun tampilkanHasilSementara(
