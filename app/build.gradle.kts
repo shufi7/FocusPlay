@@ -12,12 +12,29 @@ val localProperties = Properties().apply {
     }
 }
 
-val freemodelApiKey = providers.gradleProperty("FREEMODEL_API_KEY")
-    .orElse(providers.environmentVariable("FREEMODEL_API_KEY"))
-    .orElse(localProperties.getProperty("FREEMODEL_API_KEY", ""))
-    .getOrElse("")
-    .replace("\\", "\\\\")
-    .replace("\"", "\\\"")
+fun localSecret(name: String): String {
+    return providers.gradleProperty(name).orNull
+        ?: providers.environmentVariable(name).orNull
+        ?: localProperties.getProperty(name, "")
+}
+
+fun escapeBuildConfigString(value: String): String {
+    return value
+        .replace("\\", "\\\\")
+        .replace("\"", "\\\"")
+}
+
+val openRouterApiKey = escapeBuildConfigString(
+    localSecret("OPENROUTER_API_KEY").ifBlank {
+        localSecret("FREEMODEL_API_KEY")
+    }
+)
+
+val openRouterModel = escapeBuildConfigString(
+    localSecret("OPENROUTER_MODEL").ifBlank {
+        "openai/gpt-4o-mini"
+    }
+)
 
 android {
     namespace = "com.example.focusplay"
@@ -33,7 +50,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "FREEMODEL_API_KEY", "\"$freemodelApiKey\"")
+        buildConfigField("String", "OPENROUTER_API_KEY", "\"$openRouterApiKey\"")
+        buildConfigField("String", "OPENROUTER_MODEL", "\"$openRouterModel\"")
     }
 
     buildFeatures {

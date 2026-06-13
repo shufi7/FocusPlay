@@ -2,10 +2,8 @@ package com.example.focusplay.utils
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Window
 import android.view.WindowManager
 import com.example.focusplay.BuildConfig
 import com.example.focusplay.R
@@ -106,7 +104,8 @@ object GameResultHelper {
         CoroutineScope(Dispatchers.IO).launch {
             var hasilAI = "Wah, $namaAnak sangat fokus di game $namaGame! Saran untuk ortu: pertahankan durasi bermain ini agar konsentrasinya stabil."
             
-            val apiKey = BuildConfig.FREEMODEL_API_KEY.trim()
+            val apiKey = BuildConfig.OPENROUTER_API_KEY.trim()
+            val model = BuildConfig.OPENROUTER_MODEL.trim().ifBlank { "openai/gpt-4o-mini" }
 
             if (apiKey.isNotBlank()) {
                 var attempt = 0
@@ -115,6 +114,8 @@ object GameResultHelper {
 
                 while (attempt < maxAttempts && !success) {
                     try {
+                        if (attempt > 0) kotlinx.coroutines.delay(1500) // Delay sebelum coba lagi
+
                         val prompt = """
                             Kamu adalah asisten evaluasi permainan kognitif anak untuk aplikasi FocusPlay.
                             Buat evaluasi singkat berdasarkan data sesi berikut:
@@ -131,30 +132,31 @@ object GameResultHelper {
                             Jangan pakai bullet, markdown, atau pembuka seperti "Berikut evaluasinya".
                         """.trimIndent()
 
-                        val url = URL("https://api.freemodel.dev/v1/chat/completions")
+                        val url = URL("https://openrouter.ai/api/v1/chat/completions")
                         val connection = url.openConnection() as HttpURLConnection
                         connection.requestMethod = "POST"
                         connection.setRequestProperty("Authorization", "Bearer $apiKey")
                         connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
-                        connection.setRequestProperty("User-Agent", "FocusPlay-Android-App")
+                        connection.setRequestProperty("Accept", "application/json")
+                        connection.setRequestProperty("HTTP-Referer", "https://focusplay.app")
+                        connection.setRequestProperty("X-Title", "FocusPlay")
                         connection.connectTimeout = AI_CONNECT_TIMEOUT_MILLIS
                         connection.readTimeout = AI_READ_TIMEOUT_MILLIS
                         connection.doOutput = true
 
-                        val jsonBody = JSONObject()
-                        jsonBody.put("model", "gpt-5.5") // Sesuai dokumen "yang benar"
-                        
-                        val message = JSONObject().apply {
-                            put("role", "user")
-                            put("content", prompt)
+                        val jsonBody = JSONObject().apply {
+                            put("model", model)
+                            put("messages", JSONArray().put(JSONObject().apply {
+                                put("role", "user")
+                                put("content", prompt)
+                            }))
+                            put("temperature", 0.7)
+                            put("max_tokens", 250)
                         }
-                        jsonBody.put("messages", JSONArray().put(message))
-                        jsonBody.put("temperature", 0.7)
 
-                        val writer = OutputStreamWriter(connection.outputStream, "UTF-8")
-                        writer.write(jsonBody.toString())
-                        writer.flush()
-                        writer.close()
+                        OutputStreamWriter(connection.outputStream, "UTF-8").use { 
+                            it.write(jsonBody.toString())
+                        }
 
                         val responseCode = connection.responseCode
                         if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -170,20 +172,20 @@ object GameResultHelper {
                                 if (!content.isNullOrBlank()) {
                                     hasilAI = content.trim()
                                     success = true
-                                    Log.i("AI_SUCCESS", "Respon AI gpt-5.5 berhasil didapat")
+                                    Log.i("AI_SUCCESS", "Respon AI berhasil didapat pada percobaan ${attempt + 1}")
                                 }
                             }
                         } else {
                             val errorBody = connection.errorStream?.bufferedReader()?.use { it.readText() }
-                            Log.e("AI_ERROR", "HTTP $responseCode: $errorBody")
+                            Log.e("AI_ERROR", "Percobaan ${attempt + 1} gagal (HTTP $responseCode): $errorBody")
                         }
                     } catch (e: Exception) {
-                        Log.e("AI_ERROR", "Percobaan ${attempt + 1} gagal: ${e.message}")
+                        Log.e("AI_ERROR", "Percobaan ${attempt + 1} error: ${e.message}")
                     }
                     attempt++
                 }
             } else {
-                Log.e("AI_ERROR", "FREEMODEL_API_KEY kosong di BuildConfig.")
+                Log.e("AI_ERROR", "OPENROUTER_API_KEY kosong di BuildConfig.")
             }
 
             // 2. Simpan Dokumen Rekaman ke Cloud Firestore
