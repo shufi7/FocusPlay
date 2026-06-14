@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Layout PilihAnakActivity untuk memilih profil anak. -->
+<!-- ConstraintLayout menjadi root agar header dan kartu utama dapat diatur menggunakan constraint. -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,6 +9,8 @@
     android:fitsSystemWindows="true"
     android:background="@drawable/backgrounds">
 
+    <!-- ==================== BAGIAN HEADER ==================== -->
+    <!-- LinearLayout horizontal menyusun tombol kembali dan judul dalam satu baris. -->
     <LinearLayout
         android:id="@+id/headerPilihAnak"
         android:layout_width="0dp"
@@ -20,6 +24,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Tombol kembali ke halaman sebelumnya melalui finish(). -->
+        <!-- Ukuran 46dp, background oranye, dan padding 12dp membentuk tombol ikon. -->
         <ImageView
             android:id="@+id/ivBackPilihAnak"
             android:layout_width="46dp"
@@ -30,6 +36,7 @@
             android:scaleType="fitCenter"
             android:src="@drawable/ic_arrow_back" />
 
+        <!-- Container berbobot 1 mengisi sisa ruang di samping tombol kembali. -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -37,6 +44,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
+            <!-- Judul tetap halaman pemilihan profil. -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -50,6 +58,8 @@
 
     </LinearLayout>
 
+    <!-- ==================== BAGIAN KONTEN UTAMA ==================== -->
+    <!-- CardView membungkus seluruh isi dengan sudut bulat dan efek elevasi. -->
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -65,12 +75,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerPilihAnak">
 
+        <!-- Container vertikal menyusun informasi, judul daftar, dan daftar profil. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="18dp">
 
+            <!-- ==================== BAGIAN INFORMASI HALAMAN ==================== -->
+            <!-- Card informasi berwarna lembut sebagai pengantar sebelum memilih profil. -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -78,10 +91,12 @@
                 app:cardCornerRadius="25dp"
                 app:cardElevation="0dp">
 
+                <!-- FrameLayout memungkinkan dekorasi lingkaran berada di belakang konten. -->
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
+                    <!-- Lingkaran dekoratif besar pada sisi kanan. -->
                     <View
                         android:layout_width="150dp"
                         android:layout_height="150dp"
@@ -89,6 +104,7 @@
                         android:layout_marginEnd="-45dp"
                         android:background="@drawable/bg_circle_orange_soft" />
 
+                    <!-- Lingkaran dekoratif kecil pada bagian kanan bawah. -->
                     <View
                         android:layout_width="88dp"
                         android:layout_height="88dp"
@@ -97,6 +113,7 @@
                         android:layout_marginBottom="-28dp"
                         android:background="@drawable/bg_circle_peach_soft" />
 
+                    <!-- Baris isi kartu: teks di kiri dan gambar karakter di kanan. -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -108,12 +125,14 @@
                         android:paddingStart="18dp"
                         android:paddingEnd="14dp">
 
+                        <!-- Kolom teks menggunakan weight agar mengambil ruang tersisa. -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical">
 
+                            <!-- Kalimat utama pada kartu informasi. -->
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -123,6 +142,7 @@
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
 
+                            <!-- Penjelasan tujuan halaman pemilihan profil. -->
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -134,6 +154,7 @@
                                 android:textColor="#7A6B5D"
                                 android:textSize="12.5sp" />
 
+                            <!-- Badge kecil untuk konteks latihan fokus. -->
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -151,6 +172,7 @@
 
                         </LinearLayout>
 
+                        <!-- Gambar karakter dekoratif pada kartu informasi. -->
                         <ImageView
                             android:layout_width="82dp"
                             android:layout_height="82dp"
@@ -165,6 +187,8 @@
 
             </androidx.cardview.widget.CardView>
 
+            <!-- ==================== BAGIAN JUDUL DAFTAR PROFIL ==================== -->
+            <!-- Baris judul yang menjelaskan isi daftar di bawahnya. -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -172,12 +196,14 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
+                <!-- Kolom judul dan subjudul daftar profil. -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
+                    <!-- Judul bagian daftar profil. -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -187,6 +213,7 @@
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
+                    <!-- Petunjuk singkat untuk memilih salah satu profil. -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -200,6 +227,8 @@
 
             </LinearLayout>
 
+            <!-- ==================== BAGIAN DAFTAR PROFIL ANAK ==================== -->
+            <!-- Card menggunakan layout_weight=1 agar daftar mengisi sisa tinggi layar. -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -209,6 +238,7 @@
                 app:cardCornerRadius="24dp"
                 app:cardElevation="0dp">
 
+                <!-- ScrollView membuat daftar tetap dapat digulir jika profil banyak. -->
                 <ScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -219,11 +249,14 @@
                     android:scrollbarStyle="outsideOverlay"
                     android:smoothScrollbar="true">
 
+                    <!-- Container vertikal untuk empty state, tombol, dan GridLayout. -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
+                        <!-- Teks berubah sesuai kondisi loading, data kosong, atau gagal. -->
+                        <!-- ID tvEmptyState diubah langsung oleh PilihAnakActivity. -->
                         <TextView
                             android:id="@+id/tvEmptyState"
                             android:layout_width="match_parent"
@@ -240,6 +273,8 @@
                             android:textColor="#7A6B5D"
                             android:textSize="13sp" />
 
+                        <!-- Membuka halaman Orang Tua jika profil anak masih kosong. -->
+                        <!-- visibility awal gone dan hanya ditampilkan saat daftar kosong. -->
                         <TextView
                             android:id="@+id/btnBukaHalamanOrangTua"
                             android:layout_width="match_parent"
@@ -255,6 +290,8 @@
                             android:textSize="14sp"
                             android:visibility="gone" />
 
+                        <!-- Menampung kartu dari item_anak.xml setelah data berhasil diambil. -->
+                        <!-- columnCount=2 membuat profil tersusun menjadi dua kolom. -->
                         <GridLayout
                             android:id="@+id/containerProfilAnak"
                             android:layout_width="match_parent"

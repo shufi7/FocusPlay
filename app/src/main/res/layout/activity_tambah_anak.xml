@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Form TambahAnakActivity untuk membuat data baru di "tb_anak". -->
+<!-- ConstraintLayout root mengatur posisi header dan card form utama. -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,7 +9,9 @@
     android:fitsSystemWindows="true"
     android:background="@drawable/backgrounds">
 
+    <!-- ==================== BAGIAN HEADER ==================== -->
     <!-- Header (Synced with Dashboard) -->
+    <!-- Header horizontal berisi tombol kembali dan judul halaman. -->
     <LinearLayout
         android:id="@+id/headerTambahAnak"
         android:layout_width="0dp"
@@ -21,6 +25,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Tombol kembali ke halaman sebelumnya melalui finish(). -->
+        <!-- Background biru dan padding membentuk tombol ikon yang konsisten. -->
         <ImageView
             android:id="@+id/ivBack"
             android:layout_width="46dp"
@@ -31,6 +37,7 @@
             android:scaleType="fitCenter"
             android:src="@drawable/ic_arrow_back" />
 
+        <!-- Container judul mengisi sisa lebar header. -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -38,6 +45,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
+            <!-- Judul tetap halaman tambah profil anak. -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -50,7 +58,9 @@
 
     </LinearLayout>
 
+    <!-- ==================== BAGIAN FORM UTAMA ==================== -->
     <!-- Card Utama (Neutral & Cool Style) -->
+    <!-- Card dibatasi ke bawah header dan ke seluruh sisi parent. -->
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -66,18 +76,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerTambahAnak">
 
+        <!-- NestedScrollView menjaga form dapat digulir pada layar kecil. -->
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true">
 
+            <!-- Container vertikal menyusun seluruh elemen form. -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="22dp">
 
+                <!-- ==================== BAGIAN JUDUL FORM ==================== -->
                 <!-- Form Title Section -->
+                <!-- Judul utama kelompok data identitas anak. -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -87,6 +101,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
+                <!-- Subjudul yang menjelaskan tujuan pengisian form. -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -96,7 +111,9 @@
                     android:textColor="#7B8895"
                     android:textSize="12sp" />
 
+                <!-- ==================== BAGIAN INPUT DATA ANAK ==================== -->
                 <!-- Nama Anak Input -->
+                <!-- Label untuk input nama panggilan. -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -106,6 +123,8 @@
                     android:textColor="#4B5563"
                     android:textSize="13sp" />
 
+                <!-- Isi nama disimpan sebagai field "nama_anak". -->
+                <!-- inputType textPersonName menampilkan keyboard yang sesuai untuk nama. -->
                 <EditText
                     android:id="@+id/etNamaAnak"
                     android:layout_width="match_parent"
@@ -121,6 +140,7 @@
                     android:textSize="14sp" />
 
                 <!-- Usia Anak Input -->
+                <!-- Label untuk input usia anak. -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -130,6 +150,8 @@
                     android:textColor="#4B5563"
                     android:textSize="13sp" />
 
+                <!-- Isi umur disimpan sebagai field "usia". -->
+                <!-- inputType number membatasi keyboard ke angka. -->
                 <EditText
                     android:id="@+id/etUsiaAnak"
                     android:layout_width="match_parent"
@@ -144,7 +166,9 @@
                     android:textColorHint="#9CA3AF"
                     android:textSize="14sp" />
 
+                <!-- ==================== BAGIAN PILIH AVATAR ==================== -->
                 <!-- Pilih Avatar Section -->
+                <!-- Label bagian pemilihan karakter. -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -154,6 +178,7 @@
                     android:textColor="#4B5563"
                     android:textSize="13sp" />
 
+                <!-- HorizontalScrollView memungkinkan seluruh avatar digeser ke samping. -->
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -161,6 +186,8 @@
                     android:overScrollMode="never"
                     android:scrollbars="none">
 
+                    <!-- Menampung pilihan gambar dari AvatarHelper secara dinamis. -->
+                    <!-- Lebar wrap_content mengikuti jumlah avatar yang ditambahkan Activity. -->
                     <LinearLayout
                         android:id="@+id/containerAvatarAnak"
                         android:layout_width="wrap_content"
@@ -169,7 +196,9 @@
                         android:orientation="horizontal" />
                 </HorizontalScrollView>
 
+                <!-- ==================== BAGIAN INFORMASI ==================== -->
                 <!-- Info Hint -->
+                <!-- Box informasi menjelaskan hasil setelah profil berhasil disimpan. -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -179,6 +208,7 @@
                     android:orientation="horizontal"
                     android:padding="16dp">
 
+                    <!-- Teks informasi profil akan muncul pada daftar pilihan anak. -->
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -189,7 +219,10 @@
                         android:lineSpacingExtra="2dp" />
                 </LinearLayout>
 
+                <!-- ==================== BAGIAN TOMBOL SIMPAN ==================== -->
                 <!-- Save Button -->
+                <!-- Memvalidasi form lalu menjalankan prosesSimpanAnakFirebase(). -->
+                <!-- AppCompatButton menggunakan background hijau dan teks tanpa huruf kapital otomatis. -->
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btnSimpanAnak"
                     android:layout_width="match_parent"

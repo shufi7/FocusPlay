@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Layout pengaturan yang tersambung ke SharedPreferences "pengaturan_permainan". -->
+<!-- ConstraintLayout mengatur header dan card pengaturan sebagai dua bagian utama. -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,7 +9,9 @@
     android:fitsSystemWindows="true"
     android:background="@drawable/backgrounds">
 
+    <!-- ==================== BAGIAN HEADER ==================== -->
     <!-- Header (Synced with Dashboard/Tambah Anak) -->
+    <!-- Header horizontal berisi tombol kembali dan judul halaman. -->
     <LinearLayout
         android:id="@+id/headerPengaturan"
         android:layout_width="0dp"
@@ -21,6 +25,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Tombol kembali dihubungkan ke ivBackPengaturan. -->
         <ImageView
             android:id="@+id/ivBackPengaturan"
             android:layout_width="46dp"
@@ -31,6 +36,7 @@
             android:scaleType="fitCenter"
             android:src="@drawable/ic_arrow_back" />
 
+        <!-- Container judul mengambil sisa ruang header. -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -38,6 +44,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
+            <!-- Judul tetap halaman pengaturan permainan. -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -50,7 +57,9 @@
 
     </LinearLayout>
 
+    <!-- ==================== BAGIAN KONTEN PENGATURAN ==================== -->
     <!-- Main Container Card -->
+    <!-- Card utama membungkus seluruh konfigurasi dengan sudut membulat. -->
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -66,19 +75,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerPengaturan">
 
+        <!-- NestedScrollView menjaga semua pengaturan dapat diakses pada layar kecil. -->
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true"
             android:overScrollMode="never">
 
+            <!-- Container vertikal untuk info fase, input, switch, dan tombol simpan. -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="22dp">
 
+                <!-- ==================== BAGIAN INFORMASI FASE ==================== -->
                 <!-- HERO / INFO CARD (Green Design with Character) -->
+                <!-- MaterialCardView menampilkan penjelasan singkat mekanisme fase. -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -88,6 +101,7 @@
                     app:strokeColor="#C5E1A5"
                     app:strokeWidth="1.5dp">
 
+                    <!-- FrameLayout memungkinkan dekorasi lingkaran berada di belakang isi. -->
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -110,6 +124,7 @@
                             android:background="@drawable/bg_circle_soft_green"
                             android:alpha="0.3" />
 
+                        <!-- Baris isi informasi fase dan gambar karakter. -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -123,6 +138,7 @@
                                 android:layout_weight="1"
                                 android:orientation="vertical">
 
+                                <!-- Judul Mekanisme Fase. -->
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -132,6 +148,7 @@
                                     android:textSize="17sp"
                                     android:textStyle="bold" />
 
+                                <!-- Penjelasan hubungan mode adaptif dengan perubahan fase. -->
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -143,6 +160,7 @@
                                     android:textSize="12.5sp" />
                             </LinearLayout>
 
+                            <!-- Gambar karakter dekoratif untuk kartu informasi. -->
                             <ImageView
                                 android:layout_width="75dp"
                                 android:layout_height="75dp"
@@ -154,7 +172,9 @@
                     </FrameLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- ==================== BAGIAN KONFIGURASI PERMAINAN ==================== -->
                 <!-- SECTION: CONFIGURATION -->
+                <!-- Judul kelompok input konfigurasi bermain. -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -166,6 +186,7 @@
                     android:textStyle="bold" />
 
                 <!-- INPUT: TARGET WAKTU -->
+                <!-- Label target waktu dalam satuan menit. -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -175,6 +196,8 @@
                     android:textColor="#4B5563"
                     android:textSize="13sp" />
 
+                <!-- Nilai disimpan sebagai "target_waktu" untuk durasi timer game. -->
+                <!-- inputType number memastikan input menggunakan angka. -->
                 <EditText
                     android:id="@+id/etTargetWaktu"
                     android:layout_width="match_parent"
@@ -190,6 +213,7 @@
                     android:textSize="14sp" />
 
                 <!-- SWITCH: MODE ADAPTIF (Green Theme) -->
+                <!-- Card membungkus deskripsi mode adaptif dan switch. -->
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -205,12 +229,14 @@
                         android:orientation="horizontal"
                         android:padding="12dp">
 
+                        <!-- Kolom teks mengambil ruang selain switch. -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical">
 
+                            <!-- Nama pengaturan mode adaptif. -->
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -220,6 +246,7 @@
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
 
+                            <!-- Ringkasan batas benar dan salah untuk perubahan fase. -->
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -230,6 +257,8 @@
                                 android:textSize="12sp" />
                         </LinearLayout>
 
+                        <!-- Nilai switch disimpan sebagai "mode_adaptif". -->
+                        <!-- checked=true menjadi tampilan awal sebelum data lokal dimuat. -->
                         <Switch
                             android:id="@+id/switchAdaptif"
                             android:layout_width="wrap_content"
@@ -240,7 +269,9 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
+                <!-- ==================== BAGIAN INFORMASI PENGATURAN ==================== -->
                 <!-- INFO HINT (Green Theme) -->
+                <!-- Box informasi bahwa pengaturan berlaku untuk seluruh permainan. -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -260,7 +291,10 @@
                         android:lineSpacingExtra="2dp" />
                 </LinearLayout>
 
+                <!-- ==================== BAGIAN TOMBOL SIMPAN ==================== -->
                 <!-- SAVE BUTTON -->
+                <!-- Memvalidasi dan menyimpan pengaturan, lalu kembali. -->
+                <!-- ImageView menggunakan gambar btn_simpan sebagai tombol visual. -->
                 <ImageView
                     android:id="@+id/btnSimpanPengaturan"
                     android:layout_width="match_parent"

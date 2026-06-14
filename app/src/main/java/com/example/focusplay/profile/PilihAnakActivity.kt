@@ -21,19 +21,35 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
 
+/**
+ * Halaman untuk memilih profil anak dengan tampilan activity_pilih_anak.xml.
+ *
+ * Profil diambil dari koleksi "tb_anak" berdasarkan UID pendamping. Saat kartu dipilih,
+ * data anak dikirim melalui Intent ke DashboardAnakActivity untuk digunakan saat bermain.
+ */
 class PilihAnakActivity : AppCompatActivity() {
 
+    // ==================== BAGIAN VARIABEL DAN DATA ANAK ====================
+    // Menyediakan informasi pengguna Firebase yang sedang login.
     private lateinit var auth: FirebaseAuth
+    // Menyediakan akses untuk membaca dan menghapus data Firestore.
     private lateinit var db: FirebaseFirestore
 
+    // Grid tempat kartu profil anak ditambahkan.
     private lateinit var containerProfilAnak: GridLayout
+    // Menampilkan status loading, kosong, atau gagal.
     private lateinit var tvEmptyState: TextView
+    // Tombol menuju Dashboard Orang Tua ketika belum ada profil.
     private lateinit var btnBukaHalamanOrangTua: TextView
+    // Tombol kembali pada header.
     private lateinit var ivBack: ImageView
 
+    // Menyimpan hasil terakhir agar daftar dapat ditampilkan tanpa request ulang.
     private val daftarAnakCache = mutableListOf<Anak>()
+    // Menentukan apakah data harus dimuat ulang dari Firestore.
     private var perluRefreshData = true
 
+    // Bentuk data anak yang digunakan khusus di halaman ini.
     data class Anak(
         val idDokumen: String,
         val namaAnak: String,
@@ -41,24 +57,32 @@ class PilihAnakActivity : AppCompatActivity() {
         val avatar: String
     )
 
+    // ==================== BAGIAN INISIALISASI HALAMAN ====================
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Memasang activity_pilih_anak.xml sebagai tampilan halaman.
         setContentView(R.layout.activity_pilih_anak)
 
+        // Menyiapkan Firebase Auth dan Firestore.
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
+        // Menghubungkan variabel dengan elemen pada XML.
         containerProfilAnak = findViewById(R.id.containerProfilAnak)
         tvEmptyState = findViewById(R.id.tvEmptyState)
         btnBukaHalamanOrangTua = findViewById(R.id.btnBukaHalamanOrangTua)
         ivBack = findViewById(R.id.ivBackPilihAnak)
 
+        // Menutup halaman ketika tombol kembali ditekan.
         ivBack.setOnClickListener {
             finish()
         }
 
+        // Membuka Dashboard Orang Tua ketika tombol ditekan.
         btnBukaHalamanOrangTua.setOnClickListener {
+            // Membuat Intent menuju DashboardActivity.
             startActivity(Intent(this, DashboardActivity::class.java))
+            // Menutup halaman pemilihan profil.
             finish()
         }
     }
@@ -66,16 +90,21 @@ class PilihAnakActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        // Menggunakan cache jika data sudah ada dan tidak perlu diperbarui.
         if (daftarAnakCache.isNotEmpty() && !perluRefreshData) {
             tampilkanDaftarAnak(daftarAnakCache)
         } else {
+            // Mengambil ulang data jika cache belum tersedia.
             ambilDataAnak()
         }
     }
 
+    // ==================== BAGIAN AMBIL DATA ANAK ====================
     private fun ambilDataAnak() {
+        // Mengambil akun yang sedang login sebagai pemilik profil anak.
         val currentUser = auth.currentUser
 
+        // Menghentikan proses jika sesi Firebase tidak ditemukan.
         if (currentUser == null) {
             Toast.makeText(
                 this,
@@ -85,16 +114,22 @@ class PilihAnakActivity : AppCompatActivity() {
             return
         }
 
+        // Mengosongkan kartu lama sebelum menampilkan loading.
         containerProfilAnak.removeAllViews()
         tvEmptyState.visibility = TextView.VISIBLE
         tvEmptyState.text = "Memuat profil anak..."
         btnBukaHalamanOrangTua.visibility = View.GONE
 
+        // Menampilkan cache lebih dulu, lalu memperbarui data dari server.
+        // Memfilter profil berdasarkan UID pendamping yang sedang login.
         db.collection("tb_anak")
             .whereEqualTo("id_pendamping", currentUser.uid)
+            // Membaca cache lokal Firestore lebih dulu.
             .get(Source.CACHE)
             .addOnSuccessListener { cacheResult ->
+                // Cache hanya diproses jika berisi dokumen.
                 if (!cacheResult.isEmpty) {
+                    // Mengubah setiap dokumen menjadi object Anak.
                     val daftarAnak = cacheResult.documents.mapNotNull { doc ->
                         val nama = doc.getString("nama_anak") ?: return@mapNotNull null
                         val usiaLong = doc.getLong("usia") ?: 0L
@@ -108,19 +143,24 @@ class PilihAnakActivity : AppCompatActivity() {
                         )
                     }
 
+                    // Mengganti isi cache Activity dengan hasil Firestore.
                     daftarAnakCache.clear()
                     daftarAnakCache.addAll(daftarAnak)
                     tampilkanDaftarAnak(daftarAnak)
                 }
 
+                // Tetap mengambil server untuk memperoleh data terbaru.
                 ambilDataAnakDariServer(currentUser.uid)
             }
+            // Jika cache gagal, langsung mencoba mengambil data server.
             .addOnFailureListener {
                 ambilDataAnakDariServer(currentUser.uid)
             }
     }
 
     private fun ambilDataAnakDariServer(uidPendamping: String) {
+        // Hasil dari server menggantikan cache agar data tetap terbaru.
+        // Membaca koleksi tb_anak langsung dari server.
         db.collection("tb_anak")
             .whereEqualTo("id_pendamping", uidPendamping)
             .get(Source.SERVER)
@@ -140,6 +180,7 @@ class PilihAnakActivity : AppCompatActivity() {
 
                 daftarAnakCache.clear()
                 daftarAnakCache.addAll(daftarAnak)
+                // Menandai bahwa hasil terbaru sudah berhasil dimuat.
                 perluRefreshData = false
 
                 tampilkanDaftarAnak(daftarAnak)
@@ -159,9 +200,12 @@ class PilihAnakActivity : AppCompatActivity() {
             }
     }
 
+    // ==================== BAGIAN TAMPILKAN PROFIL ANAK ====================
     private fun tampilkanDaftarAnak(daftarAnak: List<Anak>) {
+        // Menghapus seluruh kartu sebelum menggambar daftar terbaru.
         containerProfilAnak.removeAllViews()
 
+        // Menampilkan empty state jika tidak ada profil.
         if (daftarAnak.isEmpty()) {
             tvEmptyState.visibility = TextView.VISIBLE
             tvEmptyState.text = "Data anak masih kosong.\nBuat profil anak dulu melalui halaman Orang Tua."
@@ -170,6 +214,7 @@ class PilihAnakActivity : AppCompatActivity() {
             tvEmptyState.visibility = TextView.GONE
             btnBukaHalamanOrangTua.visibility = View.GONE
 
+            // Menampilkan satu kartu untuk setiap data anak.
             daftarAnak.forEach { anak ->
                 tambahCardAnak(anak)
             }
@@ -177,6 +222,8 @@ class PilihAnakActivity : AppCompatActivity() {
     }
 
     private fun tambahCardAnak(anak: Anak) {
+        // Tampilan setiap kartu profil diambil dari item_anak.xml.
+        // Mengambil struktur kartu dari item_anak.xml.
         val itemView = layoutInflater.inflate(
             R.layout.item_anak,
             containerProfilAnak,
@@ -184,6 +231,7 @@ class PilihAnakActivity : AppCompatActivity() {
         )
 
         // Gunakan Spec untuk memaksa item berada di kolom yang benar dengan bobot seimbang (50% lebar)
+        // Membuat parameter agar kartu mengisi dua kolom secara seimbang.
         val params = GridLayout.LayoutParams(
             GridLayout.spec(GridLayout.UNDEFINED, 1f), // row spec
             GridLayout.spec(GridLayout.UNDEFINED, 1f)  // column spec
@@ -194,17 +242,21 @@ class PilihAnakActivity : AppCompatActivity() {
         }
         itemView.layoutParams = params
 
+        // Menghubungkan elemen di dalam item_anak.xml.
         val imgAvatarAnak = itemView.findViewById<ImageView>(R.id.imgAvatarAnak)
         val tvItemNamaAnak = itemView.findViewById<TextView>(R.id.tvItemNamaAnak)
         val tvItemUmurAnak = itemView.findViewById<TextView>(R.id.tvItemUmurAnak)
 
+        // Mengisi avatar, nama, dan umur dari object Anak.
         imgAvatarAnak.setImageResource(AvatarHelper.getAvatarResource(anak.avatar))
         tvItemNamaAnak.text = anak.namaAnak
         tvItemUmurAnak.text = "${anak.usia} tahun"
 
+        // Membuka Dashboard Anak ketika kartu ditekan.
         itemView.setOnClickListener {
             val intent = Intent(this, DashboardAnakActivity::class.java)
 
+            // Data extra ini nanti diambil DashboardAnakActivity untuk tahu anak yang sedang dipilih.
             intent.putExtra("ID_ANAK", anak.idDokumen)
             intent.putExtra("NAMA_ANAK", anak.namaAnak)
             intent.putExtra("USIA_ANAK", anak.usia)
@@ -215,17 +267,21 @@ class PilihAnakActivity : AppCompatActivity() {
             intent.putExtra("usia_anak", anak.usia)
             intent.putExtra("avatar_anak", anak.avatar)
 
+            // Menjalankan perpindahan menuju DashboardAnakActivity.
             startActivity(intent)
         }
 
+        // Membuka dialog hapus ketika kartu ditekan lama.
         itemView.setOnLongClickListener {
             tampilkanDialogHapusAnak(anak)
             true
         }
 
+        // Menambahkan kartu yang selesai dibuat ke GridLayout.
         containerProfilAnak.addView(itemView)
     }
 
+    // ==================== BAGIAN HAPUS PROFIL ANAK ====================
     private fun tampilkanDialogHapusAnak(anak: Anak) {
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -346,6 +402,7 @@ class PilihAnakActivity : AppCompatActivity() {
         anak: Anak,
         dialog: androidx.appcompat.app.AlertDialog
     ) {
+        // Menghapus dokumen "tb_anak" menggunakan ID anak yang dipilih.
         db.collection("tb_anak")
             .document(anak.idDokumen)
             .delete()
@@ -368,6 +425,7 @@ class PilihAnakActivity : AppCompatActivity() {
             }
     }
 
+    // ==================== BAGIAN TAMPILAN BANTUAN ====================
     private fun tampilkanToastCustom(pesan: String) {
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL

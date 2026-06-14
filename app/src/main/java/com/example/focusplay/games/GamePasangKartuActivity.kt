@@ -31,50 +31,78 @@ import com.example.focusplay.utils.AdaptiveGameManager
 import com.example.focusplay.utils.GameResultHelper
 import kotlin.math.min
 
+/**
+ * Halaman game mencocokkan kartu dengan tampilan activity_game_pasang_kartu.xml.
+ *
+ * Data anak diterima melalui Intent, sedangkan waktu dan mode adaptif diambil dari pengaturan.
+ * Setelah selesai, hasil dikirim ke GameResultHelper lalu diteruskan ke EvaluasiActivity.
+ */
 class GamePasangKartuActivity : AppCompatActivity() {
 
+    // ==================== BAGIAN ELEMEN TAMPILAN ====================
+    // Tombol untuk membuka menu permainan.
     private lateinit var btnMenuGame: ImageView
+    // Grid tempat kartu dibuat dan ditambahkan.
     private lateinit var gridKartu: GridLayout
+    // Menampilkan skor permainan.
     private lateinit var tvSkor: TextView
+    // Menampilkan fase aktif.
     private lateinit var tvFase: TextView
+    // Menampilkan sisa waktu permainan.
     private lateinit var tvTimer: TextView
+    // Menampilkan petunjuk sesuai kondisi sesi.
     private lateinit var tvPetunjuk: TextView
+    // Mengatur perubahan fase berdasarkan hasil sesi.
     private lateinit var adaptiveManager: AdaptiveGameManager
 
+    // ==================== BAGIAN DATA PERMAINAN ====================
+    // Nilai skor yang bertambah ketika pasangan ditemukan.
     private var skor = 0
+    // Fase permainan yang sedang aktif.
     private var faseSaatIni = 1
+    // Identitas anak yang diterima dari halaman sebelumnya.
     private var idAnak = ""
     private var namaAnak = "Anak"
     private var usiaAnak = 0
 
+    // Nilai pengaturan mode adaptif.
     private var modeAdaptif = true
+    // Lama permainan berdasarkan pengaturan pengguna.
     private var targetWaktuMenit = 1
 
     private var totalBenar = 0
     private var totalSalah = 0
     private var waktuMulaiPermainan = 0L
+    // Menandai bahwa permainan sudah selesai agar hasil tidak diproses dua kali.
     private var permainanSelesai = false
 
+    // ==================== BAGIAN STATUS KARTU DAN TIMER ====================
     private var jumlahPasanganSelesai = 0
     private var totalPasanganSesiIni = 0
     private var sesiAdaKesalahan = false
     private var sedangPreview = false
     private var sedangMemeriksa = false
 
+    // Referensi dua kartu yang sedang dibandingkan.
     private var kartuPertama: FrameLayout? = null
     private var kartuKedua: FrameLayout? = null
 
+    // Timer utama untuk batas durasi permainan.
     private var timerPermainan: CountDownTimer? = null
     private var sisaWaktuMillis = 0L
     private var gameSedangPause = false
 
+    // Handler menjalankan proses tertunda seperti menutup kartu.
     private val handler = Handler(Looper.getMainLooper())
     private var aksiTertunda: Runnable? = null
     private var batasWaktuAksiTertunda = 0L
     private var sisaDelayAksiTertunda = 0L
 
+    // Nama game yang dikirim ke riwayat dan evaluasi.
     private val namaGame = "Pasang Kartu"
 
+    // ==================== BAGIAN DATA KARTU ====================
+    // Menyimpan ID pasangan, gambar, dan status satu kartu.
     private data class DataKartu(
         val kode: String,
         val gambar: Int,
@@ -82,6 +110,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         var selesai: Boolean = false
     )
 
+    // Daftar gambar yang dapat dipakai sebagai pasangan kartu.
     private val daftarGambar = listOf(
         Pair("heart", R.drawable.char_heart),
         Pair("star", R.drawable.char_star),
@@ -91,32 +120,42 @@ class GamePasangKartuActivity : AppCompatActivity() {
         Pair("cucumber", R.drawable.char_cucumber)
     )
 
+    // ==================== BAGIAN INISIALISASI GAME ====================
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Memasang activity_game_pasang_kartu.xml.
         setContentView(R.layout.activity_game_pasang_kartu)
 
+        // Menyiapkan seluruh data dan aksi sebelum sesi dimulai.
         ambilDataAnakDariIntent()
         hubungkanView()
         bacaPengaturan()
         aturTombol()
 
+        // Menyimpan waktu mulai untuk menghitung durasi aktual.
         waktuMulaiPermainan = System.currentTimeMillis()
         mulaiTimerGlobal()
 
+        // Menunggu grid selesai diukur agar ukuran kartu dapat dihitung.
         gridKartu.post {
             mulaiSesiBaru()
         }
     }
 
+    // ==================== BAGIAN DATA INTENT DAN PENGATURAN ====================
     private fun ambilDataAnakDariIntent() {
+        // Mengambil data extra dari halaman anak yang membuka game.
+        // Menerima ID dengan dukungan key huruf besar dan kecil.
         idAnak = intent.getStringExtra("ID_ANAK")
             ?: intent.getStringExtra("id_anak")
             ?: ""
 
+        // Menerima nama anak dengan nilai cadangan "Anak".
         namaAnak = intent.getStringExtra("NAMA_ANAK")
             ?: intent.getStringExtra("nama_anak")
             ?: "Anak"
 
+        // Menerima usia anak untuk diteruskan ke halaman evaluasi.
         usiaAnak = intent.getIntExtra(
             "USIA_ANAK",
             intent.getIntExtra("usia_anak", 0)
@@ -124,6 +163,8 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun hubungkanView() {
+        // Menghubungkan ID dengan status dan papan kartu pada layout XML.
+        // Menghubungkan seluruh elemen status game dari XML.
         btnMenuGame = findViewById(R.id.btnMenuGame)
         gridKartu = findViewById(R.id.gridKartu)
         tvSkor = findViewById(R.id.tvSkor)
@@ -133,20 +174,26 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun bacaPengaturan() {
+        // Nama file dan key sama dengan yang disimpan PengaturanPermainanActivity.
+        // Membuka SharedPreferences yang ditulis halaman pengaturan.
         val prefs = getSharedPreferences("pengaturan_permainan", MODE_PRIVATE)
 
+        // Mengambil mode adaptif dan target waktu beserta nilai default.
         modeAdaptif = prefs.getBoolean("mode_adaptif", true)
         targetWaktuMenit = prefs.getString("target_waktu", "1")?.toIntOrNull() ?: 1
 
         // Setiap permainan selalu dimulai dari fase 1.
         faseSaatIni = 1
+        // Membuat manager adaptif dengan pengaturan yang sudah dibaca.
         adaptiveManager = AdaptiveGameManager(
             faseSekarang = faseSaatIni,
             modeAdaptifAktif = modeAdaptif
         )
     }
 
+    // ==================== BAGIAN MENU PERMAINAN ====================
     private fun aturTombol() {
+        // Memberi animasi tekan pada tombol menu.
         pasangAnimasiTekan(btnMenuGame)
 
         btnMenuGame.setOnClickListener {
@@ -155,8 +202,10 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun tampilkanMenuGame() {
+        // Menjeda game sebelum dialog menu ditampilkan.
         pauseGame()
 
+        // Membuat dialog menu secara dinamis.
         val dialog = Dialog(this)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.setCancelable(false)
@@ -190,6 +239,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
 
         root.addView(menuContainer, menuParams)
 
+        // Tombol Lanjutkan menutup dialog dan melanjutkan timer.
         btnResume.setOnClickListener {
             dialog.dismiss()
             resumeGame()
@@ -199,6 +249,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
             tampilkanAboutGame()
         }
 
+        // Tombol Keluar menghentikan proses game dan menutup Activity.
         btnQuit.setOnClickListener {
             dialog.dismiss()
             hentikanProsesBerjalan()
@@ -374,16 +425,21 @@ class GamePasangKartuActivity : AppCompatActivity() {
         }
     }
 
+    // ==================== BAGIAN TIMER DAN PAUSE ====================
     private fun mulaiTimerGlobal() {
+        // Lama timer diambil dari target waktu yang tersimpan di SharedPreferences.
+        // Mengubah target menit menjadi milidetik.
         sisaWaktuMillis = targetWaktuMenit * 60 * 1000L
         tvTimer.visibility = View.VISIBLE
         jalankanTimerGlobal()
     }
 
     private fun jalankanTimerGlobal() {
+        // Membatalkan timer lama sebelum membuat timer baru.
         timerPermainan?.cancel()
 
         timerPermainan = object : CountDownTimer(sisaWaktuMillis, 1000L) {
+            // Memperbarui sisa waktu setiap satu detik.
             override fun onTick(millisUntilFinished: Long) {
                 sisaWaktuMillis = millisUntilFinished
 
@@ -393,6 +449,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
                 tvTimer.text = "$menit:${detik.toString().padStart(2, '0')}"
             }
 
+            // Menyimpan hasil akhir ketika waktu habis.
             override fun onFinish() {
                 sisaWaktuMillis = 0L
                 tvTimer.text = "0:00"
@@ -402,11 +459,13 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun pauseGame() {
+        // Pause diabaikan jika game sudah pause atau selesai.
         if (gameSedangPause || permainanSelesai) return
 
         gameSedangPause = true
         timerPermainan?.cancel()
 
+        // Menyimpan sisa delay proses kartu yang sedang menunggu.
         aksiTertunda?.let { runnable ->
             handler.removeCallbacks(runnable)
             sisaDelayAksiTertunda =
@@ -415,6 +474,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun resumeGame() {
+        // Resume hanya berlaku jika game memang sedang pause.
         if (!gameSedangPause || permainanSelesai) return
 
         gameSedangPause = false
@@ -427,6 +487,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun jadwalkanAksi(delayMillis: Long, aksi: () -> Unit) {
+        // Membatalkan aksi tertunda sebelumnya agar tidak berjalan ganda.
         aksiTertunda?.let { handler.removeCallbacks(it) }
 
         val runnable = Runnable {
@@ -447,8 +508,11 @@ class GamePasangKartuActivity : AppCompatActivity() {
         }
     }
 
+    // ==================== BAGIAN MEMBUAT SESI KARTU ====================
     private fun mulaiSesiBaru() {
+        // Menghentikan pembuatan sesi jika permainan sudah selesai.
         if (permainanSelesai) return
+        // Menghapus seluruh kartu sesi sebelumnya.
         gridKartu.removeAllViews()
         jumlahPasanganSelesai = 0
         sesiAdaKesalahan = false
@@ -457,10 +521,13 @@ class GamePasangKartuActivity : AppCompatActivity() {
         kartuPertama = null
         kartuKedua = null
 
+        // Fase menentukan ukuran grid, jumlah pasangan, dan waktu melihat kartu.
         val waktuPreview = aturTampilanFase()
+        // Membuat daftar kartu acak sesuai jumlah pasangan fase.
         val daftarKartu = buatDaftarKartuAcak()
         val (lebarKartu, tinggiKartu) = hitungUkuranKartu()
 
+        // Membuat dan menampilkan setiap kartu dalam keadaan terbuka.
         daftarKartu.forEach { data ->
             val kartu = buatViewKartu(data, lebarKartu, tinggiKartu)
             gridKartu.addView(kartu)
@@ -469,6 +536,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
 
         tvPetunjuk.text = "Ingat letak gambarnya, lalu cocokkan kartu yang sama!"
 
+        // Setelah waktu preview selesai, semua kartu ditutup dan dapat diklik.
         jadwalkanAksi(waktuPreview) {
             sedangPreview = false
             for (i in 0 until gridKartu.childCount) {
@@ -483,6 +551,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun aturTampilanFase(): Long {
+        // Mengatur jumlah kolom, baris, pasangan, dan waktu preview per fase.
         return when (faseSaatIni) {
             1 -> {
                 tvFase.text = "Fase 1"
@@ -513,11 +582,13 @@ class GamePasangKartuActivity : AppCompatActivity() {
     private fun buatDaftarKartuAcak(): MutableList<DataKartu> {
         val hasil = mutableListOf<DataKartu>()
 
+        // Mengambil gambar sesuai jumlah pasangan pada fase.
         daftarGambar.take(totalPasanganSesiIni).forEach { (kode, gambar) ->
             hasil.add(DataKartu(kode, gambar))
             hasil.add(DataKartu(kode, gambar))
         }
 
+        // Mengacak posisi seluruh kartu sebelum ditampilkan.
         hasil.shuffle()
         return hasil
     }
@@ -527,6 +598,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         lebarKartu: Int,
         tinggiKartu: Int
     ): FrameLayout {
+        // Setiap kartu dibuat melalui kode lalu dimasukkan ke gridKartu.
         val kartu = FrameLayout(this).apply {
             layoutParams = GridLayout.LayoutParams().apply {
                 width = lebarKartu
@@ -534,6 +606,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
                 setMargins(dpToPx(5), dpToPx(5), dpToPx(5), dpToPx(5))
             }
 
+        // Menyimpan DataKartu pada tag agar dapat diambil saat kartu diklik.
             tag = data
             elevation = dpToPx(5).toFloat()
             isClickable = false
@@ -568,6 +641,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         kartu.addView(gambar)
         kartu.addView(tandaTanya)
 
+        // Menghubungkan klik kartu ke proses pilihKartu().
         kartu.setOnClickListener {
             pilihKartu(kartu)
         }
@@ -575,6 +649,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         return kartu
     }
 
+    // ==================== BAGIAN TAMPILAN KARTU ====================
     private fun tampilkanKartuTerbuka(kartu: FrameLayout) {
         val data = kartu.tag as DataKartu
         val gambar = kartu.findViewById<ImageView>(R.id.img_isi_kartu)
@@ -612,18 +687,23 @@ class GamePasangKartuActivity : AppCompatActivity() {
         tandaTanya.visibility = View.GONE
     }
 
+    // ==================== BAGIAN CEK PASANGAN DAN FASE ====================
     private fun pilihKartu(kartu: FrameLayout) {
+        // Mengabaikan klik ketika game tidak siap menerima pilihan.
         if (permainanSelesai || gameSedangPause || sedangPreview || sedangMemeriksa) return
         if (kartu == kartuPertama) return
 
         val data = kartu.tag as DataKartu
         if (data.terbuka || data.selesai) return
 
+        // Membuka kartu yang baru dipilih.
         tampilkanKartuTerbuka(kartu)
 
         if (kartuPertama == null) {
+            // Menyimpan pilihan pertama.
             kartuPertama = kartu
         } else {
+            // Menyimpan pilihan kedua lalu membandingkan pasangan.
             kartuKedua = kartu
             cekPasangan()
         }
@@ -632,14 +712,17 @@ class GamePasangKartuActivity : AppCompatActivity() {
     private fun cekPasangan() {
         sedangMemeriksa = true
 
+        // Mengambil data dari kedua kartu.
         val dataPertama = kartuPertama?.tag as? DataKartu
         val dataKedua = kartuKedua?.tag as? DataKartu
+        // Membandingkan kode untuk menentukan apakah gambar sama.
         val pasanganSama = dataPertama?.kode == dataKedua?.kode
 
         if (pasanganSama) {
             kartuPertama?.let { tampilkanKartuBenar(it) }
             kartuKedua?.let { tampilkanKartuBenar(it) }
 
+            // Menambah jumlah pasangan, jawaban benar, dan skor.
             jumlahPasanganSelesai++
             totalBenar++
             skor += 15
@@ -653,6 +736,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
                 }
             }
         } else {
+            // Menandai sesi memiliki kesalahan dan menambah total salah.
             sesiAdaKesalahan = true
             totalSalah++
 
@@ -670,6 +754,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         // Satu sesi dinilai benar hanya jika seluruh pasangan diselesaikan tanpa salah pilih.
         // Dengan begitu, adaptif dihitung per sesi, bukan per kartu yang ditekan.
         val sesiBenar = !sesiAdaKesalahan
+        // Mengirim hasil sesi ke AdaptiveGameManager untuk menentukan fase berikutnya.
         val faseBaru = adaptiveManager.prosesJawaban(sesiBenar)
 
         if (faseBaru != faseSaatIni) {
@@ -711,13 +796,16 @@ class GamePasangKartuActivity : AppCompatActivity() {
         }
     }
 
+    // ==================== BAGIAN HASIL AKHIR PERMAINAN ====================
     private fun simpanRiwayatAkhir() {
+        // Dijalankan saat timer habis sebelum menampilkan ringkasan hasil.
         if (permainanSelesai) return
         permainanSelesai = true
 
         hentikanProsesBerjalan()
         gridKartu.removeAllViews()
 
+        // Menghitung akurasi berdasarkan total benar dan salah.
         val totalJawaban = totalBenar + totalSalah
         val akurasi = if (totalJawaban > 0) {
             ((totalBenar * 100f) / totalJawaban).toInt()
@@ -725,10 +813,12 @@ class GamePasangKartuActivity : AppCompatActivity() {
             0
         }
 
+        // Menghitung durasi aktual dari waktu mulai sampai sekarang.
         val durasiMillis = System.currentTimeMillis() - waktuMulaiPermainan
         val durasiDetik = maxOf(1, (durasiMillis / 1000L).toInt())
         val durasiMenit = maxOf(1, (durasiMillis / 60000L).toInt())
 
+        // Menampilkan dialog ringkasan sebelum pengguna memilih tindakan.
         tampilkanHasilSementara(akurasi, durasiDetik, durasiMenit)
     }
 
@@ -740,6 +830,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         val contentView = LayoutInflater.from(this)
             .inflate(R.layout.dialog_hasil_sementara, null, false)
 
+        // Mengisi seluruh angka hasil ke dialog_hasil_sementara.xml.
         contentView.findViewById<TextView>(R.id.tvHasilSkor).text = skor.toString()
         contentView.findViewById<TextView>(R.id.tvHasilAkurasi).text = "$akurasi%"
         contentView.findViewById<TextView>(R.id.tvHasilDurasi).text = "$durasiDetik detik"
@@ -751,6 +842,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
             setCancelable(false)
         }
 
+        // Tombol utama menyimpan hasil dan membuka evaluasi.
         contentView.findViewById<TextView>(R.id.btnSimpanLihatHasil).apply {
             pasangAnimasiTekan(this)
             setOnClickListener {
@@ -760,6 +852,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
             }
         }
 
+        // Tombol kedua kembali tanpa membuka halaman evaluasi.
         contentView.findViewById<TextView>(R.id.btnKembaliDashboard).apply {
             pasangAnimasiTekan(this)
             setOnClickListener {
@@ -785,11 +878,13 @@ class GamePasangKartuActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    // ==================== BAGIAN PINDAH HALAMAN ====================
     private fun simpanDanBukaEvaluasi(
         akurasi: Int,
         durasiDetik: Int,
         durasiMenit: Int
     ) {
+        // Mengirim data sesi untuk dievaluasi AI dan disimpan ke "tb_riwayat".
         GameResultHelper.evaluasiDanSimpanRealtime(
             activity = this,
             idAnak = idAnak,
@@ -801,6 +896,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
             durasiMenit = durasiMenit,
             faseAkhir = faseSaatIni,
             onSelesai = { hasilEvaluasi ->
+                // Mengirim statistik dan hasil evaluasi ke EvaluasiActivity melalui Intent.
                 val intentToEvaluasi = Intent(this, EvaluasiActivity::class.java)
                 intentToEvaluasi.putExtra("ID_ANAK", idAnak)
                 intentToEvaluasi.putExtra("NAMA_ANAK", namaAnak)
@@ -819,6 +915,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
     }
 
     private fun kembaliKeDashboard() {
+        // Kembali ke Dashboard Anak dengan membawa identitas anak yang sedang bermain.
         val intent = Intent(this, DashboardAnakActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             putExtra("ID_ANAK", idAnak)
@@ -829,6 +926,7 @@ class GamePasangKartuActivity : AppCompatActivity() {
         finish()
     }
 
+    // ==================== BAGIAN PEMBERSIHAN PROSES ====================
     private fun hentikanProsesBerjalan() {
         timerPermainan?.cancel()
         aksiTertunda?.let { handler.removeCallbacks(it) }

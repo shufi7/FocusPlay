@@ -38,14 +38,25 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import com.example.focusplay.utils.DashboardTutorialOverlay
 
+/**
+ * Dashboard utama pendamping dengan tampilan dari activity_dashboard.xml.
+ *
+ * Menggabungkan profil dari "tb_anak" dengan hasil game dari "tb_riwayat".
+ * Anak yang dipilih menentukan isi grafik, recap AI, dan data yang dibuka di halaman riwayat.
+ */
 class DashboardActivity : AppCompatActivity() {
 
+    // ==================== BAGIAN KONSTANTA DAN VARIABEL ====================
     private companion object {
+        // Membatasi jumlah baris evaluasi sebelum tombol Selengkapnya muncul.
         const val MAX_BARIS_RECAP_AI = 7
     }
 
+    // Mengelola sesi lokal pendamping.
     private lateinit var session: SessionManager
+    // Mengakses akun Firebase yang sedang login.
     private lateinit var auth: FirebaseAuth
+    // Membaca profil dan riwayat dari Firestore.
     private lateinit var db: FirebaseFirestore
 
     private lateinit var ivBackDashboard: ImageView
@@ -61,14 +72,18 @@ class DashboardActivity : AppCompatActivity() {
 
     private lateinit var chartWeekly: LineChart
 
+    // Menyimpan ID profil yang sedang dipilih.
     private var selectedAnakId: String = ""
+    // Menyimpan nama profil yang sedang dipilih.
     private var selectedNamaAnak: String = ""
+    // Menampung seluruh profil yang ditampilkan pada Dashboard.
     private val daftarAnakDashboard = mutableListOf<AnakDashboard>()
     private lateinit var cardProfilAnak: View
     private lateinit var cardGrafikDashboard: View
     private lateinit var cardRecapAi: View
 
 
+    // ==================== BAGIAN MODEL DATA DASHBOARD ====================
     data class AnakDashboard(
         val idDokumen: String,
         val namaAnak: String,
@@ -83,29 +98,37 @@ class DashboardActivity : AppCompatActivity() {
         val timestampMillis: Long
     )
 
+    // ==================== BAGIAN INISIALISASI HALAMAN ====================
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Memasang activity_dashboard.xml sebagai tampilan.
         setContentView(R.layout.activity_dashboard)
 
+        // Menyiapkan penyimpanan sesi, autentikasi, dan database.
         session = SessionManager(this)
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
+        // Menjalankan persiapan tampilan Dashboard.
         hubungkanView()
         konfigurasiGrafikPlugin()
         kosongkanGrafik()
         kosongkanRecapAi()
         aturAksiTombol()
 
+        // Tutorial hanya dicoba saat halaman pertama kali dibuat.
         tampilkanTutorialDashboardJikaPertama()
     }
 
     override fun onResume() {
         super.onResume()
+        // Memuat ulang profil setiap kembali dari Tambah Anak atau halaman lain.
         ambilProfilAnak()
     }
 
+    // ==================== BAGIAN HUBUNGKAN ELEMEN XML ====================
     private fun hubungkanView() {
+        // Menghubungkan semua ID dengan elemen yang ada di activity_dashboard.xml.
         ivBackDashboard = findViewById(R.id.ivBackDashboard)
 
         tvProfilAnakKosong = findViewById(R.id.tvProfilAnakKosong)
@@ -125,15 +148,22 @@ class DashboardActivity : AppCompatActivity() {
         chartWeekly = findViewById(R.id.chartWeekly)
     }
 
+    // ==================== BAGIAN TUTORIAL DASHBOARD ====================
     private fun tampilkanTutorialDashboardJikaPertama() {
+        // Preferences khusus untuk mencatat apakah tutorial sudah pernah ditampilkan.
         val prefs = getSharedPreferences("tutorial_dashboard", MODE_PRIVATE)
+        // Mengambil nilai penanda tutorial dari penyimpanan lokal.
         val sudahTampil = prefs.getBoolean("sudah_tampil_spotlight", false)
 
+        // Menghentikan fungsi jika tutorial sudah pernah diselesaikan.
         if (sudahTampil) return
 
+        // Menunggu seluruh View selesai di-layout sebelum menghitung area sorotan.
         window.decorView.post {
+            // Elemen Dashboard di bawah ini menjadi target sorotan tutorial.
             val overlay = DashboardTutorialOverlay(this)
 
+            // Mengirim urutan target dan teks tutorial ke overlay.
             overlay.setSteps(
                 listOf(
                     DashboardTutorialOverlay.TutorialStep(
@@ -169,11 +199,15 @@ class DashboardActivity : AppCompatActivity() {
                 )
             )
 
+            // Memasang overlay tutorial ke layar.
             overlay.start()
         }
     }
 
+    // ==================== BAGIAN KONFIGURASI MPANDROIDCHART ====================
     private fun konfigurasiGrafikPlugin() {
+        // chartWeekly ini elemen LineChart MPAndroidChart dari activity_dashboard.xml.
+        // Menonaktifkan deskripsi dan legenda bawaan chart.
         chartWeekly.description.isEnabled = false
         chartWeekly.legend.isEnabled = false
         chartWeekly.axisRight.isEnabled = false
@@ -184,6 +218,7 @@ class DashboardActivity : AppCompatActivity() {
         chartWeekly.setPinchZoom(false)
         chartWeekly.setExtraOffsets(dp(8).toFloat(), dp(16).toFloat(), dp(18).toFloat(), dp(12).toFloat())
 
+        // Mengatur sumbu X untuk menampilkan label tanggal di bawah grafik.
         chartWeekly.xAxis.apply {
             position = XAxis.XAxisPosition.BOTTOM
             granularity = 1f
@@ -195,6 +230,7 @@ class DashboardActivity : AppCompatActivity() {
             valueFormatter = IndexAxisValueFormatter(emptyList<String>())
         }
 
+        // Mengatur sumbu Y untuk rentang nilai akurasi 0 sampai 100.
         chartWeekly.axisLeft.apply {
             axisMinimum = 0f
             axisMaximum = 105f
@@ -213,21 +249,26 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun kosongkanGrafik() {
+        // Menghapus data dan tampilan grafik sebelumnya.
         chartWeekly.clear()
         chartWeekly.xAxis.valueFormatter = IndexAxisValueFormatter(emptyList<String>())
         chartWeekly.invalidate()
     }
 
     private fun kosongkanRecapAi() {
+        // Menghapus kartu recap lama.
         containerAiRecap.removeAllViews()
         tvAiRecapKosong.visibility = View.VISIBLE
         tvAiRecapKosong.text =
             "Belum ada evaluasi AI. Evaluasi akan muncul setelah anak menyelesaikan permainan."
     }
 
+    // ==================== BAGIAN PROFIL ANAK ====================
     private fun ambilProfilAnak() {
+        // Mengambil akun pendamping yang sedang login.
         val currentUser = auth.currentUser
 
+        // Menampilkan pesan sesi jika akun Firebase tidak tersedia.
         if (currentUser == null) {
             selectedAnakId = ""
             selectedNamaAnak = ""
@@ -241,13 +282,17 @@ class DashboardActivity : AppCompatActivity() {
             return
         }
 
+        // Menyiapkan container dengan kartu tambah anak sebelum data masuk.
         containerProfilAnakDashboard.removeAllViews()
         tambahCardTambahAnakMini()
 
+        // Mengambil data anak dari koleksi dan UID yang digunakan TambahAnakActivity.
         db.collection("tb_anak")
+            // Memfilter dokumen anak berdasarkan UID pendamping.
             .whereEqualTo("id_pendamping", currentUser.uid)
             .get()
             .addOnSuccessListener { result ->
+                // Mengubah dokumen Firestore menjadi model AnakDashboard.
                 val daftarAnak = result.documents.mapNotNull { doc ->
                     val nama = doc.getString("nama_anak") ?: return@mapNotNull null
                     val usia = doc.getLong("usia")?.toInt() ?: 0
@@ -260,9 +305,11 @@ class DashboardActivity : AppCompatActivity() {
                     )
                 }
 
+                // Mengganti daftar lokal dengan hasil terbaru.
                 daftarAnakDashboard.clear()
                 daftarAnakDashboard.addAll(daftarAnak)
 
+                // Menangani kondisi akun belum mempunyai profil anak.
                 if (daftarAnak.isEmpty()) {
                     selectedAnakId = ""
                     selectedNamaAnak = ""
@@ -278,15 +325,19 @@ class DashboardActivity : AppCompatActivity() {
 
                 tvProfilAnakKosong.visibility = View.GONE
 
+                // Memeriksa apakah profil yang sebelumnya dipilih masih tersedia.
                 val selectedMasihAda = daftarAnak.any { it.idDokumen == selectedAnakId }
 
+                // Memilih profil pertama jika belum ada pilihan atau profil sudah dihapus.
                 if (selectedAnakId.isEmpty() || !selectedMasihAda) {
                     selectedAnakId = daftarAnak.first().idDokumen
                     selectedNamaAnak = daftarAnak.first().namaAnak
                 }
 
+                // Menggambar ulang kartu profil sesuai data terbaru.
                 renderCardProfilAnak()
 
+                // Mengambil data statistik untuk anak terpilih.
                 muatGrafikAnak(selectedAnakId)
                 muatRecapAiAnak(selectedAnakId)
             }
@@ -305,9 +356,12 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun renderCardProfilAnak() {
+        // Menghapus seluruh kartu sebelum render ulang.
         containerProfilAnakDashboard.removeAllViews()
+        // Membuat kartu tambah anak pada posisi awal.
         tambahCardTambahAnakMini()
 
+        // Membuat kartu untuk setiap profil anak.
         daftarAnakDashboard.forEach { anak ->
             tambahCardProfilAnak(anak)
         }
@@ -325,6 +379,7 @@ class DashboardActivity : AppCompatActivity() {
             }
 
             setOnClickListener {
+                // Membuka TambahAnakActivity untuk membuat profil baru.
                 startActivity(Intent(this@DashboardActivity, TambahAnakActivity::class.java))
             }
         }
@@ -394,7 +449,9 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun tambahCardProfilAnak(anak: AnakDashboard) {
+        // Menentukan apakah kartu ini merupakan profil yang sedang aktif.
         val sedangDipilih = anak.idDokumen == selectedAnakId
+        // Mengubah ID avatar menjadi drawable.
         val karakter = AvatarHelper.getAvatarResource(anak.avatar)
 
         val outerCard = FrameLayout(this).apply {
@@ -413,15 +470,19 @@ class DashboardActivity : AppCompatActivity() {
             }
 
             setOnClickListener {
+                // Mengabaikan klik jika profil sudah aktif.
                 if (selectedAnakId == anak.idDokumen) return@setOnClickListener
 
+                // Mengganti profil aktif.
                 selectedAnakId = anak.idDokumen
                 selectedNamaAnak = anak.namaAnak
 
                 renderCardProfilAnak()
+                // Memuat ulang grafik dan recap berdasarkan anak yang dipilih.
                 muatGrafikAnak(anak.idDokumen)
                 muatRecapAiAnak(anak.idDokumen)
             }
+            // Tekan lama digunakan untuk membuka dialog hapus profil.
             setOnLongClickListener {
                 tampilkanDialogHapusAnak(anak)
                 true
@@ -506,6 +567,7 @@ class DashboardActivity : AppCompatActivity() {
         containerProfilAnakDashboard.addView(outerCard)
     }
 
+    // ==================== BAGIAN HAPUS PROFIL ANAK ====================
     private fun tampilkanDialogHapusAnak(anak: AnakDashboard) {
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -667,16 +729,21 @@ class DashboardActivity : AppCompatActivity() {
     }
 
 
+    // ==================== BAGIAN GRAFIK PERKEMBANGAN ====================
     private fun muatGrafikAnak(idAnak: String) {
+        // Menghentikan proses jika belum ada anak yang dipilih.
         if (idAnak.isEmpty()) {
             kosongkanGrafik()
             return
         }
 
+        // Data grafik berasal dari riwayat yang disimpan GameResultHelper setelah game selesai.
         db.collection("tb_riwayat")
+            // Memfilter riwayat berdasarkan ID anak.
             .whereEqualTo("id_anak", idAnak)
             .get()
             .addOnSuccessListener { result ->
+                // Mengambil nilai akurasi dan timestamp dari setiap sesi.
                 val daftarSesi = result.documents.mapNotNull { doc ->
                     val akurasi = ambilFloat(doc, "akurasi") ?: return@mapNotNull null
                     val timestamp = ambilTimestampMillis(doc)
@@ -693,6 +760,7 @@ class DashboardActivity : AppCompatActivity() {
 
                 val formatHari = SimpleDateFormat("dd/MM", Locale.forLanguageTag("id-ID"))
 
+                // Mengelompokkan sesi per tanggal dan menghitung rata-rata akurasi.
                 val dataGrafik = daftarSesi
                     .groupBy { formatHari.format(it.first) }
                     .mapValues { item ->
@@ -715,11 +783,14 @@ class DashboardActivity : AppCompatActivity() {
             return
         }
 
+        // Menyusun label tanggal untuk sumbu X.
         val labels = dataGrafik.map { it.first }
+        // Mengubah data tanggal dan akurasi menjadi Entry untuk MPAndroidChart.
         val entries = dataGrafik.mapIndexed { index, item ->
             Entry(index.toFloat(), item.second.coerceIn(0f, 100f))
         }
 
+        // Menentukan warna, garis, titik, dan area isi grafik.
         val dataSet = LineDataSet(entries, "Akurasi").apply {
             color = Color.parseColor("#5E7FE0")
             setCircleColor(Color.parseColor("#5E7FE0"))
@@ -735,6 +806,7 @@ class DashboardActivity : AppCompatActivity() {
             highLightColor = Color.parseColor("#456ECF")
         }
 
+        // Memasang label tanggal dan batas sumbu X.
         chartWeekly.xAxis.apply {
             valueFormatter = IndexAxisValueFormatter(labels)
             setLabelCount(labels.size, false)
@@ -742,25 +814,30 @@ class DashboardActivity : AppCompatActivity() {
             axisMaximum = (labels.size - 1).coerceAtLeast(0).toFloat() + 0.15f
         }
 
+        // Memasukkan dataset ke chart dan menggambar ulang.
         chartWeekly.data = LineData(dataSet)
         chartWeekly.animateX(500)
         chartWeekly.invalidate()
     }
 
+    // ==================== BAGIAN RECAP EVALUASI AI ====================
     private fun muatRecapAiAnak(idAnak: String) {
         if (idAnak.isEmpty()) {
             kosongkanRecapAi()
             return
         }
 
+        // Mengosongkan recap lama dan menampilkan status loading.
         containerAiRecap.removeAllViews()
         tvAiRecapKosong.visibility = View.VISIBLE
         tvAiRecapKosong.text = "Memuat evaluasi AI..."
 
+        // Field "evaluasi_ai" pada data ini dibuat oleh GameResultHelper.
         db.collection("tb_riwayat")
             .whereEqualTo("id_anak", idAnak)
             .get()
             .addOnSuccessListener { result ->
+                // Hanya mengambil riwayat yang memiliki isi evaluasi AI.
                 val daftarAi = result.documents.mapNotNull { doc ->
                     val evaluasi = doc.getString("evaluasi_ai")?.trim().orEmpty()
 
@@ -776,6 +853,7 @@ class DashboardActivity : AppCompatActivity() {
                     )
                 }.sortedByDescending { it.timestampMillis }
 
+                // Menampilkan empty state jika belum ada evaluasi.
                 if (daftarAi.isEmpty()) {
                     tvAiRecapKosong.visibility = View.VISIBLE
                     tvAiRecapKosong.text =
@@ -786,6 +864,7 @@ class DashboardActivity : AppCompatActivity() {
                 tvAiRecapKosong.visibility = View.GONE
                 containerAiRecap.removeAllViews()
 
+                // Membuat kartu recap untuk setiap hasil evaluasi.
                 daftarAi.forEachIndexed { index, recap ->
                     tambahCardRecapAi(recap, index)
                 }
@@ -999,31 +1078,40 @@ class DashboardActivity : AppCompatActivity() {
         toast.show()
     }
 
+    // ==================== BAGIAN NAVIGASI DAN TOMBOL ====================
     private fun aturAksiTombol() {
         ivBackDashboard.setOnClickListener {
             finish()
         }
 
         btnRiwayatPermainan.jadiTombolCepat {
+            // Halaman riwayat membutuhkan profil aktif.
             if (selectedAnakId.isEmpty()) {
                 Toast.makeText(this, "Pilih profil anak terlebih dahulu.", Toast.LENGTH_SHORT).show()
                 return@jadiTombolCepat
             }
 
+            // Membuat Intent menuju halaman riwayat.
             val intent = Intent(this, RiwayatPermainanActivity::class.java)
+            // Mengirim ID anak agar halaman riwayat menampilkan sesi anak terpilih.
             intent.putExtra("ID_ANAK", selectedAnakId)
             intent.putExtra("NAMA_ANAK", selectedNamaAnak)
             startActivity(intent)
         }
 
         btnPengaturanPermainan.jadiTombolCepat {
+            // Berpindah ke halaman Pengaturan Permainan.
             startActivity(Intent(this, PengaturanPermainanActivity::class.java))
         }
 
         btnLogout.jadiTombolCepat {
+            // Membersihkan sesi Firebase dan sesi lokal, lalu kembali ke halaman autentikasi.
+            // Keluar dari akun Firebase.
             auth.signOut()
+            // Menghapus data sesi lokal.
             session.logout()
 
+            // Membuat Intent dan membersihkan seluruh tumpukan Activity.
             val intent = Intent(this, AuthChoiceActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -1031,6 +1119,7 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
+    // ==================== BAGIAN FUNGSI BANTUAN DATA ====================
     private fun ambilTimestampMillis(doc: DocumentSnapshot): Long {
         return when (val value = doc.get("timestamp")) {
             is Timestamp -> value.toDate().time

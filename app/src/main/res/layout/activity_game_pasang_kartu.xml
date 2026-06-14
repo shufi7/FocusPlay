@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Layout GamePasangKartuActivity; kartu permainan dibuat melalui Kotlin. -->
+<!-- FrameLayout root memungkinkan background berada di belakang seluruh isi game. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- ==================== BAGIAN BACKGROUND ==================== -->
+    <!-- centerCrop membuat gambar memenuhi layar tanpa mengubah perbandingan aslinya. -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:src="@drawable/bg_card" />
 
+    <!-- ==================== BAGIAN HEADER STATUS GAME ==================== -->
+    <!-- Header horizontal menampilkan menu, fase, waktu, dan skor. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,6 +25,8 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
+        <!-- Membuka menu game dan menjeda timer selama menu tampil. -->
+        <!-- Ukuran 52dp dan padding 14dp memberi area sentuh yang cukup. -->
         <ImageView
             android:id="@+id/btnMenuGame"
             android:layout_width="52dp"
@@ -29,18 +37,22 @@
             android:focusable="true"
             android:padding="14dp" />
 
+        <!-- Frame pertama menumpuk background fase dan teks fase. -->
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="42dp"
             android:layout_marginStart="8dp"
             android:layout_weight="1">
 
+            <!-- Gambar latar indikator fase. -->
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
                 android:src="@drawable/latar_fase" />
 
+            <!-- Teks fase berubah sesuai hasil dari AdaptiveGameManager. -->
+            <!-- Padding start memberi ruang untuk ikon pada gambar latar. -->
             <TextView
                 android:id="@+id/tvFase"
                 android:layout_width="match_parent"
@@ -55,18 +67,22 @@
                 android:textStyle="bold" />
         </FrameLayout>
 
+        <!-- Frame kedua menumpuk background waktu dan teks timer. -->
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="42dp"
             android:layout_marginStart="8dp"
             android:layout_weight="1">
 
+            <!-- Gambar latar indikator waktu. -->
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
                 android:src="@drawable/latar_waktu" />
 
+            <!-- Menampilkan sisa waktu dari pengaturan permainan. -->
+            <!-- Nilai awal 1:00 akan diganti oleh CountDownTimer. -->
             <TextView
                 android:id="@+id/tvTimer"
                 android:layout_width="match_parent"
@@ -81,18 +97,22 @@
                 android:textStyle="bold" />
         </FrameLayout>
 
+        <!-- Frame ketiga menumpuk background skor dan nilai skor. -->
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="42dp"
             android:layout_marginStart="8dp"
             android:layout_weight="1">
 
+            <!-- Gambar latar indikator skor. -->
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
                 android:src="@drawable/latar_skor" />
 
+            <!-- Nilai skor bertambah saat pasangan kartu ditemukan dengan benar. -->
+            <!-- Nilai awal permainan adalah 0. -->
             <TextView
                 android:id="@+id/tvSkor"
                 android:layout_width="match_parent"
@@ -108,6 +128,8 @@
         </FrameLayout>
     </LinearLayout>
 
+    <!-- ==================== BAGIAN PAPAN PERMAINAN ==================== -->
+    <!-- Container memenuhi layar dan memusatkan card permainan. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -118,6 +140,7 @@
         android:paddingEnd="18dp"
         android:paddingBottom="20dp">
 
+        <!-- CardView menjadi panel utama judul, petunjuk, dan kartu. -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -125,6 +148,7 @@
             app:cardCornerRadius="28dp"
             app:cardElevation="8dp">
 
+            <!-- Container vertikal menyusun seluruh isi panel permainan. -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -135,6 +159,7 @@
                 android:paddingEnd="14dp"
                 android:paddingBottom="18dp">
 
+                <!-- Judul tetap permainan Pasang Kartu. -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -145,6 +170,7 @@
                     android:textSize="23sp"
                     android:textStyle="bold" />
 
+                <!-- Petunjuk diubah Activity saat preview dan sesi berjalan. -->
                 <TextView
                     android:id="@+id/tvPetunjuk"
                     android:layout_width="match_parent"
@@ -157,12 +183,15 @@
                     android:textColor="#6B4A2D"
                     android:textSize="14sp" />
 
+                <!-- Garis dekoratif pemisah judul dengan papan kartu. -->
                 <View
                     android:layout_width="82dp"
                     android:layout_height="5dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_line_orange" />
 
+                <!-- Menampung 4, 8, atau 12 kartu sesuai fase. -->
+                <!-- Jumlah kolom dan baris diubah melalui aturTampilanFase(). -->
                 <GridLayout
                     android:id="@+id/gridKartu"
                     android:layout_width="wrap_content"

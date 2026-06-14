@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Kotak tutorial yang dipasang ke Dashboard melalui DashboardTutorialOverlay. -->
+<!-- FrameLayout root memungkinkan posisi tutorialBox diubah melalui layout params. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- ==================== BAGIAN KOTAK TUTORIAL ==================== -->
+    <!-- Kotak utama berisi nomor, judul, pesan, dan tombol tutorial. -->
     <LinearLayout
         android:id="@+id/tutorialBox"
         android:layout_width="match_parent"
@@ -12,6 +16,9 @@
         android:orientation="vertical"
         android:padding="20dp">
 
+        <!-- Nomor langkah diperbarui oleh showStep(), misalnya "1 dari 6". -->
+        <!-- ==================== BAGIAN ISI TUTORIAL ==================== -->
+        <!-- tvTutorialStep menunjukkan posisi pengguna dalam urutan tutorial. -->
         <TextView
             android:id="@+id/tvTutorialStep"
             android:layout_width="wrap_content"
@@ -22,6 +29,8 @@
             android:textSize="13sp"
             android:textStyle="bold" />
 
+        <!-- Judul diambil dari daftar TutorialStep di DashboardActivity. -->
+        <!-- tvTutorialTitle menjelaskan nama elemen Dashboard yang disorot. -->
         <TextView
             android:id="@+id/tvTutorialTitle"
             android:layout_width="match_parent"
@@ -33,6 +42,8 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
+        <!-- Pesan diambil dari TutorialStep sesuai target yang sedang disorot. -->
+        <!-- lineSpacingExtra memberi jarak agar pesan lebih mudah dibaca. -->
         <TextView
             android:id="@+id/tvTutorialMessage"
             android:layout_width="match_parent"
@@ -44,6 +55,8 @@
             android:textColor="#6B7280"
             android:textSize="14sp" />
 
+        <!-- ==================== BAGIAN TOMBOL TUTORIAL ==================== -->
+        <!-- Baris horizontal membagi ruang sama rata untuk Lewati dan Lanjut. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -51,6 +64,8 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <!-- Melewati tutorial dan menyimpan status selesai. -->
+            <!-- layout_weight=1 membuat tombol memakai setengah lebar. -->
             <TextView
                 android:id="@+id/btnSkipTutorial"
                 android:layout_width="0dp"
@@ -63,6 +78,8 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
+            <!-- Berpindah langkah atau menyelesaikan tutorial. -->
+            <!-- Teks tombol berubah menjadi Selesai pada langkah terakhir. -->
             <Button
                 android:id="@+id/btnNextTutorial"
                 android:layout_width="0dp"

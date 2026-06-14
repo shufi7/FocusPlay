@@ -26,12 +26,24 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Mengurus hasil akhir game, evaluasi AI, dan penyimpanan Firestore.
+ *
+ * Data sesi dikirim dari Activity game ke evaluasiDanSimpanRealtime(). Setelah dapat evaluasi,
+ * data disimpan ke "tb_riwayat", lalu hasil dikembalikan melalui callback onSelesai
+ * supaya Activity game bisa membuka EvaluasiActivity.
+ */
 object GameResultHelper {
 
+    // ==================== BAGIAN BATAS WAKTU PROSES ====================
+    // Batas waktu membuat koneksi ke layanan AI.
     private const val AI_CONNECT_TIMEOUT_MILLIS = 40000
+    // Batas waktu membaca respons layanan AI.
     private const val AI_READ_TIMEOUT_MILLIS = 60000
+    // Batas waktu penyimpanan dokumen Firestore.
     private const val FIRESTORE_SAVE_TIMEOUT_MILLIS = 10000L
 
+    // ==================== BAGIAN DIALOG DAN MULAI EVALUASI ====================
     fun evaluasiDanSimpanRealtime(
         activity: Activity,
         idAnak: String,
@@ -44,8 +56,11 @@ object GameResultHelper {
         faseAkhir: Int,
         onSelesai: (String) -> Unit
     ) {
+        // Dialog loading berasal dari dialog_loading_evaluasi.xml dan dibuat di main thread.
         // MEMAKSA PEMBUATAN POP-UP DI MAIN THREAD INSTAN
+        // Memastikan proses pembuatan dialog berjalan pada UI thread.
         activity.runOnUiThread {
+            // Tetap menjalankan proses tanpa dialog jika Activity sudah ditutup.
             if (activity.isFinishing || activity.isDestroyed) {
                 jalankanProsesAI(
                     activity, idAnak, namaAnak, namaGame, skor, akurasi,
@@ -55,14 +70,17 @@ object GameResultHelper {
             }
 
             try {
+                // Mengambil layout dialog loading.
                 val layout = LayoutInflater.from(activity)
                     .inflate(R.layout.dialog_loading_evaluasi, null, false)
 
+                // Membuat dialog yang tidak dapat ditutup selama proses.
                 val loadingDialog = AlertDialog.Builder(activity)
                     .setView(layout)
                     .setCancelable(false)
                     .create()
 
+                // Menampilkan dialog sebelum request AI dimulai.
                 loadingDialog.show()
                 loadingDialog.window?.apply {
                     setBackgroundDrawableResource(android.R.color.transparent)
@@ -74,6 +92,7 @@ object GameResultHelper {
                     )
                 }
 
+                // Menjalankan proses utama sambil membawa referensi dialog.
                 jalankanProsesAI(
                     activity, idAnak, namaAnak, namaGame, skor, akurasi,
                     durasiDetik, durasiMenit, faseAkhir, loadingDialog, onSelesai
@@ -88,6 +107,7 @@ object GameResultHelper {
         }
     }
 
+    // ==================== BAGIAN PROSES AI DAN FIRESTORE ====================
     private fun jalankanProsesAI(
         activity: Activity,
         idAnak: String,
@@ -101,21 +121,27 @@ object GameResultHelper {
         loadingDialog: AlertDialog?,
         onSelesai: (String) -> Unit
     ) {
+        // Proses jaringan dan Firestore dijalankan di thread IO agar tampilan tidak macet.
         CoroutineScope(Dispatchers.IO).launch {
+            // Teks cadangan digunakan jika API tidak tersedia atau gagal.
             var hasilAI = "Wah, $namaAnak sangat fokus di game $namaGame! Saran untuk ortu: pertahankan durasi bermain ini agar konsentrasinya stabil."
             
+            // Mengambil API key dan model dari BuildConfig.
             val apiKey = BuildConfig.OPENROUTER_API_KEY.trim()
             val model = BuildConfig.OPENROUTER_MODEL.trim().ifBlank { "openai/gpt-4o-mini" }
 
+            // Request AI hanya dijalankan jika API key tersedia.
             if (apiKey.isNotBlank()) {
                 var attempt = 0
                 val maxAttempts = 2
                 var success = false
 
+                // Maksimal dua percobaan untuk memperoleh respons.
                 while (attempt < maxAttempts && !success) {
                     try {
                         if (attempt > 0) kotlinx.coroutines.delay(1500) // Delay sebelum coba lagi
 
+                        // Menyusun prompt berdasarkan statistik permainan.
                         val prompt = """
                             Kamu adalah asisten evaluasi permainan kognitif anak untuk aplikasi FocusPlay.
                             Buat evaluasi singkat berdasarkan data sesi berikut:
@@ -132,6 +158,7 @@ object GameResultHelper {
                             Jangan pakai bullet, markdown, atau pembuka seperti "Berikut evaluasinya".
                         """.trimIndent()
 
+                        // Membuka koneksi HTTP ke endpoint OpenRouter.
                         val url = URL("https://openrouter.ai/api/v1/chat/completions")
                         val connection = url.openConnection() as HttpURLConnection
                         connection.requestMethod = "POST"
@@ -144,6 +171,7 @@ object GameResultHelper {
                         connection.readTimeout = AI_READ_TIMEOUT_MILLIS
                         connection.doOutput = true
 
+                        // Menyusun body JSON sesuai format chat completions.
                         val jsonBody = JSONObject().apply {
                             put("model", model)
                             put("messages", JSONArray().put(JSONObject().apply {
@@ -154,10 +182,12 @@ object GameResultHelper {
                             put("max_tokens", 250)
                         }
 
+                        // Mengirim body JSON melalui output stream koneksi.
                         OutputStreamWriter(connection.outputStream, "UTF-8").use { 
                             it.write(jsonBody.toString())
                         }
 
+                        // Membaca respons hanya jika status HTTP berhasil.
                         val responseCode = connection.responseCode
                         if (responseCode == HttpURLConnection.HTTP_OK) {
                             val responseString = connection.inputStream.bufferedReader().use { it.readText() }
@@ -170,6 +200,7 @@ object GameResultHelper {
                                     ?.optString("content")
                                 
                                 if (!content.isNullOrBlank()) {
+                                    // Menyimpan isi evaluasi sebagai hasil akhir.
                                     hasilAI = content.trim()
                                     success = true
                                     Log.i("AI_SUCCESS", "Respon AI berhasil didapat pada percobaan ${attempt + 1}")
@@ -188,12 +219,15 @@ object GameResultHelper {
                 Log.e("AI_ERROR", "OPENROUTER_API_KEY kosong di BuildConfig.")
             }
 
+            // Data yang tersimpan di sini nanti dibaca DashboardActivity untuk grafik dan recap AI.
             // 2. Simpan Dokumen Rekaman ke Cloud Firestore
             try {
+                // Mengambil UID pendamping untuk menghubungkan riwayat dengan akun.
                 val auth = FirebaseAuth.getInstance()
                 val uid = auth.currentUser?.uid
                 if (uid != null) {
                     val formatTanggal = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+                    // Menyusun seluruh field dokumen riwayat permainan.
                     val dataRiwayat = hashMapOf(
                         "id_pendamping" to uid,
                         "id_anak" to idAnak,
@@ -208,6 +242,7 @@ object GameResultHelper {
                         "timestamp" to System.currentTimeMillis(),
                         "evaluasi_ai" to hasilAI
                     )
+                    // Menyimpan dokumen dengan batas waktu agar halaman tidak menunggu selamanya.
                     val tersimpan = withTimeoutOrNull(FIRESTORE_SAVE_TIMEOUT_MILLIS) {
                         FirebaseFirestore.getInstance().collection("tb_riwayat").add(dataRiwayat).await()
                         true
@@ -222,6 +257,7 @@ object GameResultHelper {
             }
 
             // 3. Selesai Memproses, Tutup Pop-Up dan Berpindah ke Halaman Evaluasi
+            // Kembali ke main thread untuk menutup dialog dan menjalankan callback.
             withContext(Dispatchers.Main) {
                 if (loadingDialog != null && loadingDialog.isShowing && !activity.isFinishing && !activity.isDestroyed) {
                     try {
@@ -231,6 +267,7 @@ object GameResultHelper {
                     }
                 }
 
+                // Mengirim hasil kembali ke Activity game untuk membuka EvaluasiActivity.
                 // Pindah ke layar EvaluasiActivity
                 onSelesai(hasilAI)
             }

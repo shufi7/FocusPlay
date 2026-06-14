@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Layout dashboard untuk profil anak, grafik, recap AI, dan menu. -->
+<!-- ConstraintLayout root mengatur posisi header dan card konten Dashboard. -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -7,6 +9,8 @@
     android:fitsSystemWindows="true"
     android:background="@drawable/backgrounds">
 
+    <!-- ==================== BAGIAN HEADER ==================== -->
+    <!-- Header horizontal berisi tombol kembali dan judul Dashboard. -->
     <LinearLayout
         android:id="@+id/headerDashboard"
         android:layout_width="0dp"
@@ -20,6 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Tombol kembali menutup Dashboard melalui finish(). -->
         <ImageView
             android:id="@+id/ivBackDashboard"
             android:layout_width="46dp"
@@ -30,6 +35,7 @@
             android:scaleType="fitCenter"
             android:src="@drawable/ic_arrow_back" />
 
+        <!-- Container judul menggunakan weight untuk mengisi sisa lebar. -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -37,6 +43,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
+            <!-- Judul tetap Dashboard Pendamping. -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -50,6 +57,8 @@
 
     </LinearLayout>
 
+    <!-- ==================== BAGIAN KONTEN DASHBOARD ==================== -->
+    <!-- Card utama membungkus seluruh isi yang dapat digulir. -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardDashboardContainer"
         android:layout_width="0dp"
@@ -66,6 +75,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerDashboard">
 
+        <!-- NestedScrollView memungkinkan Dashboard panjang digulir vertikal. -->
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollDashboard"
             android:layout_width="match_parent"
@@ -74,13 +84,16 @@
             android:overScrollMode="never"
             android:scrollbars="none">
 
+            <!-- Container vertikal untuk seluruh bagian Dashboard. -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:padding="18dp">
 
+                    <!-- ==================== BAGIAN INFORMASI PENDAMPING ==================== -->
                     <!-- HERO -->
+                    <!-- Card pembuka berisi sapaan dan gambar karakter pendamping. -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -88,10 +101,12 @@
                         app:cardCornerRadius="25dp"
                         app:cardElevation="0dp">
 
+                        <!-- FrameLayout menumpuk dekorasi lingkaran dan isi kartu. -->
                         <FrameLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
+                            <!-- Lingkaran dekoratif besar pada sisi kanan. -->
                             <View
                                 android:layout_width="150dp"
                                 android:layout_height="150dp"
@@ -99,6 +114,7 @@
                                 android:layout_marginEnd="-45dp"
                                 android:background="@drawable/bg_circle_soft_blue" />
 
+                            <!-- Lingkaran dekoratif kecil pada kanan bawah. -->
                             <View
                                 android:layout_width="88dp"
                                 android:layout_height="88dp"
@@ -107,6 +123,7 @@
                                 android:layout_marginBottom="-28dp"
                                 android:background="@drawable/bg_circle_sky_soft" />
 
+                            <!-- Baris utama berisi teks dan gambar karakter. -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -124,6 +141,7 @@
                                     android:layout_weight="1"
                                     android:orientation="vertical">
 
+                                    <!-- Sapaan utama untuk pendamping. -->
                                     <TextView
                                         android:id="@+id/tvHeroTitle"
                                         android:layout_width="wrap_content"
@@ -134,6 +152,7 @@
                                         android:textSize="18sp"
                                         android:textStyle="bold" />
 
+                                    <!-- Penjelasan fungsi Dashboard. -->
                                     <TextView
                                         android:id="@+id/tvHeroDesc"
                                         android:layout_width="match_parent"
@@ -145,6 +164,7 @@
                                         android:textColor="#6F7D8B"
                                         android:textSize="12.5sp" />
 
+                                    <!-- Badge konteks pemantauan perkembangan. -->
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -162,6 +182,7 @@
 
                                 </LinearLayout>
 
+                                <!-- Gambar karakter pendamping sebagai dekorasi. -->
                                 <ImageView
                                     android:layout_width="82dp"
                                     android:layout_height="82dp"
@@ -176,7 +197,9 @@
 
                     </androidx.cardview.widget.CardView>
 
-                    <!-- PROFIL ANAK -->
+                    <!-- ==================== BAGIAN PROFIL ANAK ==================== -->
+                    <!-- PROFIL ANAK: menampilkan data "tb_anak" melalui DashboardActivity. -->
+                    <!-- Container ini juga menjadi target tutorial profil anak. -->
                     <LinearLayout
                         android:id="@+id/cardProfilAnak"
                         android:layout_width="match_parent"
@@ -184,6 +207,7 @@
                         android:layout_marginTop="24dp"
                         android:orientation="vertical">
 
+                        <!-- Judul bagian profil anak. -->
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -193,6 +217,7 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
+                        <!-- Petunjuk untuk memilih profil yang akan dipantau. -->
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -202,6 +227,8 @@
                             android:textColor="#7B8895"
                             android:textSize="12sp" />
 
+                        <!-- Menampung kartu tambah anak dan profil yang dapat dipilih. -->
+                        <!-- HorizontalScrollView memungkinkan kartu digeser ke samping. -->
                         <HorizontalScrollView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -209,6 +236,7 @@
                             android:overScrollMode="never"
                             android:scrollbars="none">
 
+                            <!-- Kartu profil dibuat langsung oleh DashboardActivity. -->
                             <LinearLayout
                                 android:id="@+id/containerProfilAnakDashboard"
                                 android:layout_width="wrap_content"
@@ -216,6 +244,7 @@
                                 android:orientation="horizontal" />
                         </HorizontalScrollView>
 
+                        <!-- Empty state ditampilkan ketika profil belum tersedia. -->
                         <TextView
                             android:id="@+id/tvProfilAnakKosong"
                             android:layout_width="match_parent"
@@ -231,7 +260,9 @@
                             android:visibility="gone" />
                     </LinearLayout>
 
-                    <!-- GRAFIK -->
+                    <!-- ==================== BAGIAN GRAFIK PERKEMBANGAN ==================== -->
+                    <!-- GRAFIK: menggunakan field akurasi dari "tb_riwayat". -->
+                    <!-- Container ini menjadi target tutorial grafik. -->
                     <LinearLayout
                         android:id="@+id/cardGrafikDashboard"
                         android:layout_width="match_parent"
@@ -239,6 +270,7 @@
                         android:layout_marginTop="26dp"
                         android:orientation="vertical">
 
+                        <!-- Header grafik menyusun judul dan chip dalam satu baris. -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -251,6 +283,7 @@
                                 android:layout_weight="1"
                                 android:orientation="vertical">
 
+                                <!-- Judul grafik perkembangan. -->
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -260,6 +293,7 @@
                                     android:textSize="18sp"
                                     android:textStyle="bold" />
 
+                                <!-- Penjelasan bahwa nilai merupakan rata-rata akurasi harian. -->
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -270,6 +304,7 @@
                                     android:textSize="12sp" />
                             </LinearLayout>
 
+                            <!-- Chip penanda bahwa grafik mengikuti anak terpilih. -->
                             <TextView
                                 android:id="@+id/tvChipDataAnak"
                                 android:layout_width="wrap_content"
@@ -285,6 +320,7 @@
                                 android:textSize="12sp" />
                         </LinearLayout>
 
+                        <!-- Card lembut menjadi latar komponen chart. -->
                         <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -299,6 +335,8 @@
                                 android:orientation="vertical"
                                 android:padding="16dp">
 
+                                <!-- LineChart dikonfigurasi dan diisi dari DashboardActivity. -->
+                                <!-- Tinggi 290dp menyediakan ruang untuk sumbu dan garis grafik. -->
                                 <com.github.mikephil.charting.charts.LineChart
                                     android:id="@+id/chartWeekly"
                                     android:layout_width="match_parent"
@@ -307,7 +345,9 @@
                         </androidx.cardview.widget.CardView>
                     </LinearLayout>
 
-                    <!-- RECAP AI -->
+                    <!-- ==================== BAGIAN RECAP EVALUASI AI ==================== -->
+                    <!-- RECAP AI: menampilkan field "evaluasi_ai" dari "tb_riwayat". -->
+                    <!-- Container ini menjadi target tutorial recap AI. -->
                     <LinearLayout
                         android:id="@+id/cardRecapAi"
                         android:layout_width="match_parent"
@@ -321,6 +361,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
+                            <!-- Judul bagian recap evaluasi. -->
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -330,6 +371,7 @@
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
 
+                            <!-- Penjelasan singkat isi feedback permainan. -->
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -339,6 +381,7 @@
                                 android:textColor="#7B8895"
                                 android:textSize="12sp" />
 
+                            <!-- Petunjuk bahwa kartu evaluasi dapat digeser horizontal. -->
                             <TextView
                                 android:id="@+id/tvHintSwipeAi"
                                 android:layout_width="wrap_content"
@@ -355,6 +398,7 @@
                                 android:textSize="11sp" />
                         </LinearLayout>
 
+                        <!-- Card membungkus empty state dan daftar recap. -->
                         <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -369,6 +413,7 @@
                                 android:orientation="vertical"
                                 android:padding="14dp">
 
+                                <!-- Empty state tampil jika evaluasi AI belum ada. -->
                                 <TextView
                                     android:id="@+id/tvAiRecapKosong"
                                     android:layout_width="match_parent"
@@ -381,6 +426,7 @@
                                     android:textColor="#7B8895"
                                     android:textSize="12sp" />
 
+                                <!-- Scroll horizontal untuk melihat seluruh kartu evaluasi. -->
                                 <HorizontalScrollView
                                     android:id="@+id/scrollAiRecap"
                                     android:layout_width="match_parent"
@@ -389,6 +435,7 @@
                                     android:overScrollMode="never"
                                     android:scrollbars="none">
 
+                                    <!-- Kartu recap ditambahkan melalui tambahCardRecapAi(). -->
                                     <LinearLayout
                                         android:id="@+id/containerAiRecap"
                                         android:layout_width="wrap_content"
@@ -401,13 +448,16 @@
 
                     </LinearLayout>
 
+                    <!-- ==================== BAGIAN MENU PENDAMPING ==================== -->
                     <!-- MENU -->
+                    <!-- Container menu berisi Riwayat, Pengaturan, dan Logout. -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="26dp"
                         android:orientation="vertical">
 
+                        <!-- Judul kelompok menu pendamping. -->
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -417,12 +467,15 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
+                        <!-- Baris membagi ruang untuk dua kartu menu. -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
                             android:orientation="horizontal">
 
+                            <!-- Membuka halaman riwayat sambil membawa ID anak. -->
+                            <!-- layout_weight=1 membagi lebar sama rata. -->
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/btnRiwayatPermainan"
                                 android:layout_width="0dp"
@@ -439,6 +492,7 @@
                                     android:gravity="center"
                                     android:orientation="vertical">
 
+                                    <!-- Ikon menu riwayat. -->
                                     <ImageView
                                         android:layout_width="64dp"
                                         android:layout_height="64dp"
@@ -447,6 +501,7 @@
                                         android:scaleType="fitCenter"
                                         android:src="@drawable/icon_riwayat" />
 
+                                    <!-- Label menu Riwayat. -->
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -458,6 +513,8 @@
                                 </LinearLayout>
                             </androidx.cardview.widget.CardView>
 
+                            <!-- Membuka PengaturanPermainanActivity. -->
+                            <!-- Kartu kedua memiliki ukuran sama dengan kartu Riwayat. -->
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/btnPengaturanPermainan"
                                 android:layout_width="0dp"
@@ -474,6 +531,7 @@
                                     android:gravity="center"
                                     android:orientation="vertical">
 
+                                    <!-- Ikon menu pengaturan. -->
                                     <ImageView
                                         android:layout_width="64dp"
                                         android:layout_height="64dp"
@@ -482,6 +540,7 @@
                                         android:scaleType="fitCenter"
                                         android:src="@drawable/icon_setting" />
 
+                                    <!-- Label menu Pengaturan. -->
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
@@ -494,6 +553,8 @@
                             </androidx.cardview.widget.CardView>
                         </LinearLayout>
 
+                        <!-- Membersihkan sesi lalu berpindah ke AuthChoiceActivity. -->
+                        <!-- Gambar btn_logout berfungsi sebagai tombol logout penuh. -->
                         <ImageView
                             android:id="@+id/btnLogout"
                             android:layout_width="match_parent"
