@@ -155,8 +155,11 @@
             <TextView
                 android:id="@+id/tvDaftarSini"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginTop="14dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
                 android:text="Belum punya akun? Daftar di sini"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"

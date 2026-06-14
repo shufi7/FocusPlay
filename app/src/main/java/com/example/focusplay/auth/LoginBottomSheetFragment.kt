@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.InputType
 import android.view.View
 import android.widget.EditText
@@ -127,14 +129,7 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
         }
 
         aturTombolCepat(btnRegister) {
-            dismiss()
-
-            view?.postDelayed({
-                RegisterBottomSheetFragment().show(
-                    parentFragmentManager,
-                    "RegisterBottomSheet"
-                )
-            }, 120)
+            bukaRegisterBottomSheet()
         }
 
         aturTombolCepat(btnLoginGoogle) {
@@ -255,6 +250,22 @@ class LoginBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_log
         val intent = Intent(requireContext(), PilihPeranActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
+    }
+
+    private fun bukaRegisterBottomSheet() {
+        val fragmentManager = parentFragmentManager
+        dismissAllowingStateLoss()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (!fragmentManager.isStateSaved &&
+                fragmentManager.findFragmentByTag("RegisterBottomSheet") == null
+            ) {
+                RegisterBottomSheetFragment().show(
+                    fragmentManager,
+                    "RegisterBottomSheet"
+                )
+            }
+        }, 180L)
     }
 
     private fun tampilkanError(title: String, message: String) {
